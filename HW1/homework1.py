@@ -286,6 +286,18 @@ class EVector(Exp):
 
     def eval(self):
         return VVector([exp.eval() for exp in self._vector])
+
+class EDiv(Exp):
+    # Statement which divides two given values
+    def __init__(self, e1, e2):
+        self._numexp = e1
+        self._denexp = e2
+
+    def __str__(self):
+        return "EDiv({},{})".format(self._numexp,self._denexp)
+
+    def eval(self):
+        return VRational(0,1)
 #
 # Values
 #
@@ -311,10 +323,17 @@ class VVector (Value):
     def __init__(self,v):
         self.vector = v
         self.length = len(v)
-        self.type = 'vector'
+        self.type = "vector"
 
     def get(self, n):
         return self.vector[n]
+
+class VRational (Value):
+    # Value reprsentation of Rational Numbers
+    def __init__(self, num, den):
+        self.numer = num
+        self.denom = den
+        self.type = "rational"
 
 if __name__ == '__main__':
     print "EIsZero Tester >>"
