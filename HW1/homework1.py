@@ -397,3 +397,16 @@ if __name__ == '__main__':
     print "Expected: 264 Output: "+ str(ETimes(v1,v2).eval().value)
     print "Expected: 528 Output: "+ str(ETimes(v1,EPlus(v2,v2)).eval().value)
     print "Expected: 0 Output: "+ str(ETimes(v1,EMinus(v2,v2)).eval().value)
+
+    print "VRational Tester >>"
+    print "Expected: 1 Output: "+ str(VRational(1,3).numer)
+    print "Expected: 3 Output: "+ str(VRational(1,3).denom)
+    print "Expected: 2 Output: "+ str(VRational(1,3).numer)
+    print "Expected: 3 Output: "+ str(VRational(1,3).denom)
+
+    print "EDiv Tester >>"
+    def rat (v): return "{}/{}".format(v.numer,v.denom)
+    print "Expected: 1/2 Output: "+ str(rat(EDiv(EInteger(1),EInteger(2)).eval()))
+    print "Expected: 2/3 Output: "+ str(rat(EDiv(EInteger(2),EInteger(3)).eval()))
+    print "Expected: 1/6 Output: "+ str(rat(EDiv(EDiv(EInteger(2),EInteger(3)),EInteger(4)).eval()))
+    print "Expected: 8/3 Output: "+ str(rat(EDiv(EInteger(2),EDiv(EInteger(3),EInteger(4))).eval()))
