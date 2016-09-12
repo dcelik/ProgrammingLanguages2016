@@ -253,10 +253,10 @@ class ENot(Exp):
     def eval(self):
         v = self._val.eval()
         if v.type == "vector":
-            netvector = []
+            newvector = []
             for exp in v.vector:
                 if exp.type == "boolean":
-                    newvector.append(VBoolean(!exp.value))
+                    newvector.append(VBoolean(not exp.value))
             return VVector(newvector)
         if v.type != "boolean":
             raise Exception("Runtime error: Expression is not a boolean")
