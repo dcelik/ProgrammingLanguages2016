@@ -214,6 +214,20 @@ class EOr(Exp):
         
     def eval(self):
         v1 = self._exp1.eval()
+        if v1.type == "vector":
+            v2 = self._exp2.eval()
+            if v2.type == "vector":
+                if v1.length==v2.length:
+                    newvec = []
+                    for index in xrange(v1.length):
+                         if v1.get(index).type == 'boolean' and v2.get(index).type == 'boolean':
+                             newvec.append(VInteger(v1.get(index).value or v2.get(index).value))
+                         else:
+                             raise Exception ("Runtime error: vectors must contain booleans")
+                    return VVector(newvec)
+                else:
+                    raise Exception ("Runtime error: vectors must have same length")
+
         if v1.type != "boolean":
             raise Exception("Runtime error: first expression is not a boolean")
         if v1.value:
@@ -363,3 +377,5 @@ if __name__ == '__main__':
     b2 = EVector([EBoolean(False),EBoolean(False)])
 
     print "Expected: (False, False) Output: "+ str(pair(EAnd(b1,b2).eval()))
+    print "Expected: (True, False) Output: "+ str(pair(EOr(b1,b2).eval()))
+    print "Expected: (False, True) Output: "+ str(pair(ENot(b1).eval()))
