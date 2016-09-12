@@ -379,3 +379,10 @@ if __name__ == '__main__':
     print "Expected: (False, False) Output: "+ str(pair(EAnd(b1,b2).eval()))
     print "Expected: (True, False) Output: "+ str(pair(EOr(b1,b2).eval()))
     print "Expected: (False, True) Output: "+ str(pair(ENot(b1).eval()))
+
+    v1 = EVector([EInteger(2),EInteger(3)])
+    v2 = EVector([EInteger(33),EInteger(66)])
+
+    print "Expected: 264 Output: "+ str(ETimes(v1,v2).eval().value)
+    print "Expected: 528 Output: "+ str(ETimes(v1,EPlus(v2,v2)).eval().value)
+    print "Expected: 0 Output: "+ str(ETimes(v1,EMinus(v2,v2)).eval().value)
