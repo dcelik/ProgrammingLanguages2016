@@ -1,9 +1,10 @@
 ############################################################
 # HOMEWORK 1
 #
-# Team members:
+# Team members: Deniz Celik, Jacob Riedel
 #
-# Emails:
+# Emails: deniz.celik@students.olin.edu
+#		  jacob.riedel@students.olin.edu
 #
 # Remarks:
 #
