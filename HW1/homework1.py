@@ -63,13 +63,13 @@ class EPlus (Exp):
             return VInteger(v1.value + v2.value)
         if v1.type == "vector" and v2.type == "vector":
             if v1.length==v2.length:
-                return VVector(v1._vector+v2._vector)
-                # newvec = []
-                # for index in xrange(v1.length):
-                #     if v1.get(index).type == 'integer' and v2.get(index).type == 'integer':
-                #         newvex.append(VInteger(v1.get(index).value+v2.get(index).value))
-                #     else:
-                #         raise
+                newvec = []
+                for index in xrange(v1.length):
+                     if v1.get(index).type == 'integer' and v2.get(index).type == 'integer':
+                         newvec.append(VInteger(v1.get(index).value+v2.get(index).value))
+                     else:
+                         raise Exception ("Runtime error: vectors cannot contain non-numbers")
+                return VVector(newvec)
             else:
                 raise Exception ("Runtime error: vectors must have same length")
         raise Exception ("Runtime error: trying to add non-numbers or non-vectors")
