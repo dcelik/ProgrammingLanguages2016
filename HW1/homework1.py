@@ -121,6 +121,25 @@ class EIf (Exp):
             return self._else.eval()
 
 
+class EIsZero (Exp):
+    # Conditional Expression
+
+    def __init__(self,e1):
+        self._val = e1
+
+    def __str__ (self):
+        return "EIsZero({})".format(self._val)
+
+    def eval(self):
+        v = self._val.eval()
+        if v.type != "integer":
+            raise Exception ("Runtime error: Expression is not an Integer")
+        if v.value == 0:
+            return VBoolean(True)
+        else:
+            return VBoolean(False)
+
+
 #
 # Values
 #
