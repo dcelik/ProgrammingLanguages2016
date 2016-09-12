@@ -201,7 +201,7 @@ class ENot(Exp):
         return "ENot({})".format(self._val)
 
     def eval(self):
-        v = self._val
+        v = self._val.eval()
         if v.type != "boolean":
             raise Exception("Runtime error: Expression is not a boolean")
         if v.value:
