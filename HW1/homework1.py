@@ -122,7 +122,7 @@ class EIf (Exp):
 
 
 class EIsZero (Exp):
-    # Conditional Expression
+    # Conditional Expression to test if value is 0
 
     def __init__(self,e1):
         self._val = e1
@@ -141,6 +141,7 @@ class EIsZero (Exp):
 
 
 class EAnd (Exp):
+    # Conditional Statement to test if Expression 1 and Expression 2 are true
 
     def __init__(self,e1,e2):
         self._exp1 = e1
@@ -166,6 +167,7 @@ class EAnd (Exp):
             return VBoolean(False)
 
 class EOr(Exp):
+    # Conditional Statement to test if Expression 1 or Expression 2 is true
 
     def __init__(self, e1, e2):
         self._exp1 = e1
@@ -185,6 +187,24 @@ class EOr(Exp):
         if v2.type != "boolean":
             raise Exception("Runtime error: second expression is not a boolean")
         if not v2.value:
+            return VBoolean(False)
+        else:
+            return VBoolean(True)
+
+class ENot(Exp):
+    # Conditional Statement which switches the value given
+
+    def __init__(self, e1):
+        self._val = e1
+
+    def __str__(self):
+        return "ENot({})".format(self._val)
+
+    def eval(self):
+        v = self._val
+        if v.type != "boolean":
+            raise Exception("Runtime error: Expression is not a boolean")
+        if v.value:
             return VBoolean(False)
         else:
             return VBoolean(True)
