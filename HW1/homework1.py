@@ -269,15 +269,15 @@ if __name__ == '__main__':
     print "Expected: True Output: " + str(EOr(tt,EInteger(10)).eval().value)
     print "Expected: True Output: " + str(EOr(tt,EInteger(0)).eval().value)
 
-    # print "ENot Tester >>"
-    # print "Expected: False Output: " + str(ENot(tt).eval().value)
-    # print "Expected: True Output: " + str(ENot(ff).eval().value)
+    print "ENot Tester >>"
+    print "Expected: False Output: " + str(ENot(tt).eval().value)
+    print "Expected: True Output: " + str(ENot(ff).eval().value)
 
-    # print "EAnd, EOr, ENot Tester >>"
-    # print "Expected: True Output: " + str(EAnd(EOr(tt,ff),EOr(ff,tt)).eval().value)
-    # print "Expected: False Output: " + str(EAnd(EOr(tt,ff),EOr(ff,ff)).eval().value)
-    # print "Expected: False Output: " + str(EAnd(tt,ENot(tt)).eval().value)
-    # print "Expected: True Output: " + str(EAnd(tt,ENot(ENot(tt))).eval().value)
+    print "EAnd, EOr, ENot Tester >>"
+    print "Expected: True Output: " + str(EAnd(EOr(tt,ff),EOr(ff,tt)).eval().value)
+    print "Expected: False Output: " + str(EAnd(EOr(tt,ff),EOr(ff,ff)).eval().value)
+    print "Expected: False Output: " + str(EAnd(tt,ENot(tt)).eval().value)
+    print "Expected: True Output: " + str(EAnd(tt,ENot(ENot(tt))).eval().value)
 
     print "VVector Tester >>"
     print "Expected: 0 Output: " + str(VVector([]).length)
