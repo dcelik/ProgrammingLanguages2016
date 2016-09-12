@@ -318,3 +318,11 @@ if __name__ == '__main__':
     print "Expected: 2 Output: " + str(EVector([EBoolean(True),EAnd(EBoolean(True),EBoolean(False))]).eval().length)
     print "Expected: True Output: " + str(EVector([EBoolean(True),EAnd(EBoolean(True),EBoolean(False))]).eval().get(0).value)
     print "Expected: False Output: " + str(EVector([EBoolean(True),EAnd(EBoolean(True),EBoolean(False))]).eval().get(1).value)
+
+    print "EVector Extension >>"
+    def pair (v): return (v.get(0).value,v.get(1).value)
+
+    v1 = EVector([EInteger(2),EInteger(3)])
+    v2 = EVector([EInteger(33),EInteger(66)])
+
+    print "Expected: (35,69) Output: "+ str(pair(EPlus(v1,v2).eval()))
