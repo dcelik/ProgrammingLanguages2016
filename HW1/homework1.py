@@ -342,3 +342,4 @@ if __name__ == '__main__':
     b1 = EVector([EBoolean(True),EBoolean(False)])
     b2 = EVector([EBoolean(False),EBoolean(False)])
 
+    print "Expected: (False, False) Output: "+ str(pair(EAnd(b1,b2).eval()))
