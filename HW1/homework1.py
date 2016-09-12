@@ -175,6 +175,20 @@ class EAnd (Exp):
 
     def eval(self):
         v1 = self._exp1.eval()
+        if v1.type == "vector":
+            v2 = self._exp2.eval()
+            if v2.type == "vector":
+                if v1.length==v2.length:
+                    newvec = []
+                    for index in xrange(v1.length):
+                         if v1.get(index).type == 'boolean' and v2.get(index).type == 'boolean':
+                             newvec.append(VInteger(v1.get(index).value and v2.get(index).value))
+                         else:
+                             raise Exception ("Runtime error: vectors must contain booleans")
+                    return VVector(newvec)
+                else:
+                    raise Exception ("Runtime error: vectors must have same length")
+
         if v1.type != "boolean":
             raise Exception("Runtime error: first expression is not a boolean")
         if not v1.value:
