@@ -209,6 +209,16 @@ class ENot(Exp):
         else:
             return VBoolean(True)
 
+class EVector(Exp):
+
+    def __init__(self, ve1):
+        self._vector = ve1
+
+    def __str__(self):
+        return "EVector({})".format(self._vector)
+
+    def eval(self):
+        return VVector([exp.eval() for exp in self._vector])
 #
 # Values
 #
@@ -238,7 +248,6 @@ class VVector (Value):
 
     def get(self, n):
         return self.vector[n]
-
 
 if __name__ == '__main__':
     print "EIsZero Tester >>"
@@ -285,3 +294,16 @@ if __name__ == '__main__':
     print "Expected: 10 Output: " + str(VVector([VInteger(10),VInteger(20),VInteger(30)]).get(0).value)
     print "Expected: 20 Output: " + str(VVector([VInteger(10),VInteger(20),VInteger(30)]).get(1).value)
     print "Expected: 30 Output: " + str(VVector([VInteger(10),VInteger(20),VInteger(30)]).get(2).value)
+
+    print "EVector Tester >>"
+    print "Expected: 0 Output: " + str(EVector([]).eval().length)
+    print "Expected: 3 Output: " + str(EVector([EInteger(10),EInteger(20),EInteger(30)]).eval().length)
+    print "Expected: 10 Output: " + str(EVector([EInteger(10),EInteger(20),EInteger(30)]).eval().get(0).value)
+    print "Expected: 20 Output: " + str(EVector([EInteger(10),EInteger(20),EInteger(30)]).eval().get(1).value)
+    print "Expected: 30 Output: " + str(EVector([EInteger(10),EInteger(20),EInteger(30)]).eval().get(2).value)
+    print "Expected: 2 Output: " + str(EVector([EPlus(EInteger(1),EInteger(2)),EInteger(0)]).eval().length)
+    print "Expected: 3 Output: " + str(EVector([EPlus(EInteger(1),EInteger(2)),EInteger(0)]).eval().get(0).value)
+    print "Expected: 0 Output: " + str(EVector([EPlus(EInteger(1),EInteger(2)),EInteger(0)]).eval().get(1).value)
+    print "Expected: 2 Output: " + str(EVector([EBoolean(True),EAnd(EBoolean(True),EBoolean(False))]).eval().length)
+    print "Expected: True Output: " + str(EVector([EBoolean(True),EAnd(EBoolean(True),EBoolean(False))]).eval().get(0).value)
+    print "Expected: False Output: " + str(EVector([EBoolean(True),EAnd(EBoolean(True),EBoolean(False))]).eval().get(1).value)
