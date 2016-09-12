@@ -169,3 +169,20 @@ if __name__ == '__main__':
 	print "Expected: False  Output: " + str(EIsZero(EInteger(-1)).eval().value)
 	print "Expected: False  Output: " + str(EIsZero(EPlus(EInteger(1),EInteger(1))).eval().value)
 	print "Expected: True  Output: " + str(EIsZero(EMinus(EInteger(1),EInteger(1))).eval().value)
+
+
+    
+    tt = EBoolean(True)
+    ff = EBoolean(False)
+    print "EAnd Tester >>"
+    print "Expected: True Output: " + str(EAnd(tt,tt).eval().value)
+    print "Expected: False Output: " + str(EAnd(tt,ff).eval().value)
+    print "Expected: False Output: " + str(EAnd(ff,tt).eval().value)
+    print "Expected: False Output: " + str(EAnd(ff,ff).eval().value)
+
+
+    print "EOr Rester >>"
+    print "Expected: True Output: " + str(EAnd(tt,tt).eval().value)
+    print "Expected: True Output: " + str(EAnd(tt,ff).eval().value)
+    print "Expected: True Output: " + str(EAnd(ff,tt).eval().value)
+    print "Expected: False Output: " + str(EAnd(ff,ff).eval().value)
