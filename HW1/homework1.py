@@ -140,6 +140,31 @@ class EIsZero (Exp):
             return VBoolean(False)
 
 
+class EAnd (Exp):
+
+	def __init__(self,e1,e2):
+		self._exp1 = e1
+		self._exp2 = e2
+
+
+	def __str__(self):
+		return "EAnd({},{})".format(self._exp1,self._exp2)
+
+	def eval(self):
+		v1 = self._exp1.eval()
+		if v1.type != "boolean":
+			raise Exception("Runtime error: first expression is not a boolean")
+		if not v1.value:
+			return VBoolean(False)
+
+		v2 = self._exp2.eval()
+		if v2.type != "boolean":
+			raise Exception("Runtime error: second expression is not a boolean")
+		if v2.value:
+			return VBoolean(True)
+		else:
+			return VBoolean(False)
+
 #
 # Values
 #
