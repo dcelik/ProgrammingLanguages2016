@@ -163,9 +163,9 @@ class VBoolean (Value):
 
 if __name__ == '__main__':
 	print "EIsZero Tester >>"
-	print "Expected: True  Output: " + EIsZero(EInteger(0)).eval().value
-	print "Expected: False  Output: " + EIsZero(EInteger(1)).eval().value
-	print "Expected: False  Output: " + EIsZero(EInteger(9)).eval().value
-	print "Expected: False  Output: " + EIsZero(EInteger(-1)).eval().value
-	print "Expected: False  Output: " + EIsZero(EPlus(EInteger(1),EInteger(1))).eval().value
-	print "Expected: True  Output: " + EIsZero(EMinus(EInteger(1),EInteger(1))).eval().value
+	print "Expected: True  Output: " + str(EIsZero(EInteger(0)).eval().value)
+	print "Expected: False  Output: " + str(EIsZero(EInteger(1)).eval().value)
+	print "Expected: False  Output: " + str(EIsZero(EInteger(9)).eval().value)
+	print "Expected: False  Output: " + str(EIsZero(EInteger(-1)).eval().value)
+	print "Expected: False  Output: " + str(EIsZero(EPlus(EInteger(1),EInteger(1))).eval().value)
+	print "Expected: True  Output: " + str(EIsZero(EMinus(EInteger(1),EInteger(1))).eval().value)
