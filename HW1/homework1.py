@@ -4,7 +4,7 @@
 # Team members: Deniz Celik, Jacob Riedel
 #
 # Emails: deniz.celik@students.olin.edu
-#		  jacob.riedel@students.olin.edu
+#         jacob.riedel@students.olin.edu
 #
 # Remarks:
 #
@@ -142,28 +142,28 @@ class EIsZero (Exp):
 
 class EAnd (Exp):
 
-	def __init__(self,e1,e2):
-		self._exp1 = e1
-		self._exp2 = e2
+    def __init__(self,e1,e2):
+        self._exp1 = e1
+        self._exp2 = e2
 
 
-	def __str__(self):
-		return "EAnd({},{})".format(self._exp1,self._exp2)
+    def __str__(self):
+        return "EAnd({},{})".format(self._exp1,self._exp2)
 
-	def eval(self):
-		v1 = self._exp1.eval()
-		if v1.type != "boolean":
-			raise Exception("Runtime error: first expression is not a boolean")
-		if not v1.value:
-			return VBoolean(False)
+    def eval(self):
+        v1 = self._exp1.eval()
+        if v1.type != "boolean":
+            raise Exception("Runtime error: first expression is not a boolean")
+        if not v1.value:
+            return VBoolean(False)
 
-		v2 = self._exp2.eval()
-		if v2.type != "boolean":
-			raise Exception("Runtime error: second expression is not a boolean")
-		if v2.value:
-			return VBoolean(True)
-		else:
-			return VBoolean(False)
+        v2 = self._exp2.eval()
+        if v2.type != "boolean":
+            raise Exception("Runtime error: second expression is not a boolean")
+        if v2.value:
+            return VBoolean(True)
+        else:
+            return VBoolean(False)
 
 class EOr(Exp):
 
@@ -211,16 +211,14 @@ class VBoolean (Value):
 
 
 if __name__ == '__main__':
-	print "EIsZero Tester >>"
-	print "Expected: True  Output: " + str(EIsZero(EInteger(0)).eval().value)
-	print "Expected: False  Output: " + str(EIsZero(EInteger(1)).eval().value)
-	print "Expected: False  Output: " + str(EIsZero(EInteger(9)).eval().value)
-	print "Expected: False  Output: " + str(EIsZero(EInteger(-1)).eval().value)
-	print "Expected: False  Output: " + str(EIsZero(EPlus(EInteger(1),EInteger(1))).eval().value)
-	print "Expected: True  Output: " + str(EIsZero(EMinus(EInteger(1),EInteger(1))).eval().value)
+    print "EIsZero Tester >>"
+    print "Expected: True  Output: " + str(EIsZero(EInteger(0)).eval().value)
+    print "Expected: False  Output: " + str(EIsZero(EInteger(1)).eval().value)
+    print "Expected: False  Output: " + str(EIsZero(EInteger(9)).eval().value)
+    print "Expected: False  Output: " + str(EIsZero(EInteger(-1)).eval().value)
+    print "Expected: False  Output: " + str(EIsZero(EPlus(EInteger(1),EInteger(1))).eval().value)
+    print "Expected: True  Output: " + str(EIsZero(EMinus(EInteger(1),EInteger(1))).eval().value)
 
-
-    
     tt = EBoolean(True)
     ff = EBoolean(False)
     print "EAnd Tester >>"
@@ -228,10 +226,24 @@ if __name__ == '__main__':
     print "Expected: False Output: " + str(EAnd(tt,ff).eval().value)
     print "Expected: False Output: " + str(EAnd(ff,tt).eval().value)
     print "Expected: False Output: " + str(EAnd(ff,ff).eval().value)
+    print "Expected: False Output: " + str(EAnd(ff,EInteger(10)).eval().value)
+    print "Expected: False Output: " + str(EAnd(ff,EInteger(0)).eval().value)
 
+    print "EOr Tester >>"
+    print "Expected: True Output: " + str(EOr(tt,tt).eval().value)
+    print "Expected: True Output: " + str(EOr(tt,ff).eval().value)
+    print "Expected: True Output: " + str(EOr(ff,tt).eval().value)
+    print "Expected: False Output: " + str(EOr(ff,ff).eval().value)
+    print "Expected: True Output: " + str(EOr(tt,EInteger(10)).eval().value)
+    print "Expected: True Output: " + str(EOr(tt,EInteger(0)).eval().value)
 
-    print "EOr Rester >>"
-    print "Expected: True Output: " + str(EAnd(tt,tt).eval().value)
-    print "Expected: True Output: " + str(EAnd(tt,ff).eval().value)
-    print "Expected: True Output: " + str(EAnd(ff,tt).eval().value)
-    print "Expected: False Output: " + str(EAnd(ff,ff).eval().value)
+    print "ENot Tester >>"
+    print "Expected: False Output: " + str(ENot(tt).eval().value)
+    print "Expected: True Output: " + str(ENot(ff).eval().value)
+
+    print "EAnd, EOr, ENot Tester >>"
+    print "Expected: True Output: " + str(EAnd(EOr(tt,ff),EOr(ff,tt)).eval().value)
+    print "Expected: False Output: " + str(EAnd(EOr(tt,ff),EOr(ff,ff)).eval().value)
+    print "Expected: False Output: " + str(EAnd(tt,ENot(tt)).eval().value)
+    print "Expected: True Output: " + str(EAnd(tt,ENot(ENot(tt))).eval().value)
+
