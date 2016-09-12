@@ -90,7 +90,18 @@ class EMinus (Exp):
         v2 = self._exp2.eval()
         if v1.type == "integer" and v2.type == "integer":
             return VInteger(v1.value - v2.value)
-        raise Exception ("Runtime error: trying to subtract non-numbers")
+        if v1.type == "vector" and v2.type == "vector":
+            if v1.length==v2.length:
+                newvec = []
+                for index in xrange(v1.length):
+                     if v1.get(index).type == 'integer' and v2.get(index).type == 'integer':
+                         newvec.append(VInteger(v1.get(index).value-v2.get(index).value))
+                     else:
+                         raise Exception ("Runtime error: vectors cannot contain non-numbers")
+                return VVector(newvec)
+            else:
+                raise Exception ("Runtime error: vectors must have same length")
+        raise Exception ("Runtime error: trying to subtract non-numbers or non-vectors")
 
 
 class ETimes (Exp):
@@ -326,3 +337,8 @@ if __name__ == '__main__':
     v2 = EVector([EInteger(33),EInteger(66)])
 
     print "Expected: (35,69) Output: "+ str(pair(EPlus(v1,v2).eval()))
+    print "Expected: (-31,-63) Output: "+ str(pair(EMinus(v1,v2).eval()))
+
+    b1 = EVector([EBoolean(True),EBoolean(False)])
+    b2 = EVector([EBoolean(False),EBoolean(False)])
+
