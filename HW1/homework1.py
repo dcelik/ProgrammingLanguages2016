@@ -420,8 +420,8 @@ if __name__ == '__main__':
     print "VRational Tester >>"
     print "Expected: 1 Output: "+ str(VRational(1,3).numer)
     print "Expected: 3 Output: "+ str(VRational(1,3).denom)
-    print "Expected: 2 Output: "+ str(VRational(1,3).numer)
-    print "Expected: 3 Output: "+ str(VRational(1,3).denom)
+    print "Expected: 2 Output: "+ str(VRational(2,3).numer)
+    print "Expected: 3 Output: "+ str(VRational(2,3).denom)
 
     print "EDiv Tester >>"
     def rat (v): return "{}/{}".format(v.numer,v.denom)
