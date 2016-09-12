@@ -65,13 +65,81 @@ class EPlus (Exp):
             if v1.length==v2.length:
                 newvec = []
                 for index in xrange(v1.length):
-                     if v1.get(index).type == 'integer' and v2.get(index).type == 'integer':
-                         newvec.append(VInteger(v1.get(index).value+v2.get(index).value))
-                     else:
-                         raise Exception ("Runtime error: vectors cannot contain non-numbers")
+                    v1rat = v1.get(index)
+                    v2rat = v2.get(index)
+                    if v1rat.type == 'integer':
+                        v1rat = VRational(v1.get(index).value,1)
+                    if v2rat.type == 'integer':
+                        v2rat = VRational(v2.get(index).value,1)
+                    if v1rat.type == 'rational' and v2rat.type == 'rational':
+                        newnum = v1rat.numer*v2rat.denom + v2rat.numer*v1rat.denom
+                        newden = v1rat.denom*v2rat.denom
+                        gcd_val = gcd(newnum,newden)
+                        newnum = newnum/gcd_val
+                        newden = newden/gcd_val
+                        if newden==1:
+                            newvec.append(VInteger(newnum))
+                        else:
+                            newvec.append(VRational(newnum, newden))
+                    else:
+                        raise Exception ("Runtime error: vectors cannot contain non-numbers")
                 return VVector(newvec)
             else:
                 raise Exception ("Runtime error: vectors must have same length")
+
+        if v1.type == "rational" and v2.type == "rational":
+            return VRational(v1.numer*v2.denom + v2.numer*v1.denom, v1.denom*v2.denom)
+        if v1.type == "rational" and v2.type == "integer":
+            v2 = VRational(v2.value,1)
+            return VRational(v1.numer*v2.denom + v2.numer*v1.denom, v1.denom*v2.denom)
+        if v1.type == "integer" and v2.type == "rational":
+            v1 = VRational(v1.value,1)
+            return VRational(v1.numer*v2.denom + v2.numer*v1.denom, v1.denom*v2.denom)
+
+        if v1.type == "vector":
+            newvec = []
+            if v2.type == 'integer':
+                v2 = VRational(v2.value,1)
+            for exp in v1.vector:
+                exprat = exp
+                if exp.type == 'integer':
+                    exprat = VRational(exp.value,1)
+                if exprat.type == 'rational' and v2.type == 'rational':
+                    newnum = exprat.numer*v2.denom + v2.numer*exprat.denom
+                    newden = exprat.denom*v2.denom
+                    gcd_val = gcd(newnum,newden)
+                    newnum = newnum/gcd_val
+                    newden = newden/gcd_val
+                    if newden==1:
+                        newvec.append(VInteger(newnum))
+                    else:
+                        newvec.append(VRational(newnum, newden))
+                else:
+                    raise Exception ("Runtime error: vectors cannot contain non-numbers")
+            return VVector(newvec)
+
+        if v2.type == "vector":
+            newvec = []
+            if v1.type == 'integer':
+                v1 = VRational(v1.value,1)
+            for exp in v2.vector:
+                exprat = exp
+                if exp.type == 'integer':
+                    exprat = VRational(exp.value,1)
+                if exprat.type == 'rational' and v1.type == 'rational':
+                    newnum = v1.numer*exprat.denom + exprat.numer*v1.denom
+                    newden = v1.denom*exprat.denom
+                    gcd_val = gcd(newnum,newden)
+                    newnum = newnum/gcd_val
+                    newden = newden/gcd_val
+                    if newden==1:
+                        newvec.append(VInteger(newnum))
+                    else:
+                        newvec.append(VRational(newnum, newden))
+                else:
+                    raise Exception ("Runtime error: vectors cannot contain non-numbers")
+            return VVector(newvec)
+
         raise Exception ("Runtime error: trying to add non-numbers or non-vectors")
 
 
@@ -90,17 +158,86 @@ class EMinus (Exp):
         v2 = self._exp2.eval()
         if v1.type == "integer" and v2.type == "integer":
             return VInteger(v1.value - v2.value)
+
         if v1.type == "vector" and v2.type == "vector":
             if v1.length==v2.length:
                 newvec = []
                 for index in xrange(v1.length):
-                     if v1.get(index).type == 'integer' and v2.get(index).type == 'integer':
-                         newvec.append(VInteger(v1.get(index).value-v2.get(index).value))
-                     else:
-                         raise Exception ("Runtime error: vectors cannot contain non-numbers")
+                    v1rat = v1.get(index)
+                    v2rat = v2.get(index)
+                    if v1rat.type == 'integer':
+                        v1rat = VRational(v1.get(index).value,1)
+                    if v2rat.type == 'integer':
+                        v2rat = VRational(v2.get(index).value,1)
+                    if v1rat.type == 'rational' and v2rat.type == 'rational':
+                        newnum = v1rat.numer*v2rat.denom - v2rat.numer*v1rat.denom
+                        newden = v1rat.denom*v2rat.denom
+                        gcd_val = gcd(newnum,newden)
+                        newnum = newnum/gcd_val
+                        newden = newden/gcd_val
+                        if newden==1:
+                            newvec.append(VInteger(newnum))
+                        else:
+                            newvec.append(VRational(newnum, newden))
+                    else:
+                        raise Exception ("Runtime error: vectors cannot contain non-numbers")
                 return VVector(newvec)
             else:
                 raise Exception ("Runtime error: vectors must have same length")
+
+        if v1.type == "rational" and v2.type == "rational":
+            return VRational(v1.numer*v2.denom - v2.numer*v1.denom, v1.denom*v2.denom)
+        if v1.type == "rational" and v2.type == "integer":
+            v2 = VRational(v2.value,1)
+            return VRational(v1.numer*v2.denom - v2.numer*v1.denom, v1.denom*v2.denom)
+        if v1.type == "integer" and v2.type == "rational":
+            v1 = VRational(v1.value,1)
+            return VRational(v1.numer*v2.denom - v2.numer*v1.denom, v1.denom*v2.denom)
+
+        if v1.type == "vector":
+            newvec = []
+            if v2.type == 'integer':
+                v2 = VRational(v2.value,1)
+            for exp in v1.vector:
+                exprat = exp
+                if exp.type == 'integer':
+                    exprat = VRational(exp.value,1)
+                if exprat.type == 'rational' and v2.type == 'rational':
+                    newnum = exprat.numer*v2.denom - v2.numer*exprat.denom
+                    newden = exprat.denom*v2.denom
+                    gcd_val = gcd(newnum,newden)
+                    newnum = newnum/gcd_val
+                    newden = newden/gcd_val
+                    if newden==1:
+                        newvec.append(VInteger(newnum))
+                    else:
+                        newvec.append(VRational(newnum, newden))
+                else:
+                    raise Exception ("Runtime error: vectors cannot contain non-numbers")
+            return VVector(newvec)
+
+        if v2.type == "vector":
+            newvec = []
+            if v1.type == 'integer':
+                v1 = VRational(v1.value,1)
+            for exp in v2.vector:
+                exprat = exp
+                if exp.type == 'integer':
+                    exprat = VRational(exp.value,1)
+                if exprat.type == 'rational' and v1.type == 'rational':
+                    newnum = v1.numer*exprat.denom - exprat.numer*v1.denom
+                    newden = v1.denom*exprat.denom
+                    gcd_val = gcd(newnum,newden)
+                    newnum = newnum/gcd_val
+                    newden = newden/gcd_val
+                    if newden==1:
+                        newvec.append(VInteger(newnum))
+                    else:
+                        newvec.append(VRational(newnum, newden))
+                else:
+                    raise Exception ("Runtime error: vectors cannot contain non-numbers")
+            return VVector(newvec)
+
         raise Exception ("Runtime error: trying to subtract non-numbers or non-vectors")
 
 
@@ -121,6 +258,35 @@ class ETimes (Exp):
             return VInteger(v1.value * v2.value)
         if v1.type == "vector" and v2.type == "vector":
             if v1.length==v2.length:
+                newsum = VRational(0,1)
+                for index in xrange(v1.length):
+                    v1rat = v1.get(index)
+                    v2rat = v2.get(index)
+                    if v1rat.type == 'integer':
+                        v1rat = VRational(v1.get(index).value,1)
+                    if v2rat.type == 'integer':
+                        v2rat = VRational(v2.get(index).value,1)
+                    if v1rat.type == 'rational' and v2rat.type == 'rational':
+                        newnum = v1rat.numer*v2rat.numer
+                        newden = v1rat.denom*v2rat.denom
+                        gcd_val = gcd(newnum,newden)
+                        newnum = newnum/gcd_val
+                        newden = newden/gcd_val
+
+                        newsum = VRational(newsum.numer*newden + newnum*newsum.denom, newsum.denom*newden)
+                    else:
+                        raise Exception ("Runtime error: vectors cannot contain non-numbers")
+                last_gcd = gcd(newsum.numer,newsum.denom)
+                last_num = newsum.numer/last_gcd
+                last_den = newsum.denom/last_gcd
+                if last_den == 1:
+                    return VInteger(last_num)
+                else:
+                    return VRational(last_num,last_den)
+            else:
+                raise Exception ("Runtime error: vectors must have same length")
+        if v1.type == "vector" and v2.type == "vector":
+            if v1.length==v2.length:
                 newsum = 0
                 for index in xrange(v1.length):
                      if v1.get(index).type == 'integer' and v2.get(index).type == 'integer':
@@ -130,6 +296,58 @@ class ETimes (Exp):
                 return VInteger(newsum)
             else:
                 raise Exception ("Runtime error: vectors must have same length")
+
+        if v1.type == "rational" and v2.type == "rational":
+            return VRational(v1.numer*v2.numer, v1.denom*v2.denom)
+        if v1.type == "rational" and v2.type == "integer":
+            return VRational(v1.numer*v2.value, v1.denom)
+        if v1.type == "integer" and v2.type == "rational":
+            return VRational(v1.value*v2.numer, v2.denom)
+
+        if v1.type == "vector":
+            newvec = []
+            if v2.type == 'integer':
+                v2 = VRational(v2.value,1)
+            for exp in v1.vector:
+                exprat = exp
+                if exp.type == 'integer':
+                    exprat = VRational(exp.value,1)
+                if exprat.type == 'rational' and v2.type == 'rational':
+                    newnum = exprat.numer*v2.numer
+                    newden = exprat.denom*v2.denom
+                    gcd_val = gcd(newnum,newden)
+                    newnum = newnum/gcd_val
+                    newden = newden/gcd_val
+                    if newden==1:
+                        newvec.append(VInteger(newnum))
+                    else:
+                        newvec.append(VRational(newnum, newden))
+                else:
+                    raise Exception ("Runtime error: vectors cannot contain non-numbers")
+            return VVector(newvec)
+
+        if v2.type == "vector":
+            newvec = []
+            if v1.type == 'integer':
+                v1 = VRational(v1.value,1)
+            for exp in v2.vector:
+                exprat = exp
+                if exp.type == 'integer':
+                    exprat = VRational(exp.value,1)
+                if exprat.type == 'rational' and v1.type == 'rational':
+                    newnum = exprat.numer*v1.numer
+                    newden = exprat.denom*v1.denom
+                    gcd_val = gcd(newnum,newden)
+                    newnum = newnum/gcd_val
+                    newden = newden/gcd_val
+                    if newden==1:
+                        newvec.append(VInteger(newnum))
+                    else:
+                        newvec.append(VRational(newnum, newden))
+                else:
+                    raise Exception ("Runtime error: vectors cannot contain non-numbers")
+            return VVector(newvec)
+
         raise Exception ("Runtime error: trying to multiply non-numbers or non-vectors")
 
 
@@ -200,6 +418,14 @@ class EAnd (Exp):
                 else:
                     raise Exception ("Runtime error: vectors must have same length")
 
+            if v2.type == "boolean":
+                return VVector([VBoolean(exp.value and v2.value) for exp in v1.vector])
+
+        if v1.type == "boolean":
+            v2 = self._exp2.eval()
+            if v2.type == "vector":
+                return VVector([VBoolean(v1.value and exp.value) for exp in v2.vector])
+
         if v1.type != "boolean":
             raise Exception("Runtime error: first expression is not a boolean")
         if not v1.value:
@@ -238,6 +464,14 @@ class EOr(Exp):
                     return VVector(newvec)
                 else:
                     raise Exception ("Runtime error: vectors must have same length")
+
+            if v2.type == "boolean":
+                return VVector([VBoolean(exp.value or v2.value) for exp in v1.vector])
+
+        if v1.type == "boolean":
+            v2 = self._exp2.eval()
+            if v2.type == "vector":
+                return VVector([VBoolean(v1.value or exp.value) for exp in v2.vector])
 
         if v1.type != "boolean":
             raise Exception("Runtime error: first expression is not a boolean")
@@ -297,7 +531,94 @@ class EDiv(Exp):
         return "EDiv({},{})".format(self._numexp,self._denexp)
 
     def eval(self):
-        return VRational(0,1)
+        v1 = self._numexp.eval()
+        v2 = self._denexp.eval()
+        if v1.type == "integer":
+            v1  = VRational(v1.value,1)
+        if v2.type == "integer":
+            v2 = VRational(v2.value,1)
+
+        if v1.type == "vector" and v2.type == "vector":
+            newvec = []
+            for index in xrange(v1.length):
+                v1rat = v1.get(index)
+                v2rat = v2.get(index)
+                if v1rat.type=='integer':
+                    v1rat = VRational(v1rat.value,1)
+                if v2rat.type=='integer':
+                    v2rat = VRational(v2rat.value,1)
+                if v1rat.type == "rational" and v2rat.type == "rational":
+                    if v1rat.denom==0 or v2rat.numer==0:
+                        raise Exception("Runtime Error: division by 0 is not possible")
+                    newnum = v1rat.numer*v2rat.denom
+                    newden = v1rat.denom*v2rat.numer
+                    gcd_val = gcd(newnum,newden)
+                    newnum = newnum/gcd_val
+                    newden = newden/gcd_val
+                    if newden==1:
+                        newvec.append(VInteger(newnum))
+                    else:
+                        newvec.append(VRational(newnum, newden))
+            return VVector(newvec)
+
+        if v1.type == "vector":
+            newvec = []
+            for exp in v1.vector:
+                exprat = exp
+                if exp.type == 'integer':
+                    exprat = VRational(exp.value,1)
+                if exprat.type == 'rational' and v2.type == 'rational':
+                    newnum = exprat.numer*v2.denom
+                    newden = exprat.denom*v2.numer
+                    gcd_val = gcd(newnum,newden)
+                    newnum = newnum/gcd_val
+                    newden = newden/gcd_val
+                    if newden==1:
+                        newvec.append(VInteger(newnum))
+                    else:
+                        newvec.append(VRational(newnum, newden))
+                else:
+                    raise Exception ("Runtime error: vectors cannot contain non-numbers")
+            return VVector(newvec)
+
+        if v2.type == "vector":
+            newvec = []
+            for exp in v2.vector:
+                exprat = exp
+                if exp.type == 'integer':
+                    exprat = VRational(exp.value,1)
+                if exprat.type == 'rational' and v1.type == 'rational':
+                    newnum = v1.numer*exprat.denom
+                    newden = v1.denom*exprat.numer
+                    gcd_val = gcd(newnum,newden)
+                    newnum = newnum/gcd_val
+                    newden = newden/gcd_val
+                    if newden==1:
+                        newvec.append(VInteger(newnum))
+                    else:
+                        newvec.append(VRational(newnum, newden))
+                else:
+                    raise Exception ("Runtime error: vectors cannot contain non-numbers")
+            return VVector(newvec)
+
+
+
+
+        if v1.denom==0 or v2.numer==0:
+            raise Exception("Runtime Error: division by 0 is not possible")
+        newnum = v1.numer*v2.denom
+        newden = v1.denom*v2.numer
+        gcd_val = gcd(newnum,newden)
+        newnum = newnum/gcd_val
+        newden = newden/gcd_val
+        if newden==1:
+            return VInteger(newnum)
+        else:
+            return VRational(newnum, newden)
+
+        if v1.type != "rational" or v2.type != "rational":
+            raise Exception("Runtime Error: division not possible with non-numbers or non-vectors")
+    
 #
 # Values
 #
@@ -334,6 +655,26 @@ class VRational (Value):
         self.numer = num
         self.denom = den
         self.type = "rational"
+
+#
+# Helper Functions
+#
+
+def gcd(a,b):
+        #NOTE: Taken from Python built in gcd
+
+        # >>> from fractions import gcd
+        # >>> gcd(20,8)
+        # 4
+        # >>> print inspect.getsource(gcd)
+
+        """Calculate the Greatest Common Divisor of a and b.
+        Unless b==0, the result will have the same sign as b (so that when
+        b is divided by it, the result comes out positive).
+        """
+        while b:
+            a, b = b, a%b
+        return a
 
 if __name__ == '__main__':
     print "EIsZero Tester >>"
@@ -417,6 +758,16 @@ if __name__ == '__main__':
     print "Expected: 528 Output: "+ str(ETimes(v1,EPlus(v2,v2)).eval().value)
     print "Expected: 0 Output: "+ str(ETimes(v1,EMinus(v2,v2)).eval().value)
 
+    print "Expected: (102, 103) Output: "+ str(pair(EPlus(v1,EInteger(100)).eval()))
+    print "Expected: (102, 103) Output: "+ str(pair(EPlus(EInteger(100),v1).eval()))
+    print "Expected: (-98, -97) Output: "+ str(pair(EMinus(v1,EInteger(100)).eval()))
+    print "Expected: (98, 97) Output: "+ str(pair(EMinus(EInteger(100),v1).eval()))
+    print "Expected: (200, 300) Output: "+ str(pair(ETimes(v1,EInteger(100)).eval()))
+    print "Expected: (200, 300) Output: "+ str(pair(ETimes(EInteger(100),v1).eval()))
+
+    print "Expected: (True, False) Output: "+ str(pair(EAnd(EVector([EBoolean(True),EBoolean(False)]),EBoolean(True)).eval()))
+    print "Expected: (True, True) Output: "+ str(pair(EOr(EVector([EBoolean(True),EBoolean(False)]),EBoolean(True)).eval()))
+
     print "VRational Tester >>"
     print "Expected: 1 Output: "+ str(VRational(1,3).numer)
     print "Expected: 3 Output: "+ str(VRational(1,3).denom)
@@ -429,3 +780,35 @@ if __name__ == '__main__':
     print "Expected: 2/3 Output: "+ str(rat(EDiv(EInteger(2),EInteger(3)).eval()))
     print "Expected: 1/6 Output: "+ str(rat(EDiv(EDiv(EInteger(2),EInteger(3)),EInteger(4)).eval()))
     print "Expected: 8/3 Output: "+ str(rat(EDiv(EInteger(2),EDiv(EInteger(3),EInteger(4))).eval()))
+    print "Expected: 1/2 Output: "+ str(rat(EDiv(EInteger(3),EInteger(6)).eval()))
+    print "Expected: 2/3 Output: "+ str(rat(EDiv(EInteger(4),EInteger(6)).eval()))
+    print "Expected: -2/3 Output: "+ str(rat(EDiv(EInteger(-4),EInteger(6)).eval()))
+    print "Expected: 2/3 Output: "+ str(rat(EDiv(EInteger(-4),EInteger(-6)).eval()))
+    print "Expected: <__main__.VInteger object at 0x100f5e590> Output: "+ str(EDiv(EInteger(2),EInteger(1)).eval())
+    print "Expected: 2 Output: "+ str(EDiv(EInteger(2),EInteger(1)).eval().value)
+    print "Expected: <__main__.VInteger object at 0x100f5e650> Output: "+ str(EDiv(EInteger(4),EInteger(2)).eval())
+    print "Expected: 2 Output: "+ str(EDiv(EInteger(4),EInteger(2)).eval().value)
+
+
+    print "VRational Extension >>"
+    half = EDiv(EInteger(1),EInteger(2))
+    third = EDiv(EInteger(1),EInteger(3))
+    print "Expected: 5/6 Output: "+ str(rat(EPlus(half,third).eval()))
+    print "Expected: 3/2 Output: "+ str(rat(EPlus(half,EInteger(1)).eval()))
+    print "Expected: 1/6 Output: "+ str(rat(EMinus(half,third).eval()))
+    print "Expected: -1/2 Output: "+ str(rat(EMinus(half,EInteger(1)).eval()))
+    print "Expected: 1/6 Output: "+ str(rat(ETimes(half,third).eval()))
+    print "Expected: 1/2 Output: "+ str(rat(ETimes(half,EInteger(1)).eval()))
+
+    print "VRational Vector Extension >>"
+    print "Expected: 5/6 Output: "+ str(rat(EPlus(EVector([half,third]),EVector([third,third])).eval().get(0)))
+    print "Expected: 2/3 Output: "+ str(rat(EPlus(EVector([half,third]),EVector([third,third])).eval().get(1)))
+    print "Expected: 1/6 Output: "+ str(rat(EMinus(EVector([half,third]),EVector([third,third])).eval().get(0)))
+    print "Expected: 1/6 Output: "+ str(rat(EMinus(EVector([half,third]),third).eval().get(0)))
+    print "Expected: 1/4 Output: "+ str(rat(ETimes(EVector([half,third]),half).eval().get(0)))
+    print "Expected: 1/6 Output: "+ str(rat(ETimes(EVector([half,third]),half).eval().get(1)))
+
+    print "Expected: 1 Output: "+ str(EDiv(EVector([half,third]),EVector([half,third])).eval().get(0).value)
+    print "Expected: 1 Output: "+ str(EDiv(EVector([half,third]),EVector([half,third])).eval().get(1).value)
+    print "Expected: 1/4 Output: "+ str(rat(EDiv(EVector([half,third]),EInteger(2)).eval().get(0)))
+    print "Expected: 1/6 Output: "+ str(rat(EDiv(EVector([half,third]),EInteger(2)).eval().get(1)))
