@@ -165,6 +165,30 @@ class EAnd (Exp):
 		else:
 			return VBoolean(False)
 
+class EOr(Exp):
+
+    def __init__(self, e1, e2):
+        self._exp1 = e1
+        self._exp2 = e2
+
+    def __str__(self):
+        return "EOr({},{})".format(self._exp1,self._exp2)
+        
+    def eval(self):
+        v1 = self._exp1.eval()
+        if v1.type != "boolean":
+            raise Exception("Runtime error: first expression is not a boolean")
+        if v1.value:
+            return VBoolean(True)
+
+        v2 = self._exp2.eval()
+        if v2.type != "boolean":
+            raise Exception("Runtime error: second expression is not a boolean")
+        if not v2.value:
+            return VBoolean(False)
+        else:
+            return VBoolean(True)
+
 #
 # Values
 #
