@@ -119,7 +119,18 @@ class ETimes (Exp):
         v2 = self._exp2.eval()
         if v1.type == "integer" and v2.type == "integer":
             return VInteger(v1.value * v2.value)
-        raise Exception ("Runtime error: trying to multiply non-numbers")
+        if v1.type == "vector" and v2.type == "vector":
+            if v1.length==v2.length:
+                newsum = 0
+                for index in xrange(v1.length):
+                     if v1.get(index).type == 'integer' and v2.get(index).type == 'integer':
+                         newsum += (v1.get(index).value * v2.get(index).value)
+                     else:
+                         raise Exception ("Runtime error: vectors cannot contain non-numbers")
+                return VInteger(newsum)
+            else:
+                raise Exception ("Runtime error: vectors must have same length")
+        raise Exception ("Runtime error: trying to multiply non-numbers or non-vectors")
 
 
 class EIf (Exp):
