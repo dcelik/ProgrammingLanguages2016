@@ -209,6 +209,16 @@ class VBoolean (Value):
         self.value = b
         self.type = "boolean"
 
+class VVector (Value):
+    # Value representation of Vectors
+    def __init__(self,v):
+        self.vector = v
+        self.length = len(v)
+        self.type = 'vector'
+
+    def get(self, n):
+        return self.vector[n]
+
 
 if __name__ == '__main__':
     print "EIsZero Tester >>"
@@ -226,6 +236,7 @@ if __name__ == '__main__':
     print "Expected: False Output: " + str(EAnd(tt,ff).eval().value)
     print "Expected: False Output: " + str(EAnd(ff,tt).eval().value)
     print "Expected: False Output: " + str(EAnd(ff,ff).eval().value)
+
     print "Expected: False Output: " + str(EAnd(ff,EInteger(10)).eval().value)
     print "Expected: False Output: " + str(EAnd(ff,EInteger(0)).eval().value)
 
@@ -234,16 +245,23 @@ if __name__ == '__main__':
     print "Expected: True Output: " + str(EOr(tt,ff).eval().value)
     print "Expected: True Output: " + str(EOr(ff,tt).eval().value)
     print "Expected: False Output: " + str(EOr(ff,ff).eval().value)
+
     print "Expected: True Output: " + str(EOr(tt,EInteger(10)).eval().value)
     print "Expected: True Output: " + str(EOr(tt,EInteger(0)).eval().value)
 
-    print "ENot Tester >>"
-    print "Expected: False Output: " + str(ENot(tt).eval().value)
-    print "Expected: True Output: " + str(ENot(ff).eval().value)
+    # print "ENot Tester >>"
+    # print "Expected: False Output: " + str(ENot(tt).eval().value)
+    # print "Expected: True Output: " + str(ENot(ff).eval().value)
 
-    print "EAnd, EOr, ENot Tester >>"
-    print "Expected: True Output: " + str(EAnd(EOr(tt,ff),EOr(ff,tt)).eval().value)
-    print "Expected: False Output: " + str(EAnd(EOr(tt,ff),EOr(ff,ff)).eval().value)
-    print "Expected: False Output: " + str(EAnd(tt,ENot(tt)).eval().value)
-    print "Expected: True Output: " + str(EAnd(tt,ENot(ENot(tt))).eval().value)
+    # print "EAnd, EOr, ENot Tester >>"
+    # print "Expected: True Output: " + str(EAnd(EOr(tt,ff),EOr(ff,tt)).eval().value)
+    # print "Expected: False Output: " + str(EAnd(EOr(tt,ff),EOr(ff,ff)).eval().value)
+    # print "Expected: False Output: " + str(EAnd(tt,ENot(tt)).eval().value)
+    # print "Expected: True Output: " + str(EAnd(tt,ENot(ENot(tt))).eval().value)
 
+    print "VVector Tester >>"
+    print "Expected: 0 Output: " + str(VVector([]).length)
+    print "Expected: 3 Output: " + str(VVector([VInteger(10),VInteger(20),VInteger(30)]).length)
+    print "Expected: 10 Output: " + str(VVector([VInteger(10),VInteger(20),VInteger(30)]).get(0).value)
+    print "Expected: 20 Output: " + str(VVector([VInteger(10),VInteger(20),VInteger(30)]).get(1).value)
+    print "Expected: 30 Output: " + str(VVector([VInteger(10),VInteger(20),VInteger(30)]).get(2).value)
