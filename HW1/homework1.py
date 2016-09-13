@@ -9,8 +9,14 @@
 # Remarks:
 #
 
+#The GCD function was taken from python's implementation
 
+#The EOr and EAnd functions could be simplified while dealing
+# with Vectors by recursively solving for solutions. E.g. Call
+# EOr on each set of values within the vectors.
 
+#This is a quick and dirty write up of these modules. Probably 
+# many improvments exsist.
 
 #
 # Expressions
@@ -411,7 +417,7 @@ class EAnd (Exp):
                     newvec = []
                     for index in xrange(v1.length):
                          if v1.get(index).type == 'boolean' and v2.get(index).type == 'boolean':
-                             newvec.append(VInteger(v1.get(index).value and v2.get(index).value))
+                             newvec.append(VBoolean(v1.get(index).value and v2.get(index).value))
                          else:
                              raise Exception ("Runtime error: vectors must contain booleans")
                     return VVector(newvec)
@@ -458,7 +464,7 @@ class EOr(Exp):
                     newvec = []
                     for index in xrange(v1.length):
                          if v1.get(index).type == 'boolean' and v2.get(index).type == 'boolean':
-                             newvec.append(VInteger(v1.get(index).value or v2.get(index).value))
+                             newvec.append(VBoolean(v1.get(index).value or v2.get(index).value))
                          else:
                              raise Exception ("Runtime error: vectors must contain booleans")
                     return VVector(newvec)
