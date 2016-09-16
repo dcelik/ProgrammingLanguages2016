@@ -1,15 +1,10 @@
 ############################################################
-# HOMEWORK 2
 #
-# Team members: Deniz Celik
-#				Jacob Riedel
+# A simple expression language of integers and Booleans
 #
-# Emails: deniz.celik@students.olin.edu
-#		  jacob.riedel@students.olin.edu
+# Extended with primitive operations and local bindings
 #
-# Remarks:
 #
-
 
 
 #
@@ -53,6 +48,22 @@ class EBoolean (Exp):
         return self
 
 
+def oper_plus (v1,v2): 
+    if v1.type == "integer" and v2.type == "integer":
+        return VInteger(v1.value + v2.value)
+    raise Exception ("Runtime error: trying to add non-numbers")
+
+def oper_minus (v1,v2):
+    if v1.type == "integer" and v2.type == "integer":
+        return VInteger(v1.value - v2.value)
+    raise Exception ("Runtime error: trying to add non-numbers")
+
+def oper_times (v1,v2):
+    if v1.type == "integer" and v2.type == "integer":
+        return VInteger(v1.value * v2.value)
+    raise Exception ("Runtime error: trying to add non-numbers")
+    
+
 class EPrimCall (Exp):
 
     def __init__ (self,name,es):
@@ -66,8 +77,8 @@ class EPrimCall (Exp):
         vs = [ e.eval(prim_dict) for e in self._exps ]
         return apply(prim_dict[self._name],vs)
 
-    def substitute (self,ids,new_e):
-        new_es = [ e.substitute(ids,new_e) for e in self._exps]
+    def substitute (self,id,new_e):
+        new_es = [ e.substitute(id,new_e) for e in self._exps]
         return EPrimCall(self._name,new_es)
 
 
@@ -100,18 +111,20 @@ class EIf (Exp):
 class ELet (Exp):
     # local binding
 
-    def __init__ (self,bindings,e1):
-        self._bindings = bindings
+    def __init__ (self,id,e1,e2):
+        self._id = id
         self._e1 = e1
+        self._e2 = e2
 
     def __str__ (self):
-        return "ELet({},{})".format(self._bindings,self._e1)
+        return "ELet({},{},{})".format(self._id,self._e1,self._e2)
 
     def eval (self,prim_dict):
-        new_e = self._e1.substitute(self._bindings,self._e1)
-        return new_e.eval(prim_dict)
+        new_e2 = self._e2.substitute(self._id,self._e1)
+        return new_e2.eval(prim_dict)
 
-    def substitute (self,ids,new_e):
+    def substitute (self,id,new_e):
+        print new_e
         if id == self._id:
             return ELet(self._id,
                         self._e1.substitute(id,new_e),
@@ -119,32 +132,6 @@ class ELet (Exp):
         return ELet(self._id,
                     self._e1.substitute(id,new_e),
                     self._e2.substitute(id,new_e))
-
-class ELetS(ELet):
-
-	def __init__(self,bindings,e1):
-		ELet.__init__(self,bindings,e1)
-
-	def __str__(self):
-		return "ELet*({},{})".format(self._bindings,self._e1)
-
-	def eval(self, prim_dict):
-		if not self._bindings:
-			print "NO MORE BINDINGS"
-		firstbinding = self._bindings[0]
-
-		new_e = self._e1.substitute(self._bindings,self._e1)
-		return new_e.eval(prim_dict)
-
-		print self._bindings
-		return ELet([self._bindings[0]], ELetS(self._bindings[1:],self._e1)).eval(prim_dict)
-
-	def substitute(self,ids, new_e):
-		print ids
-		print new_e
-		return ELet.substitute(self,ids,new_e)
-
-
 
 
 class EId (Exp):
@@ -159,14 +146,12 @@ class EId (Exp):
     def eval (self,prim_dict):
         raise Exception("Runtime error: unknown identifier {}".format(self._id))
 
-    def substitute (self,ids,new_e):
-    	for ident in ids:
-    		if ident[0]==self._id:
-    			return ident[1]
+    def substitute (self,id,new_e):
+        if id == self._id:
+            return new_e
         return self
 
 
-    
 #
 # Values
 #
@@ -187,26 +172,6 @@ class VBoolean (Value):
         self.value = b
         self.type = "boolean"
 
-# Primitive operations
-
-def oper_plus (v1,v2): 
-    if v1.type == "integer" and v2.type == "integer":
-        return VInteger(v1.value + v2.value)
-    raise Exception ("Runtime error: trying to add non-numbers")
-
-def oper_minus (v1,v2):
-    if v1.type == "integer" and v2.type == "integer":
-        return VInteger(v1.value - v2.value)
-    raise Exception ("Runtime error: trying to add non-numbers")
-
-def oper_times (v1,v2):
-    if v1.type == "integer" and v2.type == "integer":
-        return VInteger(v1.value * v2.value)
-    raise Exception ("Runtime error: trying to add non-numbers")
-
-
-# Initial primitives dictionary
-
 INITIAL_PRIM_DICT = {
     "+": oper_plus,
     "*": oper_times,
@@ -214,46 +179,10 @@ INITIAL_PRIM_DICT = {
 }
 
 if __name__ == '__main__':
-	print ELet(\
-			[("b",EInteger("10"))],\
-			ELet(\
-				[("a",EId("b"))],\
-				ELet(\
-					[("b",EId("a"))],\
-					EPrimCall("-",[EId("a"),EId("b")])
-					)
-				)
-			).eval(INITIAL_PRIM_DICT)
-
-	# print ELet(\
-	# 		[("x",EInteger(10)),("y",EInteger(20))],\
-	# 		EPrimCall("+",[EId("x"),EId("y")])).eval(INITIAL_PRIM_DICT).value
-	# print ELet(\
-	#  		[("x",EInteger(10)),("y",EInteger(20)),("z",EInteger(30))],\
-	#  		EPrimCall("*",[EPrimCall("+",[EId("x"),EId("y")]),EId("z")])\
-	#  		).eval(INITIAL_PRIM_DICT).value
-
-	# print ELet(\
-	# 		[("a",EInteger(5)),("b",EInteger(20))],\
-	# 		ELet(\
-	# 			[("a",EId("b")),("b",EId("a"))],\
-	# 			ELet(\
-	# 				[("a",EId("b")),("b",EId("b"))],\
-	# 				EPrimCall("+",[EId("a"),EId("b")])
-	# 				)
-	# 			)
-	# 		).eval(INITIAL_PRIM_DICT).value
-
-	# print ELetS(\
-	#   		[("x",EInteger(10)),("y",EInteger(20)),("z",EInteger(30))],\
-	#   		EPrimCall("*",[EPrimCall("+",[EId("x"),EId("y")]),EId("z")])\
-	#   		).eval(INITIAL_PRIM_DICT).value
-
-	# print ELet(\
-	# 		[("b",EInteger("10"))],\
-	# 		ELetS(\
-	# 			[("a",EId("b")),("b",EId("a"))],\
-	# 			EPrimCall("-",[EId("a"),EId("b")])\
-	# 			)\
-	# 		).eval(INITIAL_PRIM_DICT)
-
+    #print EPrimCall("+",[EId("x"),EId("x")]).eval(INITIAL_PRIM_DICT)
+    #print ELet("x",EInteger(10), EPrimCall("+",[EId("x"),EId("x")])).eval(INITIAL_PRIM_DICT).value
+    print ELet(\
+            "a",EInteger(5),\
+            ELet(\
+                "b",EInteger(10),\
+                EPrimCall("-",[EId("a"),EId("b")]))).eval(INITIAL_PRIM_DICT).value
