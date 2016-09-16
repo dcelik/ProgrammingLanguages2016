@@ -179,10 +179,13 @@ INITIAL_PRIM_DICT = {
 }
 
 if __name__ == '__main__':
-    #print EPrimCall("+",[EId("x"),EId("x")]).eval(INITIAL_PRIM_DICT)
-    #print ELet("x",EInteger(10), EPrimCall("+",[EId("x"),EId("x")])).eval(INITIAL_PRIM_DICT).value
     print ELet(\
-            "a",EInteger(5),\
-            ELet(\
-                "b",EInteger(10),\
-                EPrimCall("-",[EId("a"),EId("b")]))).eval(INITIAL_PRIM_DICT).value
+			[("b",EInteger("10"))],\
+			ELet(\
+				[("a",EId("b"))],\
+				ELet(\
+					[("b",EId("a"))],\
+					EPrimCall("-",[EId("a"),EId("b")])
+					)
+				)
+			).eval(INITIAL_PRIM_DICT)
