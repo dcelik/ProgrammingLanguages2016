@@ -77,10 +77,11 @@ class EPrimCall (Exp):
         vs = [ e.eval(prim_dict) for e in self._exps ]
         return apply(prim_dict[self._name],vs)
 
-    def substitute (self,id,new_e):
-        new_es = [ e.substitute(id,new_e) for e in self._exps]
+    def substitute (self,ids,new_e):
+        print ids
+        print new_e
+        new_es = [e.substitute(ids,new_e) for e in self._exps]
         return EPrimCall(self._name,new_es)
-
 
 class EIf (Exp):
     # Conditional expression
@@ -111,27 +112,44 @@ class EIf (Exp):
 class ELet (Exp):
     # local binding
 
-    def __init__ (self,id,e1,e2):
-        self._id = id
+    def __init__ (self,bindings,e1):
+        self._bindings = bindings
         self._e1 = e1
-        self._e2 = e2
 
     def __str__ (self):
-        return "ELet({},{},{})".format(self._id,self._e1,self._e2)
+        return "ELet({},{})".format(self._bindings,self._e1)
 
     def eval (self,prim_dict):
-        new_e2 = self._e2.substitute(self._id,self._e1)
-        return new_e2.eval(prim_dict)
+        print self._bindings
+        for bind in self._bindings:
+            print "Bind: {}".format(bind)
+            temp_e = self._e1.substitute(bind,self._e1)
+            self._e1 = temp_e
+            print "New_e {}".format(ELet(self._bindings,self._e1))
+        return self._e1.eval(prim_dict)
 
     def substitute (self,id,new_e):
-        print new_e
-        if id == self._id:
-            return ELet(self._id,
-                        self._e1.substitute(id,new_e),
-                        self._e2)
-        return ELet(self._id,
-                    self._e1.substitute(id,new_e),
-                    self._e2.substitute(id,new_e))
+        print self._bindings
+        print id
+        new_binds = [(e[0],e[1].substitute(id[0],id[1])) for e in self._bindings]
+        print "New Binds: " + str(new_binds)
+        for inner_id in self._bindings:
+            if inner_id[0] == id[0]:
+                return ELet(new_binds,self._e1)
+        # print new_e
+        return ELet(new_binds,new_e.substitute(id,self._e1))
+
+
+
+
+        # for i in xrange(len(self._bindings)):
+        #   if ids[i] == self._bindings[i][0]:
+        #       return ELet([(self._bindings[i][0],
+        #                   self._bindings[i][1].substitute(ids,new_e))],
+        #                   self._e1)
+        #   return ELet([(self._bindings[i][0],
+        #               self._bindings[i][1].substitute(ids,new_e))],
+        #               self._e1.substitute(ids,new_e))
 
 
 class EId (Exp):
@@ -150,7 +168,6 @@ class EId (Exp):
         if id == self._id:
             return new_e
         return self
-
 
 #
 # Values
@@ -172,6 +189,26 @@ class VBoolean (Value):
         self.value = b
         self.type = "boolean"
 
+# Primitive operations
+
+def oper_plus (v1,v2): 
+    if v1.type == "integer" and v2.type == "integer":
+        return VInteger(v1.value + v2.value)
+    raise Exception ("Runtime error: trying to add non-numbers")
+
+def oper_minus (v1,v2):
+    if v1.type == "integer" and v2.type == "integer":
+        return VInteger(v1.value - v2.value)
+    raise Exception ("Runtime error: trying to add non-numbers")
+
+def oper_times (v1,v2):
+    if v1.type == "integer" and v2.type == "integer":
+        return VInteger(v1.value * v2.value)
+    raise Exception ("Runtime error: trying to add non-numbers")
+
+
+# Initial primitives dictionary
+
 INITIAL_PRIM_DICT = {
     "+": oper_plus,
     "*": oper_times,
@@ -179,6 +216,7 @@ INITIAL_PRIM_DICT = {
 }
 
 if __name__ == '__main__':
+
     #print EPrimCall("+",[EId("x"),EId("x")]).eval(INITIAL_PRIM_DICT)
     #print ELet("x",EInteger(10), EPrimCall("+",[EId("x"),EId("x")])).eval(INITIAL_PRIM_DICT).value
     print ELet(\
@@ -186,3 +224,33 @@ if __name__ == '__main__':
             ELet(\
                 "b",EInteger(10),\
                 EPrimCall("-",[EId("a"),EId("b")]))).eval(INITIAL_PRIM_DICT).value
+
+    # print EPrimCall("+",[EInteger(10),EInteger(20)]).eval(INITIAL_PRIM_DICT).value
+    # print "++++++++++++++"
+    # print ELet(\
+    #       [("b",EInteger(10))],\
+    #       ELet(\
+    #           [("a",EId("b"))],\
+    #           ELet(\
+    #               [("b",EId("a"))],\
+    #               EPrimCall("+",[EId("a"),EId("b")])
+    #               )
+    #           )
+    #       ).eval(INITIAL_PRIM_DICT).value
+
+    # print ELet([("x",EInteger(10)),\
+ #          ("y",EInteger(20)),\
+ #          ("z",EInteger(30))],\
+ #              EPrimCall("*",[EPrimCall("+",[EId("x"),EId("y")]),EId("z")])).eval(INITIAL_PRIM_DICT).value
+
+    # print ELet([("a",EInteger(20))],\
+    #           ELet([("b",EInteger(5)),\
+    #           ("b",EId("a"))],\
+    #               EPrimCall("-",[EId("a"),EId("b")]))).eval(INITIAL_PRIM_DICT).value
+
+    print ELet([("a",EInteger(5)),\
+            ("b",EInteger(20))],\
+                ELet([("a",EId("b")),\
+                ("b",EId("a"))],\
+                    EPrimCall("-",[EId("a"),EId("b")]))).eval(INITIAL_PRIM_DICT).value
+    
