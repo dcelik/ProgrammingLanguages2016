@@ -1,9 +1,10 @@
 ############################################################
 # HOMEWORK 2
 #
-# Team members:
+# Team members: Deniz Celik & Jacob Riedel
 #
-# Emails:
+# Emails: deniz.celik@students.olin.edu
+#         jacob.riedel@students.olin.edu
 #
 # Remarks:
 #
@@ -98,26 +99,23 @@ class EIf (Exp):
 class ELet (Exp):
     # local binding
 
-    def __init__ (self,id,e1,e2):
-        self._id = id
+    def __init__ (self,bindings,e1):
+        self._bindings = bindings
         self._e1 = e1
-        self._e2 = e2
 
     def __str__ (self):
-        return "ELet({},{},{})".format(self._id,self._e1,self._e2)
+        return "ELet({},{})".format(self._bindings,self._e1)
 
     def eval (self,prim_dict):
-        new_e2 = self._e2.substitute(self._id,self._e1)
-        return new_e2.eval(prim_dict)
+        new_e1 = self._e1
+        for bind in self._bindings:
+            new_e1 = new_e1.substitute(bind[0],bind[1])
+        return new_e1.eval(prim_dict)
 
     def substitute (self,id,new_e):
-        if id == self._id:
-            return ELet(self._id,
-                        self._e1.substitute(id,new_e),
-                        self._e2)
-        return ELet(self._id,
-                    self._e1.substitute(id,new_e),
-                    self._e2.substitute(id,new_e))
+        return ELet(\
+                [(newb[0],newb[1].substitute(id,new_e)) for newb in self._bindings],\
+                self._e1)
 
 
 class EId (Exp):
@@ -188,3 +186,40 @@ INITIAL_PRIM_DICT = {
     "*": oper_times,
     "-": oper_minus
 }
+
+def testIf(val,expression):
+    tval = (val==expression)
+    if tval:
+        print tval
+    else:
+        print "Expected: " + str(val) + " Got: " + str(expression)
+
+if __name__ == '__main__':
+
+    testIf(99,ELet([("a",EInteger(99))],EId("a")).eval(INITIAL_PRIM_DICT).value)
+
+    testIf(99,ELet([("a",EInteger(99)),
+          ("b",EInteger(66))],EId("a")).eval(INITIAL_PRIM_DICT).value)
+
+    testIf(66,ELet([("a",EInteger(99)),
+          ("b",EInteger(66))],EId("b")).eval(INITIAL_PRIM_DICT).value)
+
+
+
+    testIf(66,ELet([("a",EInteger(99))],
+         ELet([("a",EInteger(66)),
+               ("b",EId("a"))],
+              EId("a"))).eval(INITIAL_PRIM_DICT).value) 
+
+
+
+    testIf(99,ELet([("a",EInteger(99))],
+         ELet([("a",EInteger(66)),
+               ("b",EId("a"))],
+              EId("b"))).eval(INITIAL_PRIM_DICT).value)
+
+    testIf(15,ELet([("a",EInteger(5)),
+          ("b",EInteger(20))],
+         ELet([("a",EId("b")),
+               ("b",EId("a"))],
+              EPrimCall("-",[EId("a"),EId("b")]))).eval(INITIAL_PRIM_DICT).value)
