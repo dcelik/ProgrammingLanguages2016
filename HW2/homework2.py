@@ -117,6 +117,32 @@ class ELet (Exp):
                 [(newb[0],newb[1].substitute(id,new_e)) for newb in self._bindings],\
                 self._e1)
 
+class ELetS (ELet):
+    # local binding
+
+    def __str__ (self):
+        return "ELetS({},{})".format(self._bindings,self._e1)
+
+    def eval (self,prim_dict):
+        final_binds = []
+        for index in range(len(self._bindings)):
+            bind = self._bindings[index]
+            if range(len(self._bindings[index+1:]))==[]:
+                final_binds.append(bind)
+            for j in range(index+1,index+1+len(self._bindings[index+1:])):
+                if self._bindings[j][0]==bind[0]:
+                    break
+                self._bindings[j] = (self._bindings[j][0],self._bindings[j][1].substitute(bind[0],bind[1]))
+                if len(self._bindings[index+1:])==1:
+                    final_binds.append(bind)
+        return ELet(final_binds,self._e1).eval(prim_dict)
+
+    def substitute (self,id,new_e):
+        for index in range(len(self._bindings)):
+            if self._bindings[index][0]==id:
+                break
+            self._bindings[index] = (self._bindings[index][0],self._bindings[index][1].substitute(id,new_e))
+        return ELetS(self._bindings,self._e1)
 
 class EId (Exp):
     # identifier
@@ -128,6 +154,7 @@ class EId (Exp):
         return "EId({})".format(self._id)
 
     def eval (self,prim_dict):
+
         raise Exception("Runtime error: unknown identifier {}".format(self._id))
 
     def substitute (self,id,new_e):
@@ -196,30 +223,62 @@ def testIf(val,expression):
 
 if __name__ == '__main__':
 
-    testIf(99,ELet([("a",EInteger(99))],EId("a")).eval(INITIAL_PRIM_DICT).value)
+    print("Q1a Testers")
+    try:
+        testIf(99,ELet([("a",EInteger(99))],EId("a")).eval(INITIAL_PRIM_DICT).value)
 
-    testIf(99,ELet([("a",EInteger(99)),
-          ("b",EInteger(66))],EId("a")).eval(INITIAL_PRIM_DICT).value)
+        testIf(99,ELet([("a",EInteger(99)),
+              ("b",EInteger(66))],EId("a")).eval(INITIAL_PRIM_DICT).value)
 
-    testIf(66,ELet([("a",EInteger(99)),
-          ("b",EInteger(66))],EId("b")).eval(INITIAL_PRIM_DICT).value)
+        testIf(66,ELet([("a",EInteger(99)),
+              ("b",EInteger(66))],EId("b")).eval(INITIAL_PRIM_DICT).value)
 
+        testIf(66,ELet([("a",EInteger(99))],
+             ELet([("a",EInteger(66)),
+                   ("b",EId("a"))],
+                  EId("a"))).eval(INITIAL_PRIM_DICT).value) 
 
+        testIf(99,ELet([("a",EInteger(99))],
+             ELet([("a",EInteger(66)),
+                   ("b",EId("a"))],
+                  EId("b"))).eval(INITIAL_PRIM_DICT).value)
 
-    testIf(66,ELet([("a",EInteger(99))],
-         ELet([("a",EInteger(66)),
-               ("b",EId("a"))],
-              EId("a"))).eval(INITIAL_PRIM_DICT).value) 
+        testIf(15,ELet([("a",EInteger(5)),
+              ("b",EInteger(20))],
+             ELet([("a",EId("b")),
+                   ("b",EId("a"))],
+                  EPrimCall("-",[EId("a"),EId("b")]))).eval(INITIAL_PRIM_DICT).value)
+    except Exception as e:
+        print e
 
+    print("Q1b Testers")
+    try:
+        testIf(99,ELetS([("a",EInteger(99))],EId("a")).eval(INITIAL_PRIM_DICT).value)
 
+        testIf(99,ELetS([("a",EInteger(99)),
+           ("b",EInteger(66))],EId("a")).eval(INITIAL_PRIM_DICT).value)
 
-    testIf(99,ELet([("a",EInteger(99))],
-         ELet([("a",EInteger(66)),
-               ("b",EId("a"))],
-              EId("b"))).eval(INITIAL_PRIM_DICT).value)
+        testIf(66,ELetS([("a",EInteger(99)),
+           ("b",EInteger(66))],EId("b")).eval(INITIAL_PRIM_DICT).value)
 
-    testIf(15,ELet([("a",EInteger(5)),
-          ("b",EInteger(20))],
-         ELet([("a",EId("b")),
-               ("b",EId("a"))],
-              EPrimCall("-",[EId("a"),EId("b")]))).eval(INITIAL_PRIM_DICT).value)
+        testIf(0,ELetS([('b',EInteger(10)),('a',EId('b')),('b',EId('a'))],EPrimCall("-",[EId("a"),EId("b")])).eval(INITIAL_PRIM_DICT).value)
+
+        testIf(66,ELet([("a",EInteger(99))],
+         ELetS([("a",EInteger(66)),
+                ("b",EId("a"))],
+               EId("a"))).eval(INITIAL_PRIM_DICT).value)
+
+        testIf(66,ELet([("a",EInteger(99))],
+         ELetS([("a",EInteger(66)),
+                ("b",EId("a"))],
+               EId("b"))).eval(INITIAL_PRIM_DICT).value)
+
+        testIf(0,ELetS([("a",EInteger(5)),
+           ("b",EInteger(20))],
+          ELetS([("a",EId("b")),
+                 ("b",EId("a"))],
+                EPrimCall("-",[EId("a"),EId("b")]))).eval(INITIAL_PRIM_DICT).value)
+    except Exception as e:
+        print e
+
+    
