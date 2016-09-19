@@ -144,6 +144,36 @@ class ELetS (ELet):
             self._bindings[index] = (self._bindings[index][0],self._bindings[index][1].substitute(id,new_e))
         return ELetS(self._bindings,self._e1)
 
+class ELetV (Exp):
+    # local binding
+
+    def __init__ (self,id,e1,e2):
+        self._id = id
+        self._e1 = e1
+        self._e2 = e2
+
+    def __str__ (self):
+        return "ELet({},{},{})".format(self._id,self._e1,self._e2)
+
+    def eval (self,prim_dict):
+        val = self._e1.eval(prim_dict)
+        if val.type=='integer':
+            new_exp = EInteger(val.value)
+            new_e2 = self._e2.substitute(self._id,new_exp)
+        if val.type=='boolean':
+            new_exp = EInteger(val.value)
+            new_e2 = self._e2.substitute(self._id,new_exp)
+        return new_e2.eval(prim_dict)
+
+    def substitute (self,id,new_e):
+        if id == self._id:
+            return ELetV(self._id,
+                        self._e1.substitute(id,new_e),
+                        self._e2)
+        return ELetV(self._id,
+                    self._e1.substitute(id,new_e),
+                    self._e2.substitute(id,new_e))
+
 class EId (Exp):
     # identifier
 
@@ -281,4 +311,26 @@ if __name__ == '__main__':
     except Exception as e:
         print e
 
-    
+    print("Q2a Testers")
+    #try:
+    testIf(10,ELetV("a",EInteger(10),EId("a")).eval(INITIAL_PRIM_DICT).value)
+
+    testIf(10,ELetV("a",EInteger(10),
+      ELetV("b",EInteger(20),EId("a"))).eval(INITIAL_PRIM_DICT).value)
+
+    testIf(20,ELetV("a",EInteger(10),
+      ELetV("a",EInteger(20),EId("a"))).eval(INITIAL_PRIM_DICT).value)
+
+    testIf(30,ELetV("a",EPrimCall("+",[EInteger(10),EInteger(20)]),
+      ELetV("b",EInteger(20),EId("a"))).eval(INITIAL_PRIM_DICT).value)
+
+    testIf(900,ELetV("a",EPrimCall("+",[EInteger(10),EInteger(20)]),
+      ELetV("b",EInteger(20),
+            EPrimCall("*",[EId("a"),EId("a")]))).eval(INITIAL_PRIM_DICT).value)
+
+    testIf(60,ELetV("a",EPrimCall("+",[EInteger(10),EInteger(20)]),
+        ELetV("b",EPrimCall("*",[EInteger(10),EInteger(20)]),
+            ELetV("b",EId("a"),
+                EPrimCall("+",[EId("a"),EId("b")])))).eval(INITIAL_PRIM_DICT).value)
+    #except Exception as e:
+    #    e
