@@ -7,7 +7,14 @@
 #         jacob.riedel@students.olin.edu
 #
 # Remarks:
-#
+#   For Q2, we were confused if we implemented it correctly, as 
+#    it seemed to simple to just evaluate e1 before substituting.
+#   For Q1a (ELetS), we did not implement it purely recursively,
+#    instead we reduced our bindings down through substitution before
+#    creating returning a new ELet and calling eval on that.
+#    We found this approach to be more intuitive for us but would have
+#    implemented the recursive substitution version if time had allowed.
+#   Thanks!
 
 
 
