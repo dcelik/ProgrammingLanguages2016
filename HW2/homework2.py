@@ -120,9 +120,15 @@ class ELet (Exp):
         return new_e1.eval(prim_dict,func_dict)
 
     def substitute (self,id,new_e):
-        return ELet(\
+        if id in [ids[0] for ids in self._bindings]:
+            return ELet(\
                 [(newb[0],newb[1].substitute(id,new_e)) for newb in self._bindings],\
                 self._e1)
+        return ELet(\
+                [(newb[0],newb[1].substitute(id,new_e)) for newb in self._bindings],\
+                self._e1.substitute(id,new_e))
+
+
 
 class ELetS (ELet):
     # local binding
@@ -337,6 +343,8 @@ if __name__ == '__main__':
              ELet([("a",EId("b")),
                    ("b",EId("a"))],
                   EPrimCall("-",[EId("a"),EId("b")]))).eval(INITIAL_PRIM_DICT,FUN_DICT).value)
+
+        testIf(5,ELet([("e",EInteger(5))],ELet([("a",EInteger(6))],EId('e'))).eval(INITIAL_PRIM_DICT,FUN_DICT).value)
     except Exception as e:
         print e
 
