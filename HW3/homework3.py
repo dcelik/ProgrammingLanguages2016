@@ -311,8 +311,8 @@ def parse (input):
     pBINDING = "(" + pNAME + pEXPR + ")"
     pBINDING.setParseAction(lambda result: (result[1],result[2]))
 
-    pLET = "(" + Keyword("let") + "(" + pBINDING + ")" + pEXPR + ")"
-    pLET.setParseAction(lambda result: ELet([result[3]],result[5]))
+    pLET = "(" + Keyword("let") + "(" + OneOrMore(pBINDING) + ")" + pEXPR + ")"
+    pLET.setParseAction(lambda result: ELet(result[3:-3],result[-2]))
 
     pPLUS = "(" + Keyword("+") + pEXPR + pEXPR + ")"
     pPLUS.setParseAction(lambda result: ECall("+",[result[2],result[3]]))
@@ -340,7 +340,21 @@ def shell ():
         v = exp.eval(INITIAL_FUN_DICT)
         print v
 
-# increase stack size to let us call recursive functions quasi comfortably
-sys.setrecursionlimit(10000)
+if __name__ == '__main__':
+    # increase stack size to let us call recursive functions quasi comfortably
+    sys.setrecursionlimit(10000)
+    exp = parse("(let ((x 10)) (+ x (* x x)))")
+    print exp
+    print exp.eval(INITIAL_FUN_DICT)
+    exp = parse("(let ((x 10) (y 20)) (+ x (* y y)))")
+    print exp
+    print exp.eval(INITIAL_FUN_DICT)
+    exp = parse("(let ((x 10) (y 20) (z 30)) (+ x (* y z)))")
+    print exp
+    print exp.eval(INITIAL_FUN_DICT)
+    exp = parse("(let ((x 10) (y 20) (z 30) (x 40)) (+ x (* y z)))")
+    print exp
+    print exp.eval(INITIAL_FUN_DICT)
+    shell()
 
 
