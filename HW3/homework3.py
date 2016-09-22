@@ -12,7 +12,7 @@
 
 import sys
 from pyparsing import Word, Literal,  Keyword, Forward, alphas, alphanums
-from pyparsing import OneOrMore
+from pyparsing import OneOrMore, Group
 
 #
 # Expressions
@@ -326,10 +326,21 @@ def parse (input):
     pUSERFUNC = "(" + pNAME + pEXPRSEQ + ")"
     pUSERFUNC.setParseAction(lambda result: ECall(result[1],result[2:-1]))
 
-    pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pIF | pLET | pPLUS | pTIMES | pUSERFUNC)
+    pPARAMS = OneOrMore(pNAME)
+
+    def modify_Initial_Dict(result):
+        INITIAL_FUN_DICT[result[2]] = {"params":result[4:-3],"body":result[-2]}
+        return {"result":"function", "name": result[2], "params": result[4:-3], "body":result[-2]}
+
+    pDEF = "(" +Keyword("defun") + pNAME + "(" + pPARAMS + ")" + pEXPR + ")"
+    pDEF.setParseAction(modify_Initial_Dict)
+
+    pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pIF | pLET | pPLUS | pTIMES | pDEF | pUSERFUNC)
 
     result = pEXPR.parseString(input)[0]
-    return result    # the first element of the result is the expression
+    if isinstance(result,dict):
+        return result
+    return {"result":"expression", "expr":result}    # the first element of the result is the expression
 
 
 def shell ():
@@ -343,36 +354,39 @@ def shell ():
             return
         exp = parse(inp)
         print "Abstract representation:", exp
-        v = exp.eval(INITIAL_FUN_DICT)
-        print v
+        if exp['result']=='expression':
+            v = exp['expr'].eval(INITIAL_FUN_DICT)
+            print v
+
+def printTest (exp):
+    parsed = parse(exp)
+    print '{'+"'result': {}, 'expr': {}".format(parsed['result'],parsed['expr'])+'}'
+    print parsed['expr'].eval(INITIAL_FUN_DICT)
 
 if __name__ == '__main__':
     # increase stack size to let us call recursive functions quasi comfortably
-    sys.setrecursionlimit(10000)
-    #Q1a
-    exp = parse("(let ((x 10)) (+ x (* x x)))")
-    print exp
-    print exp.eval(INITIAL_FUN_DICT)
-    exp = parse("(let ((x 10) (y 20)) (+ x (* y y)))")
-    print exp
-    print exp.eval(INITIAL_FUN_DICT)
-    exp = parse("(let ((x 10) (y 20) (z 30)) (+ x (* y z)))")
-    print exp
-    print exp.eval(INITIAL_FUN_DICT)
-    exp = parse("(let ((x 10) (y 20) (z 30) (x 40)) (+ x (* y z)))")
-    print exp
-    print exp.eval(INITIAL_FUN_DICT)
+    # sys.setrecursionlimit(10000)
 
-    #Q1b
-    exp = parse("(zero? (+ 10 20))")
-    print exp
-    print exp.eval(INITIAL_FUN_DICT)
-    exp = parse("(zero? (+ -20 20))")
-    print exp
-    print exp.eval(INITIAL_FUN_DICT)
-    exp = parse("(some-unknown-function 10 20 30)")
-    print exp
+    # #Q1a
+    # printTest("(let ((x 10)) (+ x (* x x)))")
+    
+    # printTest("(let ((x 10) (y 20)) (+ x (* y y)))")
+    # printTest("(let ((x 10) (y 20) (z 30)) (+ x (* y z)))")
+    # printTest("(let ((x 10) (y 20) (z 30) (x 40)) (+ x (* y z)))")
 
+    # #Q1b
+    # printTest("(zero? (+ 10 20))")
+    # printTest("(zero? (+ -20 20))")
+
+    # exp = parse("(some-unknown-function 10 20 30)")
+    # print exp
+
+    # #Q2a
+    # exp = parse("(defun increment (x) (+ x 1))")
+    # print exp
+
+    # printTest("(increment 0)")
+    
     #Interactive shell
     shell()
 
