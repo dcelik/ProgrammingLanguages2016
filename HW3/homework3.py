@@ -12,7 +12,7 @@
 
 import sys
 from pyparsing import Word, Literal,  Keyword, Forward, alphas, alphanums
-from pyparsing import OneOrMore, Group
+from pyparsing import OneOrMore
 
 #
 # Expressions
@@ -365,27 +365,27 @@ def printTest (exp):
 
 if __name__ == '__main__':
     # increase stack size to let us call recursive functions quasi comfortably
-    # sys.setrecursionlimit(10000)
+    sys.setrecursionlimit(10000)
 
     # #Q1a
-    # printTest("(let ((x 10)) (+ x (* x x)))")
+    printTest("(let ((x 10)) (+ x (* x x)))")
     
-    # printTest("(let ((x 10) (y 20)) (+ x (* y y)))")
-    # printTest("(let ((x 10) (y 20) (z 30)) (+ x (* y z)))")
-    # printTest("(let ((x 10) (y 20) (z 30) (x 40)) (+ x (* y z)))")
+    printTest("(let ((x 10) (y 20)) (+ x (* y y)))")
+    printTest("(let ((x 10) (y 20) (z 30)) (+ x (* y z)))")
+    printTest("(let ((x 10) (y 20) (z 30) (x 40)) (+ x (* y z)))")
 
     # #Q1b
-    # printTest("(zero? (+ 10 20))")
-    # printTest("(zero? (+ -20 20))")
+    printTest("(zero? (+ 10 20))")
+    printTest("(zero? (+ -20 20))")
 
-    # exp = parse("(some-unknown-function 10 20 30)")
-    # print exp
+    exp = parse("(some-unknown-function 10 20 30)")
+    print exp
 
     # #Q2a
-    # exp = parse("(defun increment (x) (+ x 1))")
-    # print exp
+    exp = parse("(defun increment (x) (+ x 1))")
+    print exp
 
-    # printTest("(increment 0)")
+    printTest("(increment 0)")
     
     #Interactive shell
     shell()
