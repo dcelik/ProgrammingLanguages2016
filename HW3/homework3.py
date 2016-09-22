@@ -11,7 +11,7 @@
 
 import sys
 from pyparsing import Word, Literal,  Keyword, Forward, alphas, alphanums
-
+from pyparsing import OneOrMore
 
 #
 # Expressions
@@ -320,7 +320,12 @@ def parse (input):
     pTIMES = "(" + Keyword("*") + pEXPR + pEXPR + ")"
     pTIMES.setParseAction(lambda result: ECall("*",[result[2],result[3]]))
 
-    pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pIF | pLET | pPLUS | pTIMES)
+    pEXPRSEQ = OneOrMore(pEXPR)
+
+    pUSERFUNC = "(" + pNAME + pEXPRSEQ + ")"
+    pUSERFUNC.setParseAction(lambda result: ECall(result[1],result[2:-1]))
+
+    pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pIF | pLET | pPLUS | pTIMES | pUSERFUNC)
 
     result = pEXPR.parseString(input)[0]
     return result    # the first element of the result is the expression
@@ -343,6 +348,7 @@ def shell ():
 if __name__ == '__main__':
     # increase stack size to let us call recursive functions quasi comfortably
     sys.setrecursionlimit(10000)
+    #Q1a
     exp = parse("(let ((x 10)) (+ x (* x x)))")
     print exp
     print exp.eval(INITIAL_FUN_DICT)
@@ -355,6 +361,18 @@ if __name__ == '__main__':
     exp = parse("(let ((x 10) (y 20) (z 30) (x 40)) (+ x (* y z)))")
     print exp
     print exp.eval(INITIAL_FUN_DICT)
+
+    #Q1b
+    exp = parse("(zero? (+ 10 20))")
+    print exp
+    print exp.eval(INITIAL_FUN_DICT)
+    exp = parse("(zero? (+ -20 20))")
+    print exp
+    print exp.eval(INITIAL_FUN_DICT)
+    exp = parse("(some-unknown-function 10 20 30)")
+    print exp
+
+    #Interactive shell
     shell()
 
 
