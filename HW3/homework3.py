@@ -442,6 +442,8 @@ def shell ():
             return
         exp = parse(inp)
         print "Abstract representation:", exp
+        if exp['result']=='function':
+            print "Function {} added to functions dictionary".format(exp['name'])
         if exp['result']=='expression':
             v = exp['expr'].eval(INITIAL_FUN_DICT)
             print v
@@ -476,28 +478,49 @@ if __name__ == '__main__':
     sys.setrecursionlimit(10000)
 
     # # #Q1a
-    # printTest("(let ((x 10)) (+ x (* x x)))")
+    printTest("(let ((x 10) (y 20)) (+ x y))")
     
-    # printTest("(let ((x 10) (y 20)) (+ x (* y y)))")
-    # printTest("(let ((x 10) (y 20) (z 30)) (+ x (* y z)))")
-    # printTest("(let ((x 10) (y 20) (z 30) (x 40)) (+ x (* y z)))")
+    printTest("(let ((a (let ((x 1) (y 2)) x)) (b (let ((x 1) (y 2)) y))) (let ((b a) (a b)) a))")
+    printTest("(let ((a 1) (b 2) (c 3) (d 4) (e 5) (f 6)) f)")
+    printTest("(let ((x 10) (y 20) (z 30) (x 40)) (+ x (* y z)))")
 
     # # #Q1b
-    # printTest("(zero? (+ 10 20))")
-    # printTest("(zero? (+ -20 20))")
+    printTest("(zero? 0)")
+    printTest("(zero? 1)")
+    printTest("(zero? (- 10 20))")
+    printTest("(zero? (let ((a 1) (b 1)) (- a b)))")
+    printTest("(zero? (+ -20 20))")
 
-    # exp = parse("(some-unknown-function 10 20 30)")
-    # print exp
+    printTest("(+1 10)")
+    printTest("(if (= 3 3) 1 2)")
+    printTest("(if (= 3 4) 1 2)")
+    printTest("(- 30 (- 20 15))")
+    printTest("(+1 (if (zero? 0) 10 20))")
+
+    exp = parse("(some-unknown-function 10 20 30)")
+    print exp['expr']
 
     # # #Q2a
-    # exp = parse("(defun increment (x) (+ x 1))")
+    exp = parse("(defun decrement (x) (- x 1))")
     # print exp
-    # try:
-    #     print exp['expr'].eval(INITIAL_FUN_DICT)
-    # except Exception as e:
-    #     print str(e)
+    printTest("(decrement 123)")
 
-    # printTest("(increment 0)")
+    parse("(defun decr2 (x) (decrement (decrement x)))")
+    printTest("(decr2 11)")
+
+    parse("(defun sum-of-squares (x y) (+ (square x) (square y)))")
+    printTest("(sum-of-squares 10 5)")
+
+    exp = parse("(defun increment (x) (+ x 1))")
+    # print exp
+    try:
+        print exp['expr'].eval(INITIAL_FUN_DICT)
+    except Exception as e:
+        print str(e)
+
+    printTest("(increment 0)")
+
+    # shell()
     
     # #Q3a
     printTest_nat("let (x = 10) x + 1")
