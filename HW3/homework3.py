@@ -502,7 +502,6 @@ if __name__ == '__main__':
 
     # # #Q2a
     exp = parse("(defun decrement (x) (- x 1))")
-    # print exp
     printTest("(decrement 123)")
 
     parse("(defun decr2 (x) (decrement (decrement x)))")
@@ -512,7 +511,6 @@ if __name__ == '__main__':
     printTest("(sum-of-squares 10 5)")
 
     exp = parse("(defun increment (x) (+ x 1))")
-    # print exp
     try:
         print exp['expr'].eval(INITIAL_FUN_DICT)
     except Exception as e:
@@ -535,6 +533,6 @@ if __name__ == '__main__':
     printTest_nat("let (x = 4 + 5 * 6) let (y = x * 2) square(y)")
     printTest_nat("(34 * 2) * (34 * 2)")
     printTest_nat("(zero? (1) ? false : true) ? 1 : 2")
-    shell_natural()
+    # shell_natural()
 
 
