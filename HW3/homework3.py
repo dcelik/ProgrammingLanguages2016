@@ -13,6 +13,7 @@
 import sys
 from pyparsing import Word, Literal,  Keyword, Forward, alphas, alphanums
 from pyparsing import OneOrMore
+from pyparsing import ZeroOrMore, Suppress, Optional
 
 #
 # Expressions
@@ -342,6 +343,93 @@ def parse (input):
         return result
     return {"result":"expression", "expr":result}    # the first element of the result is the expression
 
+def parse_natural(input):
+    # parse a string into an element of the abstract representation
+
+    # Grammar:
+    #
+    # <expr> ::= <bins> [ ? <bins> : <bins>]
+    #
+    # <bins> ::= <unit> {( + | - ) <unit>}
+    #
+    # <unit> ::= <prims> { * <prims> }
+    #
+    # <prims> ::= <integer>
+    #             true
+    #             false
+    #             ( <expr> )
+    #             let ( <bindings> ) <expr>
+    #             <name> ( <expr-seq>)
+    #             <identifier>
+    #             
+    # 
+    # <bindings> ::= <name> = <expr> , <bindings>
+    #                <name> = <expr>
+    #
+    # <expr-seq> ::= <expr> , <exprseq>
+    #               <expr>
+    #
+
+
+    idChars = alphas+"_+*-?!=<>"
+
+    pIDENTIFIER = Word(idChars, idChars+"0123456789")
+    pIDENTIFIER.setParseAction(lambda result: EId(result[0]))
+
+    # A name is like an identifier but it does not return an EId...
+    pNAME = Word(idChars,idChars+"0123456789")
+
+    pINTEGER = Word("-0123456789","0123456789")
+    pINTEGER.setParseAction(lambda result: EInteger(int(result[0])))
+
+    pBOOLEAN = Keyword("true") | Keyword("false")
+    pBOOLEAN.setParseAction(lambda result: EBoolean(result[0]=="true"))
+
+    pEXPR = Forward()
+
+    pBINDING = pNAME + Keyword("=") + pEXPR + ZeroOrMore(Suppress(",") + pNAME + Keyword("=") + pEXPR)
+    pBINDING.setParseAction(lambda result: [(result[i], result[i+2]) for i in xrange(len(result)-2) if i%3==0])
+
+    pLET = Keyword("let") + "(" + pBINDING + ")" + pEXPR
+    pLET.setParseAction(lambda result: ELet(result[2:-2],result[-1]))
+
+    pCALL = pNAME + "(" + pEXPR + ZeroOrMore(Suppress(",") + pEXPR) + ")"
+    pCALL.setParseAction(lambda result: ECall(result[0],result[2:-1]))
+
+    def prim_parse (result):
+        if len(result)>1:
+            return result[1]
+        return result[0]
+
+    pPRIMS = (pINTEGER | pBOOLEAN | "(" + pEXPR + ")" | pLET | pCALL | pIDENTIFIER )
+    pPRIMS.setParseAction(prim_parse)
+    
+    def expr_parse(result):
+        if len(result)>1:
+            return ECall(result[1],[result[0],expr_parse(result[2:])])
+        return result[0]
+
+    pUNIT = pPRIMS + ZeroOrMore(Keyword("*") + pPRIMS)
+    pUNIT.setParseAction(expr_parse)
+
+    pBINS = pUNIT + ZeroOrMore((Keyword("+") | Keyword("-")) + pUNIT)
+    pBINS.setParseAction(expr_parse)
+
+    def cond_parse(result):
+        if len(result)>1:
+            return EIf(result[0],result[2],result[4])
+        return result[0]
+    pEXPR << pBINS + Optional(Keyword("?") + pBINS + Keyword(":") + pBINS)
+    pEXPR.setParseAction(cond_parse)
+
+    pALL = pEXPR
+
+    result = pALL.parseString(input)[0]
+    if isinstance(result,dict):
+        return result
+    return {"result":"expression", "expr":result}    # the first element of the result is the expression
+
+
 
 def shell ():
     # A simple shell
@@ -358,8 +446,28 @@ def shell ():
             v = exp['expr'].eval(INITIAL_FUN_DICT)
             print v
 
+def shell_natural():
+    # A simple natural shell
+    # Repeatedly read a line of input, parse it, and evaluate the result
+
+    print "Homework 3 - Calc Language (Natural syntax)"
+    while True:
+        inp = raw_input("calc> ")
+        if not inp:
+            return
+        exp = parse_natural(inp)
+        print "Abstract representation:", exp
+        if exp['result']=='expression':
+            v = exp['expr'].eval(INITIAL_FUN_DICT)
+            print v
+
 def printTest (exp):
     parsed = parse(exp)
+    print '{'+"'result': {}, 'expr': {}".format(parsed['result'],parsed['expr'])+'}'
+    print parsed['expr'].eval(INITIAL_FUN_DICT)
+
+def printTest_nat (exp):
+    parsed = parse_natural(exp)
     print '{'+"'result': {}, 'expr': {}".format(parsed['result'],parsed['expr'])+'}'
     print parsed['expr'].eval(INITIAL_FUN_DICT)
 
@@ -367,27 +475,43 @@ if __name__ == '__main__':
     # increase stack size to let us call recursive functions quasi comfortably
     sys.setrecursionlimit(10000)
 
-    # #Q1a
-    printTest("(let ((x 10)) (+ x (* x x)))")
+    # # #Q1a
+    # printTest("(let ((x 10)) (+ x (* x x)))")
     
-    printTest("(let ((x 10) (y 20)) (+ x (* y y)))")
-    printTest("(let ((x 10) (y 20) (z 30)) (+ x (* y z)))")
-    printTest("(let ((x 10) (y 20) (z 30) (x 40)) (+ x (* y z)))")
+    # printTest("(let ((x 10) (y 20)) (+ x (* y y)))")
+    # printTest("(let ((x 10) (y 20) (z 30)) (+ x (* y z)))")
+    # printTest("(let ((x 10) (y 20) (z 30) (x 40)) (+ x (* y z)))")
 
-    # #Q1b
-    printTest("(zero? (+ 10 20))")
-    printTest("(zero? (+ -20 20))")
+    # # #Q1b
+    # printTest("(zero? (+ 10 20))")
+    # printTest("(zero? (+ -20 20))")
 
-    exp = parse("(some-unknown-function 10 20 30)")
-    print exp
+    # exp = parse("(some-unknown-function 10 20 30)")
+    # print exp
 
-    # #Q2a
-    exp = parse("(defun increment (x) (+ x 1))")
-    print exp
+    # # #Q2a
+    # exp = parse("(defun increment (x) (+ x 1))")
+    # print exp
+    # try:
+    #     print exp['expr'].eval(INITIAL_FUN_DICT)
+    # except Exception as e:
+    #     print str(e)
 
-    printTest("(increment 0)")
+    # printTest("(increment 0)")
     
-    #Interactive shell
-    shell()
+    # #Q3a
+    printTest_nat("let (x = 10) x + 1")
+    printTest_nat("let (x = 100 , y = 10 , z = 1) x * y + z * x + z")
+    printTest_nat("let (x = 10 , y = 20) x + y * y")
+    printTest_nat("zero? (1)")
+    printTest_nat("= (10, 10)")
+    printTest_nat("zero? (10 - 10)")
+    printTest_nat("zero? (0) ? 1 : 2")
+    printTest_nat("(zero? (0) ? 1 : 2) + 55")
+    printTest_nat("(zero? (1) ? 1 : 2) + 55")
+    printTest_nat("let (x = 4 + 5 * 6) let (y = x * 2) square(y)")
+    printTest_nat("(34 * 2) * (34 * 2)")
+    printTest_nat("(zero? (1) ? false : true) ? 1 : 2")
+    shell_natural()
 
 
