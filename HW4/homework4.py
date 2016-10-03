@@ -4,7 +4,7 @@
 # Team members: Deniz Celik and Jacob Riedel
 #
 # Emails: deniz.celik@students.olin.edu
-#		  jacob.riedel@students.olin.edu
+#         jacob.riedel@students.olin.edu
 #
 # Remarks:
 #
@@ -321,13 +321,39 @@ def parse (input):
     pLET = "(" + Keyword("let") + "(" + pBINDINGS + ")" + pEXPR + ")"
     pLET.setParseAction(lambda result: ELet(result[3],result[5]))
 
+    pLETS = "(" + Keyword("let*") + "(" + pBINDINGS + ")"
+    
     pEXPRS = ZeroOrMore(pEXPR)
     pEXPRS.setParseAction(lambda result: [result])
+
+    def parseAND(result):
+        if len(result)==3:
+            return EBoolean(True)
+        if len(result)==4:
+            return result[2]
+        if len(result)==5:
+            return EIf(result[2],result[3],EBoolean(False))
+        return EIf(result[2],parseAND(result[0:2]+result[3:]),EBoolean(False))
+
+    pAND = "(" + Keyword("and") + ZeroOrMore(pEXPR) + ")"
+    pAND.setParseAction(parseAND)
+
+    def parseOR(result):
+        if len(result)==3:
+            return EBoolean(False)
+        if len(result)==4:
+            return result[2]
+        if len(result)==5:
+            return EIf(result[2],EBoolean(True),result[3])
+        return EIf(result[2],EBoolean(True),parseOR(result[0:2]+result[3:]))
+
+    pOR = "(" + Keyword("or") + ZeroOrMore(pEXPR) + ")"
+    pOR.setParseAction(parseOR)
 
     pCALL = "(" + pNAME + pEXPRS + ")"
     pCALL.setParseAction(lambda result: ECall(result[1],result[2]))
 
-    pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pIF | pLET | pCALL)
+    pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pAND | pOR | pIF | pLET | pCALL)
 
     # can't attach a parse action to pEXPR because of recursion, so let's duplicate the parser
     pTOPEXPR = pEXPR.copy()
@@ -373,5 +399,42 @@ def shell ():
 # increase stack size to let us call recursive functions quasi comfortably
 sys.setrecursionlimit(10000)
 
+def printTest (exp):
+    result = parse(exp)
+    fun_dict = INITIAL_FUN_DICT.copy()
+    print "calc> {}".format(exp)
+    if result["result"] == "expression":
+            exp = result["expr"]
+            print "Abstract representation:", exp
+            v = exp.eval(fun_dict)
+            print v
+    elif result["result"] == "function":
+        # a result is already of the right form to put in the
+        # functions dictionary
+        fun_dict[result["name"]] = result
+        print "Function {} added to functions dictionary".format(result["name"])
 
-##shell()
+
+if __name__ == '__main__':
+    printTest("(and)")
+    printTest("(and true)")
+    printTest("(and true false)")
+    printTest("(and false true)")
+    printTest("(and false 999)")
+    printTest("(and (= 1 1))")
+    printTest("(and (= 1 1) (= 1 2))")
+    printTest("(and true false true)")
+    printTest("(let ((x true)) (and x x false true))")
+
+    printTest("(or)")
+    printTest("(or true)")
+    printTest("(or false)")
+    printTest("(or true false)")
+    printTest("(or false false)")
+    printTest("(or true false false)")
+    printTest("(or true false 99)")
+    printTest("(or true false false true)")
+    printTest("(or (= 1 1))")
+    printTest("(or (= 1 1) (= 1 2))")
+
+    #shell()
