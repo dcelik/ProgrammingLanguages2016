@@ -318,6 +318,19 @@ def parse (input):
     pBINDINGS = OneOrMore(pBINDING)
     pBINDINGS.setParseAction(lambda result: [ result ])
 
+    def parseCOND(result):
+        # print result
+        if len(result) == 3:
+            return EBoolean(False)
+        if len(result) == 7:
+            return EIf(result[3],result[4],EBoolean(False))
+        return EIf(result[3],result[4],parseCOND(result[0:2]+result[6:]))
+
+
+    pCOND = "(" + Keyword("cond") + ZeroOrMore("(" + pEXPR + pEXPR + ")") + ")"
+    pCOND.setParseAction(parseCOND)
+
+
     pLET = "(" + Keyword("let") + "(" + pBINDINGS + ")" + pEXPR + ")"
     pLET.setParseAction(lambda result: ELet(result[3],result[5]))
 
@@ -360,7 +373,7 @@ def parse (input):
     pCALL = "(" + pNAME + pEXPRS + ")"
     pCALL.setParseAction(lambda result: ECall(result[1],result[2]))
 
-    pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pAND | pOR | pIF | pLETS | pLET | pCALL)
+    pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pAND | pOR | pIF | pLETS | pLET | pCOND | pCALL)
 
     # can't attach a parse action to pEXPR because of recursion, so let's duplicate the parser
     pTOPEXPR = pEXPR.copy()
