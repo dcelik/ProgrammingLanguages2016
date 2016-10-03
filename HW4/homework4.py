@@ -12,6 +12,7 @@
 
 import sys
 from pyparsing import Word, Literal, ZeroOrMore, OneOrMore, Keyword, Forward, alphas, alphanums
+from pyparsing import Group, Suppress
 
 
 #
@@ -386,7 +387,6 @@ def parse (input):
     def parseLETS(result):
         if len(result[3])==1:
             return ELet(result[3],result[5])
-        #print ELet(result[3][0],result[5])
         return ELet([result[3][0]],parseLETS(result[0:3]+[result[3][1:]]+result[-3:]))
 
     pLETS = "(" + Keyword("let*") + "(" + pBINDINGS + ")" + pEXPR + ")"
@@ -419,12 +419,23 @@ def parse (input):
     pOR = "(" + Keyword("or") + ZeroOrMore(pEXPR) + ")"
     pOR.setParseAction(parseOR)
 
- 
+    def parseCASE(result):
+        body = EBoolean(False)
+        if len(result[3])==0:
+            return ELet([("___case___",result[2])],body)
+        for group in result[3]:
+            body = EIf(parseOR(["(","or"]+[ECall("=",[EId("___case___"),e]) for e in group[:-1]]+[")"]),group[-1],body)
+
+        #body = EIf(parseOR(),body)
+        return ELet([("___case___",result[2])],body)
+
+    pCASE = "(" + Keyword("case") + pEXPR + Group(ZeroOrMore(Suppress("(" + "(") + Group(OneOrMore(pINTEGER) + Suppress(")") + pEXPR) + Suppress(")"))) + ")"
+    pCASE.setParseAction(parseCASE)
 
     pCALL = "(" + pNAME + pEXPRS + ")"
     pCALL.setParseAction(lambda result: ECall(result[1],result[2]))
 
-    pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pAND | pOR | pIF | pLETS | pLET | pCOND | pCALL)
+    pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pAND | pOR | pIF | pLETS | pLET | pCOND | pCASE | pCALL)
 
     # can't attach a parse action to pEXPR because of recursion, so let's duplicate the parser
     pTOPEXPR = pEXPR.copy()
@@ -567,7 +578,16 @@ if __name__ == '__main__':
     printTest("(cond ((= 1 2) 20) ((= 1 1) 30))")
     printTest("(cond ((= 1 2) 20) ((= 1 3) 30))")
 
+    #Question 1d
+    print "Tests for Question 1d"
+    printTest("(case 1)")
+    printTest("(case 1 ((1 2 3) 99) ((4 5 6) 66))")
+    printTest("(case 2 ((1 2 3) 99) ((4 5 6) 66))")
+    printTest("(case 5 ((1 2 3) 99) ((4 5 6) 66))")
+    printTest("(case 8 ((1 2 3) 99) ((4 5 6) 66))")
+
     #Question 2
+    print "Tests for Question 2"
     printTestEnv("(let ((x 10)) (+ (let ((x 20)) (* x x)) x))")
     printTestEnv("(let ((x 10)) (+ (let ((y 20)) (* y y)) x))")
     printTestEnv("(let ((x 10)) (let ((y (+ x 1))) (let ((x (* y 2))) (* x x))))")
@@ -576,7 +596,6 @@ if __name__ == '__main__':
     printTestEnv("(let* ((x 10) (y (+ x 1)) (z (+ y 1))) x)")
     printTestEnv("(let* ((x 10) (y (+ x 1)) (z (+ y 1))) y)")
     printTestEnv("(let* ((x 10) (y (+ x 1)) (z (+ y 1))) z)")
-
     printTestEnv("(let ((x 10) (y 30)) (+ (let ((x 20)) (* x y)) x))")
 
     #shell()
