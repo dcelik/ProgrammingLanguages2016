@@ -37,6 +37,9 @@ class EValue (Exp):
     def substitute (self,id,new_e):
         return self
 
+    def evalEnv(self, fun_dict, env):
+        return self.eval(fun_dict)
+
 
 class EInteger (Exp):
     # Integer literal
@@ -53,6 +56,9 @@ class EInteger (Exp):
     def substitute (self,id,new_e):
         return self
 
+    def evalEnv(self, fun_dict, env):
+        return self.eval(fun_dict)
+
 
 class EBoolean (Exp):
     # Boolean literal
@@ -68,6 +74,9 @@ class EBoolean (Exp):
 
     def substitute (self,id,new_e):
         return self
+
+    def evalEnv(self, fun_dict, env):
+        return self.eval(fun_dict)
 
 
 class EPrimCall (Exp):
@@ -90,6 +99,10 @@ class EPrimCall (Exp):
     def substitute (self,id,new_e):
         new_es = [ e.substitute(id,new_e) for e in self._exps]
         return EPrimCall(self._prim,new_es)
+
+    def evalEnv (self, fun_dict, env):
+        vs = [ e.evalEnv(fun_dict,env) for e in self._exps]
+        return apply(self._prim,vs)
 
 
 class EIf (Exp):
@@ -116,6 +129,15 @@ class EIf (Exp):
         return EIf(self._cond.substitute(id,new_e),
                    self._then.substitute(id,new_e),
                    self._else.substitute(id,new_e))
+
+    def evalEnv(self, fun_dict, env):
+        v = self._cond.evalEnv(fun_dict,env)
+        if v.type != "boolean":
+            raise Exception ("Runtime error: condition not a Boolean")
+        if v.value:
+            return self._then.evalEnv(fun_dict,env)
+        else:
+            return self._else.evalEnv(fun_dict,env)
 
 
 class ELet (Exp):
@@ -144,6 +166,13 @@ class ELet (Exp):
             return ELet(new_bindings, self._e2)
         return ELet(new_bindings, self._e2.substitute(id,new_e))
 
+    def evalEnv (self, fun_dict, env):
+        for (id,e) in self._bindings:
+            env.append((id,e.evalEnv(fun_dict,env)))
+        temp = self._e2.evalEnv(fun_dict,env)
+        env.pop()
+        return temp
+
 
 class EId (Exp):
     # identifier
@@ -162,6 +191,14 @@ class EId (Exp):
             return new_e
         return self
 
+    def evalEnv (self, fun_dict, env):
+        # print env
+        for i in xrange(len(env)-1,-1,-1):
+            #print env[i][0]
+            if env[i][0]==self._id:
+                #print env[i][1]
+                return env[i][1]
+        return self
 
 class ECall (Exp):
     # Call a defined function in the function dictionary
@@ -186,6 +223,19 @@ class ECall (Exp):
     def substitute (self,var,new_e):
         new_es = [ e.substitute(var,new_e) for e in self._exps]
         return ECall(self._name,new_es)
+
+    def evalEnv (self, fun_dict, env):
+        vs = [ e.evalEnv(fun_dict,env) for e in self._exps]
+
+        params = fun_dict[self._name]["params"]
+        body = fun_dict[self._name]["body"]
+        if len(params) != len(vs):
+            raise Exception("Runtime error: wrong number of argument calling function {}".format(self._name))
+        
+        for (val,p) in zip(vs,params):
+            body = body.substitute(p,EValue(val))
+        
+        return body.evalEnv(fun_dict,env)
 
 
     
@@ -221,7 +271,7 @@ class VBoolean (Value):
 
 # Primitive operations
 
-def oper_plus (v1,v2): 
+def oper_plus (v1,v2):
     if v1.type == "integer" and v2.type == "integer":
         return VInteger(v1.value + v2.value)
     raise Exception ("Runtime error: trying to add non-numbers")
@@ -330,7 +380,6 @@ def parse (input):
     pCOND = "(" + Keyword("cond") + ZeroOrMore("(" + pEXPR + pEXPR + ")") + ")"
     pCOND.setParseAction(parseCOND)
 
-
     pLET = "(" + Keyword("let") + "(" + pBINDINGS + ")" + pEXPR + ")"
     pLET.setParseAction(lambda result: ELet(result[3],result[5]))
 
@@ -369,6 +418,8 @@ def parse (input):
 
     pOR = "(" + Keyword("or") + ZeroOrMore(pEXPR) + ")"
     pOR.setParseAction(parseOR)
+
+ 
 
     pCALL = "(" + pNAME + pEXPRS + ")"
     pCALL.setParseAction(lambda result: ECall(result[1],result[2]))
@@ -416,6 +467,32 @@ def shell ():
             fun_dict[result["name"]] = result
             print "Function {} added to functions dictionary".format(result["name"])
 
+def shellEnv():
+    # A simple shell
+    # Repeatedly read a line of input, parse it, and evaluate the result
+
+    print "Homework 4 - Calc Language"
+
+    # work on a copy because we'll be adding to it
+    fun_dict = INITIAL_FUN_DICT.copy()
+    
+    while True:
+        inp = raw_input("calc> ")
+        if not inp:
+            return
+        result = parse(inp)
+        if result["result"] == "expression":
+            exp = result["expr"]
+            print "Abstract representation:", exp
+            v = exp.evalEnv(fun_dict,[])
+            print v
+        elif result["result"] == "function":
+            # a result is already of the right form to put in the
+            # functions dictionary
+            fun_dict[result["name"]] = result
+            print "Function {} added to functions dictionary".format(result["name"])
+
+
 # increase stack size to let us call recursive functions quasi comfortably
 sys.setrecursionlimit(10000)
 
@@ -427,6 +504,21 @@ def printTest (exp):
             exp = result["expr"]
             print "Abstract representation:", exp
             v = exp.eval(fun_dict)
+            print v
+    elif result["result"] == "function":
+        # a result is already of the right form to put in the
+        # functions dictionary
+        fun_dict[result["name"]] = result
+        print "Function {} added to functions dictionary".format(result["name"])
+
+def printTestEnv (exp):
+    result = parse(exp)
+    fun_dict = INITIAL_FUN_DICT.copy()
+    print "calc> {}".format(exp)
+    if result["result"] == "expression":
+            exp = result["expr"]
+            print "Abstract representation:", exp
+            v = exp.evalEnv(fun_dict,[])
             print v
     elif result["result"] == "function":
         # a result is already of the right form to put in the
@@ -474,5 +566,17 @@ if __name__ == '__main__':
     printTest("(cond (false 20) (true 30))")
     printTest("(cond ((= 1 2) 20) ((= 1 1) 30))")
     printTest("(cond ((= 1 2) 20) ((= 1 3) 30))")
+
+    #Question 2
+    printTestEnv("(let ((x 10)) (+ (let ((x 20)) (* x x)) x))")
+    printTestEnv("(let ((x 10)) (+ (let ((y 20)) (* y y)) x))")
+    printTestEnv("(let ((x 10)) (let ((y (+ x 1))) (let ((x (* y 2))) (* x x))))")
+    printTestEnv("(let* ((x 10)) x)")
+    printTestEnv("(let* ((x 10) (y (+ x 1))) y)")
+    printTestEnv("(let* ((x 10) (y (+ x 1)) (z (+ y 1))) x)")
+    printTestEnv("(let* ((x 10) (y (+ x 1)) (z (+ y 1))) y)")
+    printTestEnv("(let* ((x 10) (y (+ x 1)) (z (+ y 1))) z)")
+
+    printTestEnv("(let ((x 10) (y 30)) (+ (let ((x 20)) (* x y)) x))")
 
     #shell()
