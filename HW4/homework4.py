@@ -454,4 +454,12 @@ if __name__ == '__main__':
     printTest("(let* ((x 10) (y (+ x 1)) (z (+ y 1))) y)")
     printTest("(let* ((x 10) (y (+ x 1)) (z (+ y 1))) z)")
 
+    #Question 1c
+    print "Tests for Question 1c"
+    printTest("(cond)")
+    printTest("(cond (true 10))")
+    printTest("(cond (false 20) (true 30))")
+    printTest("(cond ((= 1 2) 20) ((= 1 1) 30))")
+    printTest("(cond ((= 1 2) 20) ((= 1 3) 30))")
+
     #shell()
