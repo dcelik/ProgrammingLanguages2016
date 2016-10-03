@@ -321,8 +321,15 @@ def parse (input):
     pLET = "(" + Keyword("let") + "(" + pBINDINGS + ")" + pEXPR + ")"
     pLET.setParseAction(lambda result: ELet(result[3],result[5]))
 
-    pLETS = "(" + Keyword("let*") + "(" + pBINDINGS + ")"
-    
+    def parseLETS(result):
+        if len(result[3])==1:
+            return ELet(result[3],result[5])
+        #print ELet(result[3][0],result[5])
+        return ELet([result[3][0]],parseLETS(result[0:3]+[result[3][1:]]+result[-3:]))
+
+    pLETS = "(" + Keyword("let*") + "(" + pBINDINGS + ")" + pEXPR + ")"
+    pLETS.setParseAction(parseLETS)
+
     pEXPRS = ZeroOrMore(pEXPR)
     pEXPRS.setParseAction(lambda result: [result])
 
@@ -353,7 +360,7 @@ def parse (input):
     pCALL = "(" + pNAME + pEXPRS + ")"
     pCALL.setParseAction(lambda result: ECall(result[1],result[2]))
 
-    pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pAND | pOR | pIF | pLET | pCALL)
+    pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pAND | pOR | pIF | pLETS | pLET | pCALL)
 
     # can't attach a parse action to pEXPR because of recursion, so let's duplicate the parser
     pTOPEXPR = pEXPR.copy()
@@ -416,6 +423,8 @@ def printTest (exp):
 
 
 if __name__ == '__main__':
+    #Question 1a
+    print "Tests for Question 1a"
     printTest("(and)")
     printTest("(and true)")
     printTest("(and true false)")
@@ -436,5 +445,13 @@ if __name__ == '__main__':
     printTest("(or true false false true)")
     printTest("(or (= 1 1))")
     printTest("(or (= 1 1) (= 1 2))")
+
+    #Question 1b
+    print "Tests for Question 1b"
+    printTest("(let* ((x 10)) x)")
+    printTest("(let* ((x 10) (y (+ x 1))) y)")
+    printTest("(let* ((x 10) (y (+ x 1)) (z (+ y 1))) x)")
+    printTest("(let* ((x 10) (y (+ x 1)) (z (+ y 1))) y)")
+    printTest("(let* ((x 10) (y (+ x 1)) (z (+ y 1))) z)")
 
     #shell()
