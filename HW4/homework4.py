@@ -171,7 +171,8 @@ class ELet (Exp):
         for (id,e) in self._bindings:
             env.append((id,e.evalEnv(fun_dict,env)))
         temp = self._e2.evalEnv(fun_dict,env)
-        env.pop()
+        for i in xrange(len(self._bindings)):
+            env.pop()
         return temp
 
 
