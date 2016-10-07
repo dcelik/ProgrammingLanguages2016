@@ -482,7 +482,7 @@ def shellEnv():
     # A simple shell
     # Repeatedly read a line of input, parse it, and evaluate the result
 
-    print "Homework 4 - Calc Language"
+    print "Homework 4 - Calc Language (Environment Evaluation)"
 
     # work on a copy because we'll be adding to it
     fun_dict = INITIAL_FUN_DICT.copy()
