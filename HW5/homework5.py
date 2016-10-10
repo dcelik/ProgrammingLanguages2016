@@ -4,7 +4,7 @@
 # Team members: Deniz Celik, Jacob Riedel
 #
 # Emails: deniz.celik@students.olin.edu
-#		  jacob.riedel@students.olin.edu
+#         jacob.riedel@students.olin.edu
 #
 # Remarks:
 #
@@ -94,35 +94,32 @@ class ECall (Exp):
 
     def __init__ (self,fun,exps):
         self._fun = fun
-        if len(exps) != 1:
-            raise Exception("ERROR: multi-argument ECall not implemented")
-        self._arg = exps[0]
+        #if len(exps) != 1:
+        #    raise Exception("ERROR: multi-argument ECall not implemented")
+        self._args = exps#[0]
 
     def __str__ (self):
-        return "ECall({},[{}])".format(str(self._fun),str(self._arg))
+        return "ECall({},[{}])".format(str(self._fun),",".join([ str(e) for e in self._args]))
 
     def eval (self,env):
         f = self._fun.eval(env)
         if f.type != "function":
             raise Exception("Runtime error: trying to call a non-function")
-        arg = self._arg.eval(env)
-        new_env = [(f.param,arg)] + f.env
+        new_env = [(p,a.eval(env)) for (p,a) in zip(f.params,self._args)] + f.env
         return f.body.eval(new_env)
 
 class EFunction (Exp):
-    # Creates an anonymous function
+    # Creates an anonymous function 
 
     def __init__ (self,params,body):
-        if len(params) != 1:
-            raise Exception("ERROR: multi-argument EFunction not implemented")
-        self._param = params[0]
+        self._params = params
         self._body = body
 
     def __str__ (self):
-        return "EFunction([{}],{})".format(self._param,str(self._body))
+        return "EFunction([{}],{})".format(",".join([ str(e) for e in self._params]),str(self._body))
 
     def eval (self,env):
-        return VClosure(self._param,self._body,env)
+        return VClosure(self._params,self._body,env)
 
     
 #
@@ -158,16 +155,13 @@ class VBoolean (Value):
 class VClosure (Value):
     
     def __init__ (self,params,body,env):
-        if len(params) != 1:
-            raise Exception("ERROR: multi-argument VClosure not implemented")
-            
-        self.param = params[0]
+        self.params = params
         self.body = body
         self.env = env
         self.type = "function"
 
     def __str__ (self):
-        return "<function [{}] {}>".format(self.param,str(self.body))
+        return "<function [{}] {}>".format(",".join([ str(e) for e in self.params]),str(self.body))
 
 
 
@@ -250,6 +244,7 @@ def initial_env ():
 # cf http://pyparsing.wikispaces.com/
 
 from pyparsing import Word, Literal, ZeroOrMore, OneOrMore, Keyword, Forward, alphas, alphanums
+from pyparsing import Group
 
 
 def letUnimplementedError ():
@@ -298,13 +293,16 @@ def parse (input):
     pBINDINGS = OneOrMore(pBINDING)
     pBINDINGS.setParseAction(lambda result: [ result ])
 
+    def letparse(result):
+        return ECall(EFunction([id for (id,_) in result[3]],result[5]),[val for (_,val) in result[3]])
+
     pLET = "(" + Keyword("let") + "(" + pBINDINGS + ")" + pEXPR + ")"
-    pLET.setParseAction(lambda result: letUnimplementedError())
+    pLET.setParseAction(letparse)
 
-    pCALL = "(" + pEXPR + pEXPR + ")"
-    pCALL.setParseAction(lambda result: ECall(result[1],[result[2]]))
+    pCALL = "(" + pEXPR + Group(OneOrMore(pEXPR)) + ")"
+    pCALL.setParseAction(lambda result: ECall(result[1],result[2]))
 
-    pFUN = "(" + Keyword("function") + "(" + pNAME + ")" + pEXPR + ")"
+    pFUN = "(" + Keyword("function") + "(" + Group(OneOrMore(pNAME)) + ")" + pEXPR + ")"
     pFUN.setParseAction(lambda result: EFunction(result[3],result[5]))
 
     pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pIF | pLET | pFUN | pCALL)
@@ -313,7 +311,7 @@ def parse (input):
     pTOPEXPR = pEXPR.copy()
     pTOPEXPR.setParseAction(lambda result: {"result":"expression","expr":result[0]})
 
-    pDEFUN = "(" + Keyword("defun") + pNAME + "(" + pNAME + ")" + pEXPR + ")"
+    pDEFUN = "(" + Keyword("defun") + pNAME + "(" + Group(OneOrMore(pNAME)) + ")" + pEXPR + ")"
     pDEFUN.setParseAction(lambda result: {"result":"function",
                                           "name":result[2],
                                           "param":result[4],
@@ -334,7 +332,7 @@ def shell ():
 
     ## UNCOMMENT THIS LINE WHEN YOU COMPLETE Q1 IF YOU WANT TO TRY
     ## EXAMPLES
-    ## env = initial_env()
+    env = initial_env()
     while True:
         inp = raw_input("func> ")
 
@@ -354,7 +352,7 @@ def shell ():
                 # the top-level environment is special, it is shared
                 # amongst all the top-level closures so that all top-level
                 # functions can refer to each other
-                env.insert(0,(result["name"],VClosure([result["param"]],result["body"],env)))
+                env.insert(0,(result["name"],VClosure(result["param"],result["body"],env)))
                 print "Function {} added to top-level environment".format(result["name"])
 
         except Exception as e:
@@ -416,7 +414,95 @@ def initial_env_curry ():
 
 
 def parse_curry (input):
-    raise Exception ("ERROR: parse_curry not implemented")
+    # parse a string into an element of the abstract representation
+
+    # Grammar:
+    #
+    # <expr> ::= <integer>
+    #            true
+    #            false
+    #            <identifier>
+    #            ( if <expr> <expr> <expr> )
+    #            ( let ( ( <name> <expr> ) ) <expr )
+    #            (function ( <name> ) <expr> )
+    #            ( <expr> <expr> )
+    #
+    # <definition> ::= ( defun <name> ( <name> ) <expr> )
+    #
+
+
+    idChars = alphas+"_+*-~/?!=<>"
+
+    pIDENTIFIER = Word(idChars, idChars+"0123456789")
+    pIDENTIFIER.setParseAction(lambda result: EId(result[0]))
+
+    # A name is like an identifier but it does not return an EId...
+    pNAME = Word(idChars,idChars+"0123456789")
+
+    pINTEGER = Word("0123456789")
+    pINTEGER.setParseAction(lambda result: EValue(VInteger(int(result[0]))))
+
+    pBOOLEAN = Keyword("true") | Keyword("false")
+    pBOOLEAN.setParseAction(lambda result: EValue(VBoolean(result[0]=="true")))
+
+    pEXPR = Forward()
+
+    pIF = "(" + Keyword("if") + pEXPR + pEXPR + pEXPR + ")"
+    pIF.setParseAction(lambda result: EIf(result[2],result[3],result[4]))
+
+    pBINDING = "(" + pNAME + pEXPR + ")"
+    pBINDING.setParseAction(lambda result: (result[1],result[2]))
+
+    pBINDINGS = OneOrMore(pBINDING)
+    pBINDINGS.setParseAction(lambda result: [ result ])
+
+    def letparse(result):
+        return ECall(EFunction([id for (id,_) in result[3]],result[5]),[val for (_,val) in result[3]])
+
+    pLET = "(" + Keyword("let") + "(" + pBINDINGS + ")" + pEXPR + ")"
+    pLET.setParseAction(letparse)
+
+    def callparse(result):
+        def call_recurse(lst):
+            if len(lst)==1:
+                return ECall(result[1],lst)
+            return ECall(call_recurse(lst[:-1]),[lst[-1]])
+        return call_recurse(result[2])
+
+    pCALL = "(" + pEXPR + Group(OneOrMore(pEXPR)) + ")"
+    pCALL.setParseAction(callparse)
+
+    def funparse(result):
+        def fun_recurse(lst):
+            if len(lst)==1:
+                return EFunction(lst,result[5])
+            return EFunction(lst[0],fun_recurse(lst[1:]))
+        return fun_recurse(result[3])
+
+    pFUN = "(" + Keyword("function") + "(" + Group(OneOrMore(pNAME)) + ")" + pEXPR + ")"
+    pFUN.setParseAction(funparse)
+
+    pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pIF | pLET | pFUN | pCALL)
+
+    # can't attach a parse action to pEXPR because of recursion, so let's duplicate the parser
+    pTOPEXPR = pEXPR.copy()
+    pTOPEXPR.setParseAction(lambda result: {"result":"expression","expr":result[0]})
+
+    def defunparse(result):
+        temp = funparse(["(","function","(",result[4][1:],")",result[6],")"])
+        #print temp
+
+        return {"result":"function",
+                  "name":result[2],
+                  "param":result[4][0],
+                  "body":temp}
+
+    pDEFUN = "(" + Keyword("defun") + pNAME + "(" + Group(OneOrMore(pNAME)) + ")" + pEXPR + ")"
+    pDEFUN.setParseAction(defunparse)
+    pTOP = (pDEFUN | pTOPEXPR)
+
+    result = pTOP.parseString(input)[0]
+    return result    # the first element of the result is the expression
 
 
 def shell_curry ():
@@ -441,12 +527,74 @@ def shell_curry ():
                 print v
 
             elif result["result"] == "function":
-                # the top-level environment is special, it is shared
-                # amongst all the top-level closures so that all top-level
-                # functions can refer to each other
-                env.insert(0,(result["name"],VClosure([result["param"]],result["body"],env)))
+                env.insert(0,(result["name"],VClosure(result["param"],result["body"],env)))
                 print "Function {} added to top-level environment".format(result["name"])
 
         except Exception as e:
             print "Exception: {}".format(e)
 
+def printTest (exp,env):
+    print "func> {}".format(exp)
+    result = parse(exp)
+
+    if result["result"] == "expression":
+        exp = result["expr"]
+        print "Abstract representation:", exp
+        v = exp.eval(env)
+        print v
+
+    elif result["result"] == "function":
+        env.insert(0,(result["name"],VClosure(result["param"],result["body"],env)))
+        print "Function {} added to top-level environment".format(result["name"])
+
+
+def printTestCurry(exp,env):
+    print "func/curry> {}".format(exp)
+    result = parse_curry(exp)
+
+    if result["result"] == "expression":
+        exp = result["expr"]
+        print "Abstract representation:", exp
+        v = exp.eval(env)
+        print v
+
+    elif result["result"] == "function":
+        env.insert(0,(result["name"],VClosure(result["param"],result["body"],env)))
+        print "Function {} added to top-level environment".format(result["name"])
+
+if __name__ == '__main__':
+
+    # Question 1
+    print "Question 1"
+    global_env = initial_env()
+    printTest("(function (x y) (+ x y))",global_env)
+    printTest("((function (x y) (+ x y)) 10 20)",global_env)
+    printTest("(defun sum2 (x y) (+ x y))",global_env)
+    printTest("(sum2 10 20)",global_env)
+    printTest("(defun sum3 (x y z) (+ x (+ y z)))",global_env)
+    printTest("(sum3 10 20 30)",global_env)
+    printTest("(sum3 (sum2 10 20) 30 40)",global_env)
+
+    # Question 2A
+    print "Question 2A"
+    global_env = initial_env()
+    printTest("(let ((x 10)) x)",global_env)
+    printTest("(let ((x 10)) (+ x 1))",global_env)
+    printTest("(let ((x 10) (y 20)) (+ x y))",global_env)
+    printTest("(let ((x (* 2 3)) (y (* 4 5))) (+ x y))",global_env)
+    printTest("(let ((x 1) (y 2) (z 3)) (+ x (* y z)))",global_env)
+    printTest("(let ((x (let ((y 10)) y))) x)",global_env)
+
+    # Question 2B
+    print "Question 2B"
+    global_env = initial_env_curry()
+    printTestCurry("+",global_env)
+    printTestCurry("(+ 10 20)",global_env)
+    printTestCurry("(* 2 3)",global_env)
+    printTestCurry("((function (x y) (+ x y)) 10 20)",global_env)
+    printTestCurry("(function (x y) (+ x y))",global_env)
+    printTestCurry("(defun test (x y z) (+ x (+ y z)))",global_env)
+    printTestCurry("test",global_env)
+    printTestCurry("(test 1 2 3)",global_env)
+
+    # Question 3
