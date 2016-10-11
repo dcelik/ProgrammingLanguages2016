@@ -124,12 +124,9 @@ class EFunction (Exp):
                 .format(",".join([ str(e) for e in self._params]),str(self._body),str(self._name))
 
     def eval (self,env):
-        print self._name
         if self._name==None:
             return VClosure(self._params,self._body,env)
-        new_env = [(self._name,VClosure(self._params,self._body,env))]+env
-        print new_env
-        return VClosure(self._params,self._body,new_env)
+        return VClosure(self._params,self._body,env,name=self._name)
 
     
 #
@@ -164,17 +161,18 @@ class VBoolean (Value):
     
 class VClosure (Value):
     
-    def __init__ (self,params,body,env):
+    def __init__ (self,params,body,env,name=None):
         self.params = params
         self.body = body
-        self.env = env
         self.type = "function"
-
+        if name==None:
+            self.env = env
+        else:
+            self.env = [(name,self)]+env
+        
     def __str__ (self):
         return "<function [{}] {}>".format(",".join([ str(e) for e in self.params]),str(self.body))
 
-    def env():
-        return self.env
 
 
 # Primitive operations
@@ -317,7 +315,10 @@ def parse (input):
     pFUN = "(" + Keyword("function") + "(" + Group(OneOrMore(pNAME)) + ")" + pEXPR + ")"
     pFUN.setParseAction(lambda result: EFunction(result[3],result[5]))
 
-    pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pIF | pLET | pFUN | pCALL)
+    pRECFUN = "(" + Keyword("function") + pNAME + "(" + Group(OneOrMore(pNAME)) + ")" + pEXPR + ")"
+    pRECFUN.setParseAction(lambda result: EFunction(result[4],result[6],name=result[2]))
+
+    pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pIF | pLET | pFUN | pRECFUN | pCALL)
 
     # can't attach a parse action to pEXPR because of recursion, so let's duplicate the parser
     pTOPEXPR = pEXPR.copy()
@@ -619,3 +620,10 @@ if __name__ == '__main__':
     f = e.eval(initial_env())
     print f
     print ECall(EValue(f),[EValue(VInteger(10))]).eval([]).value
+
+    #Question 3B
+    print "Question 3B"
+    printTest("((function (x y) (+ x y)) 10 20)",global_env)
+    printTest("((function me (n) (if (zero? n) 0 (+ n (me (- n 1))))) 10)",global_env)
+    printTest("(let ((sum (function me (n) (if (zero? n) 0 (+ n (me (- n 1))))))) (sum 100))",global_env)
+    printTest("((function me2 (n1 n2) (if (= n2 n1) n2 (+ n2 (me2 n1 (- n2 1))))) 0 20)",global_env)
