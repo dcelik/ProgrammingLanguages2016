@@ -111,15 +111,25 @@ class ECall (Exp):
 class EFunction (Exp):
     # Creates an anonymous function 
 
-    def __init__ (self,params,body):
+    def __init__ (self,params,body,name=None):
         self._params = params
         self._body = body
+        self._name=name
 
     def __str__ (self):
-        return "EFunction([{}],{})".format(",".join([ str(e) for e in self._params]),str(self._body))
+        if self._name==None:
+            return "EFunction([{}],{})"\
+                .format(",".join([ str(e) for e in self._params]),str(self._body))
+        return "EFunction([{}],{},name={})"\
+                .format(",".join([ str(e) for e in self._params]),str(self._body),str(self._name))
 
     def eval (self,env):
-        return VClosure(self._params,self._body,env)
+        print self._name
+        if self._name==None:
+            return VClosure(self._params,self._body,env)
+        new_env = [(self._name,VClosure(self._params,self._body,env))]+env
+        print new_env
+        return VClosure(self._params,self._body,new_env)
 
     
 #
@@ -163,6 +173,8 @@ class VClosure (Value):
     def __str__ (self):
         return "<function [{}] {}>".format(",".join([ str(e) for e in self.params]),str(self.body))
 
+    def env():
+        return self.env
 
 
 # Primitive operations
@@ -430,7 +442,6 @@ def parse_curry (input):
     # <definition> ::= ( defun <name> ( <name> ) <expr> )
     #
 
-
     idChars = alphas+"_+*-~/?!=<>"
 
     pIDENTIFIER = Word(idChars, idChars+"0123456789")
@@ -587,14 +598,24 @@ if __name__ == '__main__':
 
     # Question 2B
     print "Question 2B"
-    global_env = initial_env_curry()
-    printTestCurry("+",global_env)
-    printTestCurry("(+ 10 20)",global_env)
-    printTestCurry("(* 2 3)",global_env)
-    printTestCurry("((function (x y) (+ x y)) 10 20)",global_env)
-    printTestCurry("(function (x y) (+ x y))",global_env)
-    printTestCurry("(defun test (x y z) (+ x (+ y z)))",global_env)
-    printTestCurry("test",global_env)
-    printTestCurry("(test 1 2 3)",global_env)
+    global_env_curry = initial_env_curry()
+    printTestCurry("+",global_env_curry)
+    printTestCurry("(+ 10 20)",global_env_curry)
+    printTestCurry("(* 2 3)",global_env_curry)
+    printTestCurry("((function (x y) (+ x y)) 10 20)",global_env_curry)
+    printTestCurry("(function (x y) (+ x y))",global_env_curry)
+    printTestCurry("(defun test (x y z) (+ x (+ y z)))",global_env_curry)
+    printTestCurry("test",global_env_curry)
+    printTestCurry("(test 1 2 3)",global_env_curry)
 
-    # Question 3
+    # Question 3A
+    print "Question 3A"
+    e = EFunction(["n"],
+                  EIf(ECall(EId("zero?"),[EId("n")]),
+              EValue(VInteger(0)),
+              ECall(EId("+"),[EId("n"),
+                              ECall(EId("me"),[ECall(EId("-"),[EId("n"),EValue(VInteger(1))])])])),
+                  name="me")
+    f = e.eval(initial_env())
+    print f
+    print ECall(EValue(f),[EValue(VInteger(10))]).eval([]).value
