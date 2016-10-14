@@ -6,8 +6,8 @@
 # Emails: deniz.celik@students.olin.edu
 #         jacob.riedel@students.olin.edu
 #
-# Remarks:
-#
+# Remarks: 
+#        
 
 
 
@@ -203,47 +203,40 @@ def oper_zero (v1):
 # this initial environment works with Q1 when you've completed it
 
 def initial_env ():
-    # A sneaky way to allow functions to refer to functions that are not
-    # yet defined at top level, or recursive functions
     env = []
-    base = [ 
+    env.insert(0,
         ("+",
          VClosure(["x","y"],EPrimCall(oper_plus,
                                       [EId("x"),EId("y")]),
-                  env)),
+                  env)))
+    env.insert(0,
         ("-",
          VClosure(["x","y"],EPrimCall(oper_minus,
                                       [EId("x"),EId("y")]),
-                  env)),
+                  env)))
+    env.insert(0,
         ("*",
          VClosure(["x","y"],EPrimCall(oper_times,
                                       [EId("x"),EId("y")]),
-                  env)),
+                  env)))
+    env.insert(0,
         ("zero?",
          VClosure(["x"],EPrimCall(oper_zero,
                                   [EId("x")]),
-                  env)),
+                  env)))
+    env.insert(0,
         ("square",
          VClosure(["x"],ECall(EId("*"),[EId("x"),EId("x")]),
-                  env)),
+                  env)))
+    env.insert(0,
         ("=",
          VClosure(["x","y"],ECall(EId("zero?"),
                                   [ECall(EId("-"),[EId("x"),EId("y")])]),
-                  env)),
+                  env)))
+    env.insert(0,
         ("+1",
          VClosure(["x"],ECall(EId("+"),[EId("x"),EValue(VInteger(1))]),
-                  env)),
-        ("sum_from_to",
-         VClosure(["s","e"],
-                  EIf(ECall(EId("="),[EId("s"),EId("e")]),
-                      EId("s"),
-                      ECall(EId("+"),[EId("s"),
-                                       ECall(EId("sum_from_to"),
-                                             [ECall(EId("+1"),[EId("s")]),
-                                              EId("e")])])),
-                  env)),
-    ]
-    env.extend(base)
+                  env)))
     return env
 
 
@@ -379,51 +372,45 @@ sys.setrecursionlimit(10000)
 
 
 def initial_env_curry ():
-    # A sneaky way to allow functions to refer to functions that are not
-    # yet defined at top level, or recursive functions
     env = []
-    base = [ 
+    env.insert(0,
         ("+",
          VClosure(["x"],EFunction("y",EPrimCall(oper_plus,
                                               [EId("x"),EId("y")])),
-                  env)),
+                  env)))
+    env.insert(0,
         ("-",
          VClosure(["x"],EFunction("y",EPrimCall(oper_minus,
                                               [EId("x"),EId("y")])),
-                  env)),
+                  env)))
+    env.insert(0,
         ("*",
          VClosure(["x"],EFunction("y",EPrimCall(oper_times,
                                               [EId("x"),EId("y")])),
-                  env)),
+                  env)))
+    env.insert(0,
         ("zero?",
          VClosure(["x"],EPrimCall(oper_zero,
                                          [EId("x")]),
-                           env)),
+                           env)))
+    env.insert(0,
         ("square",
          VClosure(["x"],ECall(ECall(EId("*"),[EId("x")]),
                             [EId("x")]),
-                  env)),
+                  env)))
+    env.insert(0,
         ("=",
          VClosure(["x"],EFunction("y",ECall(EId("zero?"),
                                           [ECall(ECall(EId("-"),[EId("x")]),
                                                  [EId("y")])])),
-                  env)),
+                  env)))
+    env.insert(0,
         ("+1",
          VClosure(["x"],ECall(ECall(EId("+"),[EId("x")]),
                             [EValue(VInteger(1))]),
-                  env)),
-        ("sum_from_to",
-         VClosure(["s"],EFunction("e",
-                                  EIf(ECall(ECall(EId("="),[EId("s")]),[EId("e")]),
-                                      EId("s"),
-                                      ECall(ECall(EId("+"),[EId("s")]),
-                                            [ECall(ECall(EId("sum_from_to"),
-                                                         [ECall(EId("+1"),[EId("s")])]),
-                                                   [EId("e")])]))),
-                  env)),
-    ]
-    env.extend(base)
+                  env)))
     return env
+
 
 
 def parse_curry (input):
