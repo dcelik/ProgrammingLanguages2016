@@ -535,3 +535,21 @@ def shell_imp ():
         except Exception as e:
             print "Exception: {}".format(e)
 
+def printTest (exp,env):
+    print "func> {}".format(exp)
+    result = parse_imp(exp)
+
+    if result["result"] == "expression":
+        exp = result["expr"]
+        print "Abstract representation:", exp
+        v = exp.eval(env)
+        print v
+
+    elif result["result"] == "function":
+        env.insert(0,(result["name"],VClosure(result["param"],result["body"],env)))
+        print "Function {} added to top-level environment".format(result["name"])
+
+
+if __name__ == '__main__':
+
+    printTest("var a = 0; for(a=10;a<20;a=a+1) { print a; }",initial_env_imp())
