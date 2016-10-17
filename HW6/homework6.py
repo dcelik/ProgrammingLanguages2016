@@ -281,6 +281,15 @@ class VNone (Value):
     def __str__ (self):
         return "none"
 
+class VString (Value):
+
+    def __init__ (self,value):
+        self.value = value
+        self.type = "string"
+
+    def __str__ (self):
+        return self.value
+
 
 # Primitive operations
 
