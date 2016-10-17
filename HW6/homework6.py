@@ -195,6 +195,35 @@ class EWhile (Exp):
                 raise Exception ("Runtime error: while condition not a Boolean")
         return VNone()
 
+class EFor(Exp):
+
+    def __init__(self,id,init_val,cond,mod,exp):
+        self._iter = id #binding id
+        self._init = init_val #binding
+        self._cond = cond #conditional
+        self._mod = mod #value for new binding
+        self._exp = exp #eval every loop
+
+    def __str__ (self):
+        return "EFor({}={},{},{},{})".format(str(self._iter),str(self._init),str(self._cond),str(self._mod),str(self._exp))
+
+    def eval (self,env):
+        print self.__str__
+        return VNone()
+
+        self._init.eval(env)
+        c = self._cond.eval(env)
+        if c.type != "boolean":
+            raise Exception ("Runtime error: while condition not a Boolean")
+
+        while c.value:
+            self._exp.eval(env)
+            new_c = self._mod.eval(env)
+
+            if c.type != "boolean":
+                raise Exception ("Runtime error: while condition not a Boolean")
+        return VNone()
+
     
 #
 # Values
@@ -433,6 +462,9 @@ def parse_imp (input):
     pSTMT_UPDATE = pNAME + "<-" + pEXPR + ";"
     pSTMT_UPDATE.setParseAction(lambda result: EPrimCall(oper_update,[EId(result[0]),result[2]]))
 
+    pSTMT_FOR = "for" + "(" + pNAME + "=" + pEXPR + ";" + pEXPR + ";" + pNAME + "=" + pEXPR + ")" + pSTMT_BLOCK
+    pSTMT_FOR.setParseAction(lambda result: EFor(result[2],result[4],))
+
     pSTMTS = ZeroOrMore(pSTMT)
     pSTMTS.setParseAction(lambda result: [result])
 
@@ -443,7 +475,7 @@ def parse_imp (input):
     pSTMT_BLOCK = "{" + pDECLS + pSTMTS + "}"
     pSTMT_BLOCK.setParseAction(lambda result: mkBlock(result[1],result[2]))
 
-    pSTMT << ( pSTMT_IF_1 | pSTMT_IF_2 | pSTMT_WHILE | pSTMT_PRINT | pSTMT_UPDATE |  pSTMT_BLOCK )
+    pSTMT << ( pSTMT_IF_1 | pSTMT_IF_2 | pSTMT_WHILE | pSTMT_PRINT | pSTMT_UPDATE |  pSTMT_BLOCK | pSTMT_FOR)
 
     # can't attach a parse action to pSTMT because of recursion, so let's duplicate the parser
     pTOP_STMT = pSTMT.copy()
@@ -502,3 +534,4 @@ def shell_imp ():
                 
         except Exception as e:
             print "Exception: {}".format(e)
+
