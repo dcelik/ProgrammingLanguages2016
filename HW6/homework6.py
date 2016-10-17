@@ -197,21 +197,16 @@ class EWhile (Exp):
 
 class EFor(Exp):
 
-    def __init__(self,id,init_val,cond,mod,exp):
-        self._iter = id #binding id
-        self._init = init_val #binding
+    def __init__(self,init,cond,mod,exp):
+        self._init = init #binding
         self._cond = cond #conditional
         self._mod = mod #value for new binding
         self._exp = exp #eval every loop
 
     def __str__ (self):
-        return "EFor({}={},{},{},{})".format(str(self._iter),str(self._init),str(self._cond),str(self._mod),str(self._exp))
+        return "EFor({},{},{},{})".format(str(self._init),str(self._cond),str(self._mod),str(self._exp))
 
     def eval (self,env):
-        print self._iter
-        print self.__str__
-        return VNone()
-
         self._init.eval(env)
         c = self._cond.eval(env)
         if c.type != "boolean":
@@ -219,8 +214,8 @@ class EFor(Exp):
 
         while c.value:
             self._exp.eval(env)
-            new_c = self._mod.eval(env)
-
+            self._mod.eval(env)
+            c = self._cond.eval(env)
             if c.type != "boolean":
                 raise Exception ("Runtime error: while condition not a Boolean")
         return VNone()
@@ -324,8 +319,30 @@ def oper_print (v1):
     print v1
     return VNone()
 
-    
+def oper_not (v1):
+    if v1.type == "boolean":
+        return VBoolean(not v1.value)
+    raise Exception ("Runtime error: type error in not")
 
+def oper_greater (v1,v2):
+    if v1.type == "integer" and v2.type == "integer":
+        return VBoolean(v1.value>v2.value)
+    raise Exception ("Runtime error: type error in >")
+
+def oper_greater_equal (v1,v2):
+    if v1.type == "integer" and v2.type == "integer":
+        return VBoolean(v1.value>=v2.value)
+    raise Exception ("Runtime error: type error in >=")
+
+def oper_less (v1,v2):
+    if v1.type == "integer" and v2.type == "integer":
+        return VBoolean(v1.value<v2.value)
+    raise Exception ("Runtime error: type error in <") 
+
+def oper_less_equal (v1,v2):
+    if v1.type == "integer" and v2.type == "integer":
+        return VBoolean(v1.value<=v2.value)
+    raise Exception ("Runtime error: type error in <=")
 
 ############################################################
 # IMPERATIVE SURFACE SYNTAX
@@ -339,6 +356,7 @@ def oper_print (v1):
 # cf http://pyparsing.wikispaces.com/
 
 from pyparsing import Word, Literal, ZeroOrMore, OneOrMore, Keyword, Forward, alphas, alphanums, NoMatch
+from pyparsing import Group
 
 
 def initial_env_imp ():
@@ -365,6 +383,31 @@ def initial_env_imp ():
                 VRefCell(VClosure(["x"],
                                   EPrimCall(oper_zero,[EId("x")]),
                                   env))))
+    env.insert(0,
+               ("not",
+                VRefCell(VClosure(["x"],
+                                  EPrimCall(oper_not,[EId("x")]),
+                                  env))))
+    env.insert(0,
+               ("<",
+                VRefCell(VClosure(["x","y"],
+                                  EPrimCall(oper_less,[EId("x"),EId("y")]),
+                                  env))))
+    env.insert(0,
+               (">",
+                VRefCell(VClosure(["x","y"],
+                                  EPrimCall(oper_greater,[EId("x"),EId("y")]),
+                                  env))))
+    env.insert(0,
+               ("<=",
+                VRefCell(VClosure(["x","y"],
+                                  EPrimCall(oper_less_equal,[EId("x"),EId("y")]),
+                                  env))))
+    env.insert(0,
+               (">=",
+                VRefCell(VClosure(["x","y"],
+                                  EPrimCall(oper_greater_equal,[EId("x"),EId("y")]),
+                                  env))))
     return env
 
 
@@ -390,6 +433,7 @@ def parse_imp (input):
     #            name <- <expr> ;
     #            print <expr> ;
     #            <block>
+    #            for ( name <- <expr> ; <name> <expr> <expr> ; <name> = <expr> <expr> <expr> ) <block>
     #
     # <block> ::= { <decl> ... <stmt> ... }
     #
@@ -433,6 +477,7 @@ def parse_imp (input):
 
     pCALL = "(" + pEXPR + pEXPRS + ")"
     pCALL.setParseAction(lambda result: ECall(result[1],result[2]))
+    #pCALL.setParseAction(lambda result: ECall(result[1],result[2]))
 
     pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pIF | pFUN | pCALL)
 
@@ -475,8 +520,28 @@ def parse_imp (input):
     pSTMT_BLOCK = "{" + pDECLS + pSTMTS + "}"
     pSTMT_BLOCK.setParseAction(lambda result: mkBlock(result[1],result[2]))
 
-    pSTMT_FOR = "for" + "(" + pNAME + "=" + pEXPR + ";" + pEXPR + ";" + pNAME + "=" + pEXPR + ")" + pSTMT_BLOCK
-    pSTMT_FOR.setParseAction(lambda result: EFor(result[2],result[4]))
+    def parse_for(result):
+        init = result[2]
+        cond = 0
+
+        if result[3][1] == "!=":
+            cond = ECall(EPrimCall(oper_deref,[EId("not")]),[ECall(EPrimCall(oper_deref,[EId("zero?")]),[ECall(EPrimCall(oper_deref,[EId("-")]),[result[3][0],result[3][2]])])])
+        if result[3][1] == "<":
+            cond = ECall(EPrimCall(oper_deref,[EId("<")]),[result[3][0],result[3][2]])
+        if result[3][1] == ">":
+            cond = ECall(EPrimCall(oper_deref,[EId(">")]),[result[3][0],result[3][2]])
+        if result[3][1] == "<=":
+            cond = ECall(EPrimCall(oper_deref,[EId("<=")]),[result[3][0],result[3][2]])
+        if result[3][1] == ">=":
+            cond = ECall(EPrimCall(oper_deref,[EId(">=")]),[result[3][0],result[3][2]])
+        if cond ==0:
+            raise Exception("Unknown comparator {}".format(result[3][1]))
+
+        mod = EPrimCall(oper_update,[EId(result[5]),ECall(result[8],[result[7],result[9]])])
+        return EFor(init,cond,mod,result[11])
+
+    pSTMT_FOR = Keyword("for") + "(" + pSTMT_UPDATE + Group(pEXPR + pNAME + pEXPR) + ";" + pNAME + "=" + pEXPR + pEXPR + pEXPR + ")"+ pSTMT_BLOCK
+    pSTMT_FOR.setParseAction(parse_for)
 
     pSTMT << ( pSTMT_IF_1 | pSTMT_IF_2 | pSTMT_WHILE | pSTMT_PRINT | pSTMT_UPDATE |  pSTMT_BLOCK | pSTMT_FOR)
 
@@ -562,6 +627,20 @@ def printTest (exp,env):
 
 if __name__ == '__main__':
 
+    # Question 1 Tester
+    print "Question 1: C-Style For loop"
+    print "For ( <name> <- <expr> ; <name> <cond> <expr> ; <name> = <name> <oper> <expr>) { <stmts> }"
+    print "example: For ( x <- 10 ; x < 20 ; x = x + 1) { print x; }"
+    print ""
     global_env = initial_env_imp()
     printTest("var a = 0;",global_env)
-    printTest("for(a=10;a<20;a=a+1) { print a; }",global_env)
+    printTest("print (+ 1 2);",global_env)
+    printTest("print (not (zero? (- 0 5)));",global_env)
+    printTest("for ( a <- 10 ; a != 20 ; a = a + 1 ) { print a;}",global_env)
+    printTest("for ( a <- 10 ; a < 20 ; a = a + 1 ) { print a;}",global_env)
+    printTest("for ( a <- 30 ; a > 20 ; a = a - 1 ) { print a;}",global_env)
+    printTest("for ( a <- 30 ; a >= 20 ; a = a - 1 ) { print a;}",global_env)
+    printTest("for ( a <- 10 ; a <= 20 ; a = a + 1 ) { print a;}",global_env)
+
+    # Question 2 Tester
+    print "Question 2: Immutable Strings"
