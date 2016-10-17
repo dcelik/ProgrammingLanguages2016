@@ -208,6 +208,7 @@ class EFor(Exp):
         return "EFor({}={},{},{},{})".format(str(self._iter),str(self._init),str(self._cond),str(self._mod),str(self._exp))
 
     def eval (self,env):
+        print self._iter
         print self.__str__
         return VNone()
 
@@ -462,8 +463,7 @@ def parse_imp (input):
     pSTMT_UPDATE = pNAME + "<-" + pEXPR + ";"
     pSTMT_UPDATE.setParseAction(lambda result: EPrimCall(oper_update,[EId(result[0]),result[2]]))
 
-    pSTMT_FOR = "for" + "(" + pNAME + "=" + pEXPR + ";" + pEXPR + ";" + pNAME + "=" + pEXPR + ")" + pSTMT_BLOCK
-    pSTMT_FOR.setParseAction(lambda result: EFor(result[2],result[4],))
+
 
     pSTMTS = ZeroOrMore(pSTMT)
     pSTMTS.setParseAction(lambda result: [result])
@@ -474,6 +474,9 @@ def parse_imp (input):
         
     pSTMT_BLOCK = "{" + pDECLS + pSTMTS + "}"
     pSTMT_BLOCK.setParseAction(lambda result: mkBlock(result[1],result[2]))
+
+    pSTMT_FOR = "for" + "(" + pNAME + "=" + pEXPR + ";" + pEXPR + ";" + pNAME + "=" + pEXPR + ")" + pSTMT_BLOCK
+    pSTMT_FOR.setParseAction(lambda result: EFor(result[2],result[4]))
 
     pSTMT << ( pSTMT_IF_1 | pSTMT_IF_2 | pSTMT_WHILE | pSTMT_PRINT | pSTMT_UPDATE |  pSTMT_BLOCK | pSTMT_FOR)
 
@@ -539,17 +542,26 @@ def printTest (exp,env):
     print "func> {}".format(exp)
     result = parse_imp(exp)
 
-    if result["result"] == "expression":
-        exp = result["expr"]
-        print "Abstract representation:", exp
-        v = exp.eval(env)
-        print v
+    if result["result"] == "statement":
+        stmt = result["stmt"]
+        # print "Abstract representation:", exp
+        v = stmt.eval(env)
 
-    elif result["result"] == "function":
-        env.insert(0,(result["name"],VClosure(result["param"],result["body"],env)))
-        print "Function {} added to top-level environment".format(result["name"])
+    elif result["result"] == "abstract":
+        print result["stmt"]
+
+    elif result["result"] == "quit":
+        return
+
+    elif result["result"] == "declaration":
+        (name,expr) = result["decl"]
+        v = expr.eval(env)
+        env.insert(0,(name,VRefCell(v)))
+        print "{} defined".format(name)
 
 
 if __name__ == '__main__':
 
-    printTest("var a = 0; for(a=10;a<20;a=a+1) { print a; }",initial_env_imp())
+    global_env = initial_env_imp()
+    printTest("var a = 0;",global_env)
+    printTest("for(a=10;a<20;a=a+1) { print a; }",global_env)
