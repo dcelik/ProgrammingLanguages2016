@@ -353,6 +353,45 @@ def oper_less_equal (v1,v2):
         return VBoolean(v1.value<=v2.value)
     raise Exception ("Runtime error: type error in <=")
 
+# Primitive string operations
+
+def str_oper_length(s1):
+    if s1.type == "string":
+        return len(s1.value)
+    raise Exception ("Runtime error: trying to get length of non-string")
+
+def str_oper_substring(s1,start,end):
+    if s1.type == "string":
+        return s1.value[start.value:end.value]
+    raise Exception ("Runtime error: trying to get substring of non-string")
+
+def str_oper_concat(s1,s2):
+    if s1.type == "string" and s2.type == "string":
+        return s1.value+s2.value
+    raise Exception ("Runtime error: trying to get concat of non-strings")
+
+def str_oper_startswith(s1,s2):
+    #checks if s1 starts with s2
+    if s1.type == "string" and s2.type == "string":
+        return s1.value[:len(s2.value)]==s2.value
+    raise Exception ("Runtime error: trying to apply startswith on non-strings")
+
+def str_oper_endswith(s1,s2):
+    #checks if s1 ends with s2
+    if s1.type == "string" and s2.type == "string":
+        return s1.value[-len(s2.value):]==s2.value
+    raise Exception ("Runtime error: trying to apply endswith on non-strings")
+
+def str_oper_lower(s1):
+    if s1.type == "string":
+        return s1.value.lower()
+    raise Exception ("Runtime error: trying to get lowercase version of non-string")
+
+def str_oper_upper(s1):
+    if s1.type == "string":
+        return s1.value.upper()
+    raise Exception ("Runtime error: trying to get uppercase version of non-string")
+
 ############################################################
 # IMPERATIVE SURFACE SYNTAX
 #
@@ -365,7 +404,7 @@ def oper_less_equal (v1,v2):
 # cf http://pyparsing.wikispaces.com/
 
 from pyparsing import Word, Literal, ZeroOrMore, OneOrMore, Keyword, Forward, alphas, alphanums, NoMatch
-from pyparsing import Group
+from pyparsing import Group, QuotedString
 
 
 def initial_env_imp ():
@@ -417,6 +456,42 @@ def initial_env_imp ():
                 VRefCell(VClosure(["x","y"],
                                   EPrimCall(oper_greater_equal,[EId("x"),EId("y")]),
                                   env))))
+    env.insert(0,
+               ("length",
+                VRefCell(VClosure(["x"],
+                                  EPrimCall(str_oper_length,[EId("x")]),
+                                  env))))
+    env.insert(0,
+               ("substring",
+                VRefCell(VClosure(["x","y","z"],
+                                  EPrimCall(str_oper_substring,[EId("x"),EId("y"),EId("z")]),
+                                  env))))
+    env.insert(0,
+               ("concat",
+                VRefCell(VClosure(["x","y"],
+                                  EPrimCall(str_oper_concat,[EId("x"),EId("y")]),
+                                  env))))
+    env.insert(0,
+               ("startswith",
+                VRefCell(VClosure(["x","y"],
+                                  EPrimCall(str_oper_startswith,[EId("x"),EId("y")]),
+                                  env))))
+    env.insert(0,
+               ("endswith",
+                VRefCell(VClosure(["x","y"],
+                                  EPrimCall(str_oper_endswith,[EId("x"),EId("y")]),
+                                  env))))
+    env.insert(0,
+               ("lower",
+                VRefCell(VClosure(["x"],
+                                  EPrimCall(str_oper_lower,[EId("x")]),
+                                  env))))
+    env.insert(0,
+               ("upper",
+                VRefCell(VClosure(["x"],
+                                  EPrimCall(str_oper_upper,[EId("x")]),
+                                  env))))
+
     return env
 
 
@@ -460,6 +535,12 @@ def parse_imp (input):
     # A name is like an identifier but it does not return an EId...
     pNAME = Word(idChars,idChars+"0123456789")
 
+    def test(result):
+        print result
+
+    pSTRING = QuotedString('"',escChar='\\')
+    pSTRING.setParseAction(lambda result: EValue(VString(result[0])))
+
     pNAMES = ZeroOrMore(pNAME)
     pNAMES.setParseAction(lambda result: [result])
 
@@ -488,7 +569,7 @@ def parse_imp (input):
     pCALL.setParseAction(lambda result: ECall(result[1],result[2]))
     #pCALL.setParseAction(lambda result: ECall(result[1],result[2]))
 
-    pEXPR << (pINTEGER | pBOOLEAN | pIDENTIFIER | pIF | pFUN | pCALL)
+    pEXPR << (pINTEGER | pBOOLEAN | pSTRING | pIDENTIFIER | pIF | pFUN | pCALL)
 
     pDECL_VAR = "var" + pNAME + "=" + pEXPR + ";"
     pDECL_VAR.setParseAction(lambda result: (result[1],result[3]))
@@ -517,8 +598,6 @@ def parse_imp (input):
     pSTMT_UPDATE = pNAME + "<-" + pEXPR + ";"
     pSTMT_UPDATE.setParseAction(lambda result: EPrimCall(oper_update,[EId(result[0]),result[2]]))
 
-
-
     pSTMTS = ZeroOrMore(pSTMT)
     pSTMTS.setParseAction(lambda result: [result])
 
@@ -531,20 +610,10 @@ def parse_imp (input):
 
     def parse_for(result):
         init = result[2]
-        cond = 0
+        cond = ECall(EPrimCall(oper_deref,[EId(result[3][1])]),[result[3][0],result[3][2]])
 
         if result[3][1] == "!=":
             cond = ECall(EPrimCall(oper_deref,[EId("not")]),[ECall(EPrimCall(oper_deref,[EId("zero?")]),[ECall(EPrimCall(oper_deref,[EId("-")]),[result[3][0],result[3][2]])])])
-        if result[3][1] == "<":
-            cond = ECall(EPrimCall(oper_deref,[EId("<")]),[result[3][0],result[3][2]])
-        if result[3][1] == ">":
-            cond = ECall(EPrimCall(oper_deref,[EId(">")]),[result[3][0],result[3][2]])
-        if result[3][1] == "<=":
-            cond = ECall(EPrimCall(oper_deref,[EId("<=")]),[result[3][0],result[3][2]])
-        if result[3][1] == ">=":
-            cond = ECall(EPrimCall(oper_deref,[EId(">=")]),[result[3][0],result[3][2]])
-        if cond ==0:
-            raise Exception("Unknown comparator {}".format(result[3][1]))
 
         mod = EPrimCall(oper_update,[EId(result[5]),ECall(result[8],[result[7],result[9]])])
         return EFor(init,cond,mod,result[11])
@@ -637,19 +706,37 @@ def printTest (exp,env):
 if __name__ == '__main__':
 
     # Question 1 Tester
-    print "Question 1: C-Style For loop"
-    print "For ( <name> <- <expr> ; <name> <cond> <expr> ; <name> = <name> <oper> <expr>) { <stmts> }"
-    print "example: For ( x <- 10 ; x < 20 ; x = x + 1) { print x; }"
-    print ""
-    global_env = initial_env_imp()
-    printTest("var a = 0;",global_env)
-    printTest("print (+ 1 2);",global_env)
-    printTest("print (not (zero? (- 0 5)));",global_env)
-    printTest("for ( a <- 10 ; a != 20 ; a = a + 1 ) { print a;}",global_env)
-    printTest("for ( a <- 10 ; a < 20 ; a = a + 1 ) { print a;}",global_env)
-    printTest("for ( a <- 30 ; a > 20 ; a = a - 1 ) { print a;}",global_env)
-    printTest("for ( a <- 30 ; a >= 20 ; a = a - 1 ) { print a;}",global_env)
-    printTest("for ( a <- 10 ; a <= 20 ; a = a + 1 ) { print a;}",global_env)
+    # print "Question 1: C-Style For loop"
+    # print "For ( <name> <- <expr> ; <name> <cond> <expr> ; <name> = <name> <oper> <expr>) { <stmts> }"
+    # print "example: For ( x <- 10 ; x < 20 ; x = x + 1) { print x; }"
+    # print ""
+    # global_env = initial_env_imp()
+    # printTest("var a = 0;",global_env)
+    # printTest("print (+ 1 2);",global_env)
+    # printTest("print (not (zero? (- 0 5)));",global_env)
+    # printTest("for ( a <- 10 ; a != 20 ; a = a + 1 ) { print a;}",global_env)
+    # printTest("for ( a <- 10 ; a < 20 ; a = a + 1 ) { print a;}",global_env)
+    # printTest("for ( a <- 30 ; a > 20 ; a = a - 1 ) { print a;}",global_env)
+    # printTest("for ( a <- 30 ; a >= 20 ; a = a - 1 ) { print a;}",global_env)
+    # printTest("for ( a <- 10 ; a <= 20 ; a = a + 1 ) { print a;}",global_env)
 
     # Question 2 Tester
-    print "Question 2: Immutable Strings"
+    # print "Question 2: Immutable Strings"
+    # global_env = initial_env_imp()
+    # printTest("print \"Hi, I'm a \\\"string\\\" named Paul\";",global_env)
+    # printTest("print (length \"Hi, I'm a \\\"string\\\" named Paul\");",global_env)
+    # printTest("print (substring \"Hi, I'm a \\\"string\\\" named Paul\" 0 10);",global_env)
+    # printTest("print (concat \"Hi, I'm a \\\"string\\\" named Paul\" \" Giamatti\");",global_env)
+    # printTest("print (startswith \"Hi, I'm a \\\"string\\\" named Paul\" \"Hi, I'm \");",global_env)
+    # printTest("print (startswith \"Hi, I'm a \\\"string\\\" named Paul\" \"Hello, I'm \");",global_env)
+    # printTest("print (endswith \"Hi, I'm a \\\"string\\\" named Paul\" \"Paul\");",global_env)
+    # printTest("print (endswith \"Hi, I'm a \\\"string\\\" named Paul\" \"named P\");",global_env)
+    # printTest("print (lower \"Hi, I'm a \\\"string\\\" named Paul\");",global_env)
+    # printTest("print (upper \"Hi, I'm a \\\"string\\\" named Paul\");",global_env)
+
+    # Questoin 3 Tester
+    # print "Question 3: Procedures"
+    global_env = initial_env_imp()
+
+
+    #shell_imp()
