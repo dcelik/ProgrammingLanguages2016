@@ -123,8 +123,10 @@ class ECall (Exp):
 
     def eval (self,env):
         f = self._fun.eval(env)
-        if f.type != "function" and f.type != "procedure":
-            raise Exception("Runtime error: trying to call a non-function or non-procedure")
+        # if f.type != "function" and f.type != "procedure":
+        if f.type != "function":
+            #raise Exception("Runtime error: trying to call a non-function or non-procedure")
+            raise Exception("Runtime error: trying to call a non-function")
         args = [ e.eval(env) for e in self._args]
         if len(args) != len(f.params):
             raise Exception("Runtime error: argument # mismatch in call")
@@ -145,12 +147,12 @@ class EFunction (Exp):
     def eval (self,env):
         return VClosure(self._params,self._body,env)
 
-class EProcedure (EFunction):
-    def __str__ (self):
-        return "EProcedure([{}],{})".format(",".join(self._params),str(self._body))
+# class EProcedure (EFunction):
+#     def __str__ (self):
+#         return "EProcedure([{}],{})".format(",".join(self._params),str(self._body))
 
-    def eval(self,env):
-        return VClosure(self._params,self._body,env,closure_type="procedure")
+#     def eval(self,env):
+#         return VClosure(self._params,self._body,env,closure_type="procedure")
 
 
 class ERefCell (Exp):
@@ -581,7 +583,8 @@ def parse_imp (input):
     pDECL_VAR.setParseAction(lambda result: (result[1],result[3]))
 
     pDECL_PROC = Keyword("procedure") + pNAME + "(" + pNAMES + ")" + pSTMT
-    pDECL_PROC.setParseAction(lambda result: (result[1], EProcedure(result[3][:], mkFunBody(result[3][:],result[5]))))
+    pDECL_PROC.setParseAction(lambda result: (result[1], EFunction(result[3], mkFunBody(result[3],result[5]))))
+    #pDECL_PROC.setParseAction(lambda result: (result[1], EProcedure(result[3], mkFunBody(result[3],result[5]))))
 
     # hack to get pDECL to match only pDECL_VAR (but still leave room
     # to add to pDECL later)
