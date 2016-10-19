@@ -123,8 +123,8 @@ class ECall (Exp):
 
     def eval (self,env):
         f = self._fun.eval(env)
-        if f.type != "function":
-            raise Exception("Runtime error: trying to call a non-function")
+        if f.type != "function" and f.type != "procedure":
+            raise Exception("Runtime error: trying to call a non-function or non-procedure")
         args = [ e.eval(env) for e in self._args]
         if len(args) != len(f.params):
             raise Exception("Runtime error: argument # mismatch in call")
@@ -144,6 +144,13 @@ class EFunction (Exp):
 
     def eval (self,env):
         return VClosure(self._params,self._body,env)
+
+class EProcedure (EFunction):
+    def __str__ (self):
+        return "EProcedure([{}],{})".format(",".join(self._params),str(self._body))
+
+    def eval(self,env):
+        return VClosure(self._params,self._body,env,closure_type="procedure")
 
 
 class ERefCell (Exp):
@@ -253,14 +260,15 @@ class VBoolean (Value):
     
 class VClosure (Value):
     
-    def __init__ (self,params,body,env):
+    def __init__ (self,params,body,env,closure_type="function"):
         self.params = params
         self.body = body
         self.env = env
-        self.type = "function"
+        self.type = closure_type
 
     def __str__ (self):
-        return "<function [{}] {}>".format(",".join(self.params),str(self.body))
+        return "<{} [{}] {}>".format(str(self.type),",".join(self.params),str(self.body))
+
 
     
 class VRefCell (Value):
@@ -535,9 +543,6 @@ def parse_imp (input):
     # A name is like an identifier but it does not return an EId...
     pNAME = Word(idChars,idChars+"0123456789")
 
-    def test(result):
-        print result
-
     pSTRING = QuotedString('"',escChar='\\')
     pSTRING.setParseAction(lambda result: EValue(VString(result[0])))
 
@@ -567,21 +572,23 @@ def parse_imp (input):
 
     pCALL = "(" + pEXPR + pEXPRS + ")"
     pCALL.setParseAction(lambda result: ECall(result[1],result[2]))
-    #pCALL.setParseAction(lambda result: ECall(result[1],result[2]))
 
     pEXPR << (pINTEGER | pBOOLEAN | pSTRING | pIDENTIFIER | pIF | pFUN | pCALL)
+
+    pSTMT = Forward()
 
     pDECL_VAR = "var" + pNAME + "=" + pEXPR + ";"
     pDECL_VAR.setParseAction(lambda result: (result[1],result[3]))
 
-    # hack to get pDECL to match only PDECL_VAR (but still leave room
+    pDECL_PROC = Keyword("procedure") + pNAME + "(" + pNAMES + ")" + pSTMT
+    pDECL_PROC.setParseAction(lambda result: (result[1], EProcedure(result[3][:], mkFunBody(result[3][:],result[5]))))
+
+    # hack to get pDECL to match only pDECL_VAR (but still leave room
     # to add to pDECL later)
-    pDECL = ( pDECL_VAR | NoMatch() )
+    pDECL = ( pDECL_PROC | pDECL_VAR | NoMatch() )
 
     pDECLS = ZeroOrMore(pDECL)
     pDECLS.setParseAction(lambda result: [result])
-
-    pSTMT = Forward()
 
     pSTMT_IF_1 = "if" + pEXPR + pSTMT + "else" + pSTMT
     pSTMT_IF_1.setParseAction(lambda result: EIf(result[1],result[2],result[4]))
@@ -597,6 +604,9 @@ def parse_imp (input):
 
     pSTMT_UPDATE = pNAME + "<-" + pEXPR + ";"
     pSTMT_UPDATE.setParseAction(lambda result: EPrimCall(oper_update,[EId(result[0]),result[2]]))
+
+    pSTMT_PROC = pEXPR + "(" + pEXPRS + ")" + ";"
+    pSTMT_PROC.setParseAction(lambda result: ECall(result[0],result[2]))
 
     pSTMTS = ZeroOrMore(pSTMT)
     pSTMTS.setParseAction(lambda result: [result])
@@ -620,8 +630,8 @@ def parse_imp (input):
 
     pSTMT_FOR = Keyword("for") + "(" + pSTMT_UPDATE + Group(pEXPR + pNAME + pEXPR) + ";" + pNAME + "=" + pEXPR + pEXPR + pEXPR + ")"+ pSTMT_BLOCK
     pSTMT_FOR.setParseAction(parse_for)
-
-    pSTMT << ( pSTMT_IF_1 | pSTMT_IF_2 | pSTMT_WHILE | pSTMT_PRINT | pSTMT_UPDATE |  pSTMT_BLOCK | pSTMT_FOR)
+    
+    pSTMT << ( pSTMT_IF_1 | pSTMT_IF_2 | pSTMT_WHILE | pSTMT_PRINT | pSTMT_UPDATE |  pSTMT_BLOCK | pSTMT_FOR | pSTMT_PROC)
 
     # can't attach a parse action to pSTMT because of recursion, so let's duplicate the parser
     pTOP_STMT = pSTMT.copy()
@@ -697,11 +707,11 @@ def printTest (exp,env):
         return
 
     elif result["result"] == "declaration":
+        print result
         (name,expr) = result["decl"]
         v = expr.eval(env)
         env.insert(0,(name,VRefCell(v)))
         print "{} defined".format(name)
-
 
 if __name__ == '__main__':
 
@@ -737,6 +747,18 @@ if __name__ == '__main__':
     # Questoin 3 Tester
     # print "Question 3: Procedures"
     global_env = initial_env_imp()
-
+    printTest("var x = 10;",global_env)
+    printTest("procedure t1 ( ) { var a = 0; a <- 10; print a; }",global_env)
+    printTest("procedure test (val) { var a = 0; a <- val; print a; }",global_env)
+    printTest("procedure plusn (n v) { var temp = (+ n v); v <- temp; print v; }",global_env)
+    printTest("var f = ( function (a b c) (* a (* b c)));",global_env)
+    printTest("print (f 2 3 4);",global_env)
+    printTest("print (f x x x);",global_env)
+    printTest("plusn (5 10);",global_env)
+    printTest("plusn (127 x);",global_env)
+    printTest("plusn ((+ 1 2) (+ 3 4));",global_env)
+    #printTest("print (+ (test 10) 30);",global_env)
+    printTest("print (+ (f 2 3 4) 30);",global_env)
+    printTest("f (2 3 4);",global_env)
 
     #shell_imp()
