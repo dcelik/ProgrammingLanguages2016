@@ -229,6 +229,20 @@ class EFor(Exp):
                 raise Exception ("Runtime error: while condition not a Boolean")
         return VNone()
 
+class EArray(Exp):
+
+    def __init__(self,length):#,list_array):
+        self._len = length
+        self._arr = []
+
+    def __str__(self):
+        return "EArray([{}])".format(",".join( str(e) for e in self._arr ))
+
+    def eval (self,env):
+        print self._len.eval(env)
+        for i in range(self._len.eval(env).value):
+            self._arr.append(VNone())
+        return VArray(self._len.eval(env),self._arr)
     
 #
 # Values
@@ -272,6 +286,15 @@ class VClosure (Value):
         return "<{} [{}] {}>".format(str(self.type),",".join(self.params),str(self.body))
 
 
+class VArray(Value):
+    def __init__(self, length, array_list):
+        self.length = length
+        self.value = array_list
+        self.type = "array"
+
+    def __str__ (self):
+        return "[{}]".format(",".join( str(e) for e in self.value ))#"
+        
     
 class VRefCell (Value):
 
@@ -402,6 +425,22 @@ def str_oper_upper(s1):
         return s1.value.upper()
     raise Exception ("Runtime error: trying to get uppercase version of non-string")
 
+def arr_oper_update(arr,ind,val):
+    if arr.type == "array" and ind.type == "integer":
+        arr.value[ind.value] = val
+        return arr
+    raise Exception ("Runtime error: trying to update value in non-array or with non-integer index")
+
+def arr_oper_index(ind,arr = "__array__"):
+    if arr.type == "array" and ind.type == "integer":
+        return arr.value[ind.value]
+    raise Exception ("Runtime error: trying to get value in non-array or with non-integer index")
+
+def arr_oper_length(arr):
+    if arr.type == "array":
+        return len(arr.value)
+    raise Exception ("Runtime error: trying to length of non-array")
+
 ############################################################
 # IMPERATIVE SURFACE SYNTAX
 #
@@ -501,6 +540,21 @@ def initial_env_imp ():
                 VRefCell(VClosure(["x"],
                                   EPrimCall(str_oper_upper,[EId("x")]),
                                   env))))
+    env.insert(0,
+               ("arr_update",
+                VRefCell(VClosure(["x","y","z"],
+                                  EPrimCall(arr_oper_update,[EId("x"),EId("y"),EId("z")]),
+                                  env))))
+    env.insert(0,
+               ("index",
+                VRefCell(VClosure(["__array__","y"],
+                                  EPrimCall(arr_oper_index,[EId("x"),EId("__array__")]),
+                                  env))))
+    env.insert(0,
+               ("length",
+                VRefCell(VClosure(["__array__"],
+                                  EPrimCall(arr_oper_length,[EId("x")]),
+                                  env))))
 
     return env
 
@@ -571,11 +625,19 @@ def parse_imp (input):
 
     pFUN = "(" + Keyword("function") + "(" + pNAMES + ")" + pEXPR + ")"
     pFUN.setParseAction(lambda result: EFunction(result[3],mkFunBody(result[3],result[5])))
+    
+    pARRAY = "(" + Keyword("new-array") + pEXPR + ")"
+    pARRAY.setParseAction(lambda result:EArray(result[2]))
 
+    pWITH_EX
+
+    pWITH = "(" + Keyword("with") + pEXPR + pEXPR + ")"
+    pWITH.setParseAction(lambda result: ELet([(EId("__array__"),result[2])],result[3]))
+    
     pCALL = "(" + pEXPR + pEXPRS + ")"
     pCALL.setParseAction(lambda result: ECall(result[1],result[2]))
 
-    pEXPR << (pINTEGER | pBOOLEAN | pSTRING | pIDENTIFIER | pIF | pFUN | pCALL)
+    pEXPR << (pINTEGER | pBOOLEAN | pSTRING | pARRAY | pWITH | pIDENTIFIER | pIF | pFUN | pCALL)
 
     pSTMT = Forward()
 
@@ -608,6 +670,9 @@ def parse_imp (input):
     pSTMT_UPDATE = pNAME + "<-" + pEXPR + ";"
     pSTMT_UPDATE.setParseAction(lambda result: EPrimCall(oper_update,[EId(result[0]),result[2]]))
 
+    pSTMT_UPDATE_ARR = pEXPR + "[" + pEXPR + "]" + "<-" + pEXPR + ";"
+    pSTMT_UPDATE_ARR.setParseAction(lambda result:EPrimCall(arr_oper_update,[result[0],result[2],result[5]]))
+
     pSTMT_PROC = pEXPR + "(" + pEXPRS + ")" + ";"
     pSTMT_PROC.setParseAction(lambda result: ECall(result[0],result[2]))
 
@@ -634,7 +699,7 @@ def parse_imp (input):
     pSTMT_FOR = Keyword("for") + "(" + pSTMT_UPDATE + Group(pEXPR + pNAME + pEXPR) + ";" + pNAME + "=" + pEXPR + pEXPR + pEXPR + ")"+ pSTMT_BLOCK
     pSTMT_FOR.setParseAction(parse_for)
     
-    pSTMT << ( pSTMT_IF_1 | pSTMT_IF_2 | pSTMT_WHILE | pSTMT_PRINT | pSTMT_UPDATE |  pSTMT_BLOCK | pSTMT_FOR | pSTMT_PROC)
+    pSTMT << ( pSTMT_IF_1 | pSTMT_IF_2 | pSTMT_WHILE | pSTMT_PRINT | pSTMT_UPDATE_ARR | pSTMT_UPDATE |  pSTMT_BLOCK | pSTMT_FOR | pSTMT_PROC)
 
     # can't attach a parse action to pSTMT because of recursion, so let's duplicate the parser
     pTOP_STMT = pSTMT.copy()
@@ -749,19 +814,29 @@ if __name__ == '__main__':
 
     # Questoin 3 Tester
     # print "Question 3: Procedures"
+    # global_env = initial_env_imp()
+    # printTest("var x = 10;",global_env)
+    # printTest("procedure t1 ( ) { var a = 0; a <- 10; print a; }",global_env)
+    # printTest("procedure test (val) { var a = 0; a <- val; print a; }",global_env)
+    # printTest("procedure plusn (n v) { var temp = (+ n v); v <- temp; print v; }",global_env)
+    # printTest("var f = ( function (a b c) (* a (* b c)));",global_env)
+    # printTest("print (f 2 3 4);",global_env)
+    # printTest("print (f x x x);",global_env)
+    # printTest("plusn (5 10);",global_env)
+    # printTest("plusn (127 x);",global_env)
+    # printTest("plusn ((+ 1 2) (+ 3 4));",global_env)
+    # #printTest("print (+ (test 10) 30);",global_env)
+    # printTest("print (+ (f 2 3 4) 30);",global_env)
+    # printTest("f (2 3 4);",global_env)
+
     global_env = initial_env_imp()
-    printTest("var x = 10;",global_env)
-    printTest("procedure t1 ( ) { var a = 0; a <- 10; print a; }",global_env)
-    printTest("procedure test (val) { var a = 0; a <- val; print a; }",global_env)
-    printTest("procedure plusn (n v) { var temp = (+ n v); v <- temp; print v; }",global_env)
-    printTest("var f = ( function (a b c) (* a (* b c)));",global_env)
-    printTest("print (f 2 3 4);",global_env)
-    printTest("print (f x x x);",global_env)
-    printTest("plusn (5 10);",global_env)
-    printTest("plusn (127 x);",global_env)
-    printTest("plusn ((+ 1 2) (+ 3 4));",global_env)
-    #printTest("print (+ (test 10) 30);",global_env)
-    printTest("print (+ (f 2 3 4) 30);",global_env)
-    printTest("f (2 3 4);",global_env)
+    # printTest("var y = 5;",global_env)
+    # printTest("var x = (+ y 10);",global_env)
+
+    printTest("var x = (new-array 10);",global_env)
+    printTest("print x;",global_env)
+    printTest("x[3]<-(+ 3 10);",global_env)
+    printTest("print (with x (index 3));",global_env)
+    printTest("print (index x 4);",global_env)
 
     #shell_imp()
