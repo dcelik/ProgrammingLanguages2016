@@ -229,21 +229,55 @@ class EFor(Exp):
                 raise Exception ("Runtime error: while condition not a Boolean")
         return VNone()
 
+
+
+### Adapted from Lecture 6 Code by Riccardo Pucella
 class EArray(Exp):
-
-    def __init__(self,length):#,list_array):
-        self._len = length
+    def __init__(self,len_exp):
+        self._len = len_exp
         self._arr = []
+        self._fields = []
+        self._methods = []
 
-    def __str__(self):
-        return "EArray([{}])".format(",".join( str(e) for e in self._arr ))
+    def mkArrMethods(self):
+        len_meth = EFunction([],EWithObj(EId("this"),ECall(EId("deref"),[EId("__length__")])))
+        self._methods.insert(0,("length",EFunction(["this"],len_meth)))
+
+        index_meth = EFunction(["x"],EWithObj(EId("this"),EPrimCall(arr_oper_index,[EId("this"),EId("x")])))
+        self._methods.insert(0,("index",EFunction(["this"],index_meth)))
+
+        map_meth = EFunction(["__function__"],EWithObj(EId("this"),EPrimCall(arr_oper_map,[EId("this"),EId("__function__")])))
+        self._methods.insert(0,("map",EFunction(["this"],map_meth)))
 
     def eval (self,env):
-        print self._len.eval(env)
-        for i in range(self._len.eval(env).value):
-            self._arr.append(VNone())
-        return VArray(self._len.eval(env),self._arr)
-    
+        self._fields = [("__length__",EPrimCall(oper_ref,[self._len]))]
+        fields = [ (id,e.eval(env)) for (id,e) in self._fields]
+
+        self.mkArrMethods()
+        methods = [ (id,e.eval(env)) for (id,e) in self._methods]
+
+        self._arr = [VNone() for _ in xrange(fields[0][1].content.value)]
+        
+        return VArray(self._arr,fields,methods)
+
+
+
+### Taken from Lecture 6 Code
+#Author: Riccardo Pucella
+class EWithObj (Exp):
+    def __init__ (self,exp1,exp2):
+        self._object = exp1
+        self._exp = exp2
+        
+    def __str__ (self):
+        return "EWithObj({},{})".format(str(self._object),str(self._exp))
+
+    def eval (self,env):
+        object = self._object.eval(env)
+        if object.type != "object" and object.type != "array":
+            raise Exception("Runtime error: expected an object")
+        return self._exp.eval(object.env+env)
+
 #
 # Values
 #
@@ -285,17 +319,28 @@ class VClosure (Value):
     def __str__ (self):
         return "<{} [{}] {}>".format(str(self.type),",".join(self.params),str(self.body))
 
+    ### Taken from Lecture 6 Code
+    #Author: Riccardo Pucella
+    def apply (self,args):
+        if len(args) != len(self.params):
+            raise Exception("Runtime error: argument # mismatch in call")
+        new_env = zip(self.params,args) + self.env
+        return self.body.eval(new_env)
 
+### Adapted from Lecture 6 Code by Riccardo Pucella
 class VArray(Value):
-    def __init__(self, length, array_list):
-        self.length = length
-        self.value = array_list
+    def __init__(self, array, fields, methods):
         self.type = "array"
+        self._fields = fields
+        self._methods = methods
+        self.value = array
+        self.env = fields + [ (id,VRefCell(v.apply([self]))) for (id,v) in methods]
 
     def __str__ (self):
-        return "[{}]".format(",".join( str(e) for e in self.value ))#"
-        
-    
+        f = self._fields + [("__array__",self.value)]
+        return "<{} {} {}>".format(self.type,",".join( id+":"+(str(v)) for (id,v) in f),
+                                       ",".join( id+":"+(str(v)) for (id,v) in self._methods))
+
 class VRefCell (Value):
 
     def __init__ (self,initial):
@@ -361,6 +406,9 @@ def oper_print (v1):
     print v1
     return VNone()
 
+def oper_ref (v1):
+    return VRefCell(v1)
+
 def oper_not (v1):
     if v1.type == "boolean":
         return VBoolean(not v1.value)
@@ -425,13 +473,15 @@ def str_oper_upper(s1):
         return s1.value.upper()
     raise Exception ("Runtime error: trying to get uppercase version of non-string")
 
+# Primitive array operations
+
 def arr_oper_update(arr,ind,val):
     if arr.type == "array" and ind.type == "integer":
         arr.value[ind.value] = val
         return arr
     raise Exception ("Runtime error: trying to update value in non-array or with non-integer index")
 
-def arr_oper_index(ind,arr = "__array__"):
+def arr_oper_index(arr,ind):
     if arr.type == "array" and ind.type == "integer":
         return arr.value[ind.value]
     raise Exception ("Runtime error: trying to get value in non-array or with non-integer index")
@@ -439,6 +489,11 @@ def arr_oper_index(ind,arr = "__array__"):
 def arr_oper_length(arr):
     if arr.type == "array":
         return len(arr.value)
+    raise Exception ("Runtime error: trying to get length of non-array")
+
+def arr_oper_map(arr,function):
+    if arr.type == "array":
+        return [function.apply([e]) for e in arr.value]
     raise Exception ("Runtime error: trying to length of non-array")
 
 ############################################################
@@ -546,16 +601,10 @@ def initial_env_imp ():
                                   EPrimCall(arr_oper_update,[EId("x"),EId("y"),EId("z")]),
                                   env))))
     env.insert(0,
-               ("index",
-                VRefCell(VClosure(["__array__","y"],
-                                  EPrimCall(arr_oper_index,[EId("x"),EId("__array__")]),
-                                  env))))
-    env.insert(0,
-               ("length",
-                VRefCell(VClosure(["__array__"],
-                                  EPrimCall(arr_oper_length,[EId("x")]),
-                                  env))))
-
+               ("deref",
+                VClosure(["x"],
+                         EPrimCall(oper_deref, [EId("x")]),
+                         env)))
     return env
 
 
@@ -625,14 +674,13 @@ def parse_imp (input):
 
     pFUN = "(" + Keyword("function") + "(" + pNAMES + ")" + pEXPR + ")"
     pFUN.setParseAction(lambda result: EFunction(result[3],mkFunBody(result[3],result[5])))
-    
+
     pARRAY = "(" + Keyword("new-array") + pEXPR + ")"
     pARRAY.setParseAction(lambda result:EArray(result[2]))
 
-    pWITH_EX
-
     pWITH = "(" + Keyword("with") + pEXPR + pEXPR + ")"
-    pWITH.setParseAction(lambda result: ELet([(EId("__array__"),result[2])],result[3]))
+    pWITH.setParseAction(lambda result: EWithObj(result[2],result[3]))
+    #pWITH.setParseAction(lambda result: EWithObj(result[2],result[3]))
     
     pCALL = "(" + pEXPR + pEXPRS + ")"
     pCALL.setParseAction(lambda result: ECall(result[1],result[2]))
@@ -783,7 +831,7 @@ def printTest (exp,env):
 
 if __name__ == '__main__':
 
-    # Question 1 Tester
+    ##Question 1 Tester
     # print "Question 1: C-Style For loop"
     # print "For ( <name> <- <expr> ; <name> <cond> <expr> ; <name> = <name> <oper> <expr>) { <stmts> }"
     # print "example: For ( x <- 10 ; x < 20 ; x = x + 1) { print x; }"
@@ -798,7 +846,7 @@ if __name__ == '__main__':
     # printTest("for ( a <- 30 ; a >= 20 ; a = a - 1 ) { print a;}",global_env)
     # printTest("for ( a <- 10 ; a <= 20 ; a = a + 1 ) { print a;}",global_env)
 
-    # Question 2 Tester
+    ##Question 2 Tester
     # print "Question 2: Immutable Strings"
     # global_env = initial_env_imp()
     # printTest("print \"Hi, I'm a \\\"string\\\" named Paul\";",global_env)
@@ -812,7 +860,7 @@ if __name__ == '__main__':
     # printTest("print (lower \"Hi, I'm a \\\"string\\\" named Paul\");",global_env)
     # printTest("print (upper \"Hi, I'm a \\\"string\\\" named Paul\");",global_env)
 
-    # Questoin 3 Tester
+    ##Question 3 Tester
     # print "Question 3: Procedures"
     # global_env = initial_env_imp()
     # printTest("var x = 10;",global_env)
@@ -829,14 +877,21 @@ if __name__ == '__main__':
     # printTest("print (+ (f 2 3 4) 30);",global_env)
     # printTest("f (2 3 4);",global_env)
 
+    ##Question 4 Tester
     global_env = initial_env_imp()
-    # printTest("var y = 5;",global_env)
-    # printTest("var x = (+ y 10);",global_env)
-
+    print "Question 3: Mutable Array Objects"
     printTest("var x = (new-array 10);",global_env)
     printTest("print x;",global_env)
     printTest("x[3]<-(+ 3 10);",global_env)
+    printTest("print (with x (length));",global_env)
     printTest("print (with x (index 3));",global_env)
-    printTest("print (index x 4);",global_env)
+    printTest("var y = (new-array 10);",global_env)
+    printTest("var a = 0;",global_env)
+    printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { y[a]<-(+ a 10);}",global_env)
+    printTest("print y;",global_env)
+    printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { print a; print (with y (index a));}",global_env)
+    printTest("var mult = (function (x) (* 2 x));",global_env)
+    printTest("print (with y (map mult));",global_env)
+    #printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { print a;}",global_env)
 
     #shell_imp()
