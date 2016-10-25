@@ -496,6 +496,56 @@ def arr_oper_map(arr,function):
         return [function.apply([e]) for e in arr.value]
     raise Exception ("Runtime error: trying to length of non-array")
 
+def arr_partition_hoare(obj,first,last):
+    if obj.type = "array":
+        array_list = obj.array
+        pivot = array_list[first]
+        i = first
+        j = last
+        while True:
+            while array_list[i] < pivot:
+                i = i + 1
+                
+            while array_list[j] > pivot:
+                j = j-1
+            if i >= j:
+                obj.array = array_list
+                return j
+            else:
+                holder = array_list[i]
+                array_list[i] = array_list[j]
+                array_list[j] = holder
+    raise Exception ("Runtime error: trying to partition non-array")
+
+def arr_partition_lomuto(obj,first,last):
+    if obj.type = "array":
+        array_list = obj.array
+        pivot = array_list[last]
+        j = first
+        for i in xrange(first,last):
+            if array_list[i] <= pivot:
+                holder = array_list[i]
+                array_list[i] = array_list[j]
+                array_list[j] = holder
+                j = j + 1
+        holder = array_list[j]
+        array_list[j] = array_list[last]
+        array_list[last] = holder
+        obj.array = array_list
+        return j
+    raise Exception ("Runtime error: trying to partition non-array")
+
+def arr_quicksort(obj,first = 1, last = None):
+    if obj.type = "array":
+        if last = None:
+            last = obj.length-1
+        if first < last:
+            p = arr_partition_lomuto(obj,first,last)
+            arr_quicksort(obj,first,p-1)
+            arr_quicksort(obj,p+1,last)
+            return obj
+    raise Exception ("Runtime error: trying to quicksort non-array")
+
 ############################################################
 # IMPERATIVE SURFACE SYNTAX
 #
