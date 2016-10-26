@@ -776,7 +776,7 @@ def parse_imp (input):
     pSTMT_UPDATE_ARR.setParseAction(lambda result:EPrimCall(arr_oper_update,[result[0],result[2],result[5]]))
 
     # pSTMT_QS = Keyword("quicksort")+"("+pEXPR+")"+";"
-    # pSTMT_QS.setParseAction(lambda result:ECall(result[0]))
+    # pSTMT_QS.setParseAction(lambda result: EFunction([result[2]],ELet([(result[2],ERefCell(EId(result[2])))],ELet([(s,ERefCell(EValue(0))),(i,ERefCell(EValue(0))),(p,ERefCell(EValue(0))),(j,ERefCell(EValue(0))),(pivot,ERefCell(EValue(0))),(start,ERefCell(EValue(0))),(holder,ERefCell(EValue(0))),(stop,ERefCell(EWithObj(EPrimCall(<prim>,[EId(result[2])]),ECall(EPrimCall(<prim>,[EId(-)]),[ECall(EPrimCall(<prim>,[EId(length)]),[]),EValue(1)])))),(stack,ERefCell(<__main__.EArray object at 0x104a6da90>))],EDo([EPrimCall(<prim>,[EPrimCall(<prim>,[EId(stack)]),EPrimCall(<prim>,[EId(s)]),EPrimCall(<prim>,[EId(start)])]),EPrimCall(<prim>,[EId(s),ECall(EPrimCall(<prim>,[EId(+)]),[EPrimCall(<prim>,[EId(s)]),EValue(1)])]),EPrimCall(<prim>,[EPrimCall(<prim>,[EId(stack)]),EPrimCall(<prim>,[EId(s)]),EPrimCall(<prim>,[EId(stop)])]),EPrimCall(<prim>,[EId(s),ECall(EPrimCall(<prim>,[EId(+)]),[EPrimCall(<prim>,[EId(s)]),EValue(1)])]),EWhile(ECall(EPrimCall(<prim>,[EId(>)]),[EPrimCall(<prim>,[EId(s)]),EValue(0)]),ELet([],EDo([EPrimCall(<prim>,[EId(s),ECall(EPrimCall(<prim>,[EId(-)]),[EPrimCall(<prim>,[EId(s)]),EValue(1)])]),EPrimCall(<prim>,[EId(stop),EWithObj(EPrimCall(<prim>,[EId(stack)]),ECall(EPrimCall(<prim>,[EId(index)]),[EPrimCall(<prim>,[EId(s)])]))]),EPrimCall(<prim>,[EId(s),ECall(EPrimCall(<prim>,[EId(-)]),[EPrimCall(<prim>,[EId(s)]),EValue(1)])]),EPrimCall(<prim>,[EId(start),EWithObj(EPrimCall(<prim>,[EId(stack)]),ECall(EPrimCall(<prim>,[EId(index)]),[EPrimCall(<prim>,[EId(s)])]))]),EIf(ECall(EPrimCall(<prim>,[EId(<)]),[EPrimCall(<prim>,[EId(start)]),EPrimCall(<prim>,[EId(stop)])]),ELet([],EDo([EPrimCall(<prim>,[EId(pivot),EWithObj(EPrimCall(<prim>,[EId(result[2])]),ECall(EPrimCall(<prim>,[EId(index)]),[EPrimCall(<prim>,[EId(stop)])]))]),EPrimCall(<prim>,[EId(j),EPrimCall(<prim>,[EId(start)])]),EPrimCall(<prim>,[EId(i),EValue(0)]),EFor(EPrimCall(<prim>,[EId(i),EPrimCall(<prim>,[EId(start)])]),ECall(EPrimCall(<prim>,[EId(<=)]),[EPrimCall(<prim>,[EId(i)]),ECall(EPrimCall(<prim>,[EId(-)]),[EPrimCall(<prim>,[EId(stop)]),EValue(1)])]),EPrimCall(<prim>,[EId(i),ECall(EPrimCall(<prim>,[EId(+)]),[EPrimCall(<prim>,[EId(i)]),EValue(1)])]),ELet([],EDo([EIf(ECall(EPrimCall(<prim>,[EId(<=)]),[EWithObj(EPrimCall(<prim>,[EId(result[2])]),ECall(EPrimCall(<prim>,[EId(index)]),[EPrimCall(<prim>,[EId(i)])])),EPrimCall(<prim>,[EId(pivot)])]),ELet([],EDo([EPrimCall(<prim>,[EId(holder),EWithObj(EPrimCall(<prim>,[EId(result[2])]),ECall(EPrimCall(<prim>,[EId(index)]),[EPrimCall(<prim>,[EId(i)])]))]),EPrimCall(<prim>,[EPrimCall(<prim>,[EId(result[2])]),EPrimCall(<prim>,[EId(i)]),EWithObj(EPrimCall(<prim>,[EId(result[2])]),ECall(EPrimCall(<prim>,[EId(index)]),[EPrimCall(<prim>,[EId(j)])]))]),EPrimCall(<prim>,[EPrimCall(<prim>,[EId(result[2])]),EPrimCall(<prim>,[EId(j)]),EPrimCall(<prim>,[EId(holder)])]),EPrimCall(<prim>,[EId(j),ECall(EPrimCall(<prim>,[EId(+)]),[EPrimCall(<prim>,[EId(j)]),EValue(1)])])])),EValue(true))]))),EPrimCall(<prim>,[EId(holder),EWithObj(EPrimCall(<prim>,[EId(result[2])]),ECall(EPrimCall(<prim>,[EId(index)]),[EPrimCall(<prim>,[EId(j)])]))]),EPrimCall(<prim>,[EPrimCall(<prim>,[EId(result[2])]),EPrimCall(<prim>,[EId(j)]),EWithObj(EPrimCall(<prim>,[EId(result[2])]),ECall(EPrimCall(<prim>,[EId(index)]),[EPrimCall(<prim>,[EId(stop)])]))]),EPrimCall(<prim>,[EPrimCall(<prim>,[EId(result[2])]),EPrimCall(<prim>,[EId(stop)]),EPrimCall(<prim>,[EId(holder)])]),EPrimCall(<prim>,[EId(p),EPrimCall(<prim>,[EId(j)])]),EIf(ECall(EPrimCall(<prim>,[EId(>)]),[ECall(EPrimCall(<prim>,[EId(-)]),[EPrimCall(<prim>,[EId(p)]),EPrimCall(<prim>,[EId(start)])]),ECall(EPrimCall(<prim>,[EId(-)]),[EPrimCall(<prim>,[EId(stop)]),EPrimCall(<prim>,[EId(p)])])]),ELet([],EDo([EPrimCall(<prim>,[EPrimCall(<prim>,[EId(stack)]),EPrimCall(<prim>,[EId(s)]),EPrimCall(<prim>,[EId(start)])]),EPrimCall(<prim>,[EId(s),ECall(EPrimCall(<prim>,[EId(+)]),[EPrimCall(<prim>,[EId(s)]),EValue(1)])]),EPrimCall(<prim>,[EPrimCall(<prim>,[EId(stack)]),EPrimCall(<prim>,[EId(s)]),ECall(EPrimCall(<prim>,[EId(-)]),[EPrimCall(<prim>,[EId(p)]),EValue(1)])]),EPrimCall(<prim>,[EId(s),ECall(EPrimCall(<prim>,[EId(+)]),[EPrimCall(<prim>,[EId(s)]),EValue(1)])]),EPrimCall(<prim>,[EPrimCall(<prim>,[EId(stack)]),EPrimCall(<prim>,[EId(s)]),ECall(EPrimCall(<prim>,[EId(+)]),[EPrimCall(<prim>,[EId(p)]),EValue(1)])]),EPrimCall(<prim>,[EId(s),ECall(EPrimCall(<prim>,[EId(+)]),[EPrimCall(<prim>,[EId(s)]),EValue(1)])]),EPrimCall(<prim>,[EPrimCall(<prim>,[EId(stack)]),EPrimCall(<prim>,[EId(s)]),EPrimCall(<prim>,[EId(stop)])]),EPrimCall(<prim>,[EId(s),ECall(EPrimCall(<prim>,[EId(+)]),[EPrimCall(<prim>,[EId(s)]),EValue(1)])])])),ELet([],EDo([EPrimCall(<prim>,[EPrimCall(<prim>,[EId(stack)]),EPrimCall(<prim>,[EId(s)]),ECall(EPrimCall(<prim>,[EId(+)]),[EPrimCall(<prim>,[EId(p)]),EValue(1)])]),EPrimCall(<prim>,[EId(s),ECall(EPrimCall(<prim>,[EId(+)]),[EPrimCall(<prim>,[EId(s)]),EValue(1)])]),EPrimCall(<prim>,[EPrimCall(<prim>,[EId(stack)]),EPrimCall(<prim>,[EId(s)]),EPrimCall(<prim>,[EId(stop)])]),EPrimCall(<prim>,[EId(s),ECall(EPrimCall(<prim>,[EId(+)]),[EPrimCall(<prim>,[EId(s)]),EValue(1)])]),EPrimCall(<prim>,[EPrimCall(<prim>,[EId(stack)]),EPrimCall(<prim>,[EId(s)]),EPrimCall(<prim>,[EId(start)])]),EPrimCall(<prim>,[EId(s),ECall(EPrimCall(<prim>,[EId(+)]),[EPrimCall(<prim>,[EId(s)]),EValue(1)])]),EPrimCall(<prim>,[EPrimCall(<prim>,[EId(stack)]),EPrimCall(<prim>,[EId(s)]),ECall(EPrimCall(<prim>,[EId(-)]),[EPrimCall(<prim>,[EId(p)]),EValue(1)])]),EPrimCall(<prim>,[EId(s),ECall(EPrimCall(<prim>,[EId(+)]),[EPrimCall(<prim>,[EId(s)]),EValue(1)])])])))])),EValue(true))])))])))))
 
     pSTMT_PROC = pEXPR + "(" + pEXPRS + ")" + ";"
     pSTMT_PROC.setParseAction(lambda result: ECall(result[0],result[2]))
@@ -885,6 +885,7 @@ def printTest (exp,env):
         v = expr.eval(env)
         env.insert(0,(name,VRefCell(v)))
         print "{} defined".format(name)
+        print expr
 
 if __name__ == '__main__':
 
@@ -937,19 +938,18 @@ if __name__ == '__main__':
     ##Question 4 Tester
     global_env = initial_env_imp()
     print "Question 4: Mutable Array Objects"
-    printTest("var x = (new-array 10);",global_env)
-    printTest("print x;",global_env)
-    printTest("x[3]<-(+ 3 10);",global_env)
-    printTest("print (with x (length));",global_env)
-    printTest("print (with x (index 3));",global_env)
+    # printTest("var x = (new-array 10);",global_env)
+    # printTest("print x;",global_env)
+    # printTest("x[3]<-(+ 3 10);",global_env)
+    # printTest("print (with x (length));",global_env)
+    # printTest("print (with x (index 3));",global_env)
     printTest("var y = (new-array 10);",global_env)
     printTest("var a = 0;",global_env)
-    printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { y[a]<-(+ a 10);}",global_env)
-    printTest("print y;",global_env)
-    printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { print a; print (with y (index a));}",global_env)
-    printTest("var mult = (function (x) (* 2 x));",global_env)
-    printTest("print (with y (map mult));",global_env)
-    printTest("procedure quicksort (x) {var s = 0; var i = 0; var start = 0; var stop = (with x (length)); var stack = (new-array 64); stack[s]<-start; s<-(+ s 1); stack[s]<-stop; s<-(+ s 1); while (> s 0) { s<-(- s 1); stop <- (with stack (index s)); s<-(- s 1); start <- (with stack (index s)); if (< start stop) { var pivot = (with x(index start)); var j = start; var i = 0; for(i <- start ; i <= stop ; i = i + 1 ) { if (<= (with x (index i)) pivot) { var holder = (with x(index i)); x[i]<-(with x(index j )); x[j]<-holder; j<-(+ j 1); var holder = (with x(index stop)); x[stop]<-(with x(index j )); x[j]<-holder; } var p = j; if (> (- p start) (- stop p)){ stack[s]<-start; s<-(+ s 1); stack[s]<-(- i 1); s<-(+ s 1); stack[s]<-(+ i 1); s<-(+ s 1); stack[s]<-stop; s<-(+ s 1); } else { stack[s]<-(+ i 1); s<-(+ s 1); stack[s]<-stop; s<-(+ s 1); stack[s]<-start; s<-(+ s 1); stack[s]<-(- i 1); s<-(+ s 1); } } } }",global_env)
+    # printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { y[a]<-(+ a 10);}",global_env)
+    # printTest("print y;",global_env)
+    # printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { print a; print (with y (index a));}",global_env)
+    # printTest("var mult = (function (x) (* 2 x));",global_env)
+    # printTest("print (with y (map mult));",global_env)
      
     #printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { print a;}",global_env)
 
@@ -959,6 +959,8 @@ if __name__ == '__main__':
         var s = 0; \
         var i = 0; \
         var p = 0; \
+        var j = 0; \
+        var pivot = 0; \
         var start = 0; \
         var holder = 0; \
         var stop = (with x (- (length) 1)); \
@@ -973,8 +975,8 @@ if __name__ == '__main__':
             s <-(- s 1); \
             start <- (with stack (index s));\
             if (< start stop) { \
-                var pivot = (with x(index start)); \
-                var j = start; \
+                pivot <- (with x(index stop)); \
+                j <- start; \
                 i <- 0; \
                 for(i <- start ; i <= (- stop 1) ; i = i + 1 ) { \
                     if (<= (with x (index i)) pivot) { \
@@ -1009,8 +1011,7 @@ if __name__ == '__main__':
                     stack[s]<-(- p 1); \
                     s <-(+ s 1); \
                 } \
-            }\
-        } }",global_env)
+            } } }",global_env)
     printTest("{\
                 y[0]<-8;\
                 y[1]<-4;\
