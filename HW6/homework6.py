@@ -975,45 +975,55 @@ if __name__ == '__main__':
             if (< start stop) { \
                 var pivot = (with x(index start)); \
                 var j = start; \
-                var i = 0; \
-                for(i <- start ; i <= stop ; i = i + 1 ) { \
-                    print \"i\";\
-                    print i;\
+                i <- 0; \
+                for(i <- start ; i <= (- stop 1) ; i = i + 1 ) { \
                     if (<= (with x (index i)) pivot) { \
                         holder <- (with x(index i)); \
                         x[i]<-(with x(index j)); \
                         x[j]<-holder; \
                         j <- (+ j 1); \
-                        print \"j\";\
-                        print j;\
                     }\
                 }\
-                holder <- (with x(index stop)); \
-                x[stop]<-(with x(index j )); \
-                x[j]<-holder;\
+                holder <- (with x(index j)); \
+                x[j]<-(with x(index stop )); \
+                x[stop]<-holder;\
                 p <- j; \
-                print \"p\";\
-                print p;\
+                \
                 if (> (- p start) (- stop p)) { \
                     stack[s]<-start; \
                     s <-(+ s 1); \
-                    stack[s]<-(- i 1); \
+                    stack[s]<-(- p 1); \
                     s <-(+ s 1); \
-                    stack[s]<-(+ i 1); \
+                    stack[s]<-(+ p 1); \
                     s <-(+ s 1); \
                     stack[s]<-stop; \
                     s <-(+ s 1); \
                 } \
                 else { \
-                    stack[s]<-(+ i 1); \
+                    stack[s]<-(+ p 1); \
                     s <-(+ s 1); \
                     stack[s]<-stop; \
                     s <-(+ s 1); \
                     stack[s]<-start; \
                     s <-(+ s 1); \
-                    stack[s]<-(- i 1); \
+                    stack[s]<-(- p 1); \
                     s <-(+ s 1); \
                 } \
             }\
         } }",global_env)
+    printTest("{\
+                y[0]<-8;\
+                y[1]<-4;\
+                y[2]<-9;\
+                y[3]<-2;\
+                y[4]<-6;\
+                y[5]<-1;\
+                y[6]<-3;\
+                y[7]<-7;\
+                y[8]<-0;\
+                y[9]<-11;\
+            }",global_env)
+    printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { print (with y (index a));}",global_env)
     printTest("quicksort (y);",global_env)
+    printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { print (with y (index a));}",global_env)
+    printTest("print y;",global_env)
