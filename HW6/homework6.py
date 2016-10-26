@@ -654,6 +654,11 @@ def initial_env_imp ():
                 VClosure(["x"],
                          EPrimCall(oper_deref, [EId("x")]),
                          env)))
+    env.insert(0,
+                ("quicksort",
+                VClosure(["x"],
+                         EPrimCall(arr_quicksort, [EId("x")]),
+                         env)))
     return env
 
 
@@ -769,6 +774,9 @@ def parse_imp (input):
 
     pSTMT_UPDATE_ARR = pEXPR + "[" + pEXPR + "]" + "<-" + pEXPR + ";"
     pSTMT_UPDATE_ARR.setParseAction(lambda result:EPrimCall(arr_oper_update,[result[0],result[2],result[5]]))
+
+    # pSTMT_QS = Keyword("quicksort")+"("+pEXPR+")"+";"
+    # pSTMT_QS.setParseAction(lambda result:ECall(result[0]))
 
     pSTMT_PROC = pEXPR + "(" + pEXPRS + ")" + ";"
     pSTMT_PROC.setParseAction(lambda result: ECall(result[0],result[2]))
@@ -928,7 +936,7 @@ if __name__ == '__main__':
 
     ##Question 4 Tester
     global_env = initial_env_imp()
-    print "Question 3: Mutable Array Objects"
+    print "Question 4: Mutable Array Objects"
     printTest("var x = (new-array 10);",global_env)
     printTest("print x;",global_env)
     printTest("x[3]<-(+ 3 10);",global_env)
@@ -941,6 +949,8 @@ if __name__ == '__main__':
     printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { print a; print (with y (index a));}",global_env)
     printTest("var mult = (function (x) (* 2 x));",global_env)
     printTest("print (with y (map mult));",global_env)
+    printTest("procedure quicksort (x) {var s = 0; var i = 0; var start = 0; var stop = (with x (length)); var stack = (new-array 64); stack[s]<-start; s<-(+ s 1); stack[s]<-stop; s<-(+ s 1); while (> s 0) { s<-(- s 1); stop <- (with stack (index s)); s<-(- s 1); start <- (with stack (index s)); if (< start stop) { var pivot = (with x(index start)); var j = start; var i = 0; for(i <- start ; i <= stop ; i = i + 1 ) { if (<= (with x (index i)) pivot) { var holder = (with x(index i)); x[i]<-(with x(index j )); x[j]<-holder; j<-(+ j 1); var holder = (with x(index stop)); x[stop]<-(with x(index j )); x[j]<-holder; } var p = j; if (> (- p start) (- stop p)){ stack[s]<-start; s<-(+ s 1); stack[s]<-(- i 1); s<-(+ s 1); stack[s]<-(+ i 1); s<-(+ s 1); stack[s]<-stop; s<-(+ s 1); } else { stack[s]<-(+ i 1); s<-(+ s 1); stack[s]<-stop; s<-(+ s 1); stack[s]<-start; s<-(+ s 1); stack[s]<-(- i 1); s<-(+ s 1); } } } }",global_env)
+     
     #printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { print a;}",global_env)
 
     #shell_imp()
