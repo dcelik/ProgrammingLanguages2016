@@ -827,8 +827,68 @@ def shell_imp ():
     print "Homework 6 - Imp Language"
     print "#quit to quit, #abs to see abstract representation"
     env = initial_env_imp()
+    quicksort = parse_imp("procedure quicksort ( x ) {\
+        var s = 0; \
+        var i = 0; \
+        var p = 0; \
+        var j = 0; \
+        var pivot = 0; \
+        var start = 0; \
+        var holder = 0; \
+        var stop = (with x (- (length) 1)); \
+        var stack = (new-array 64); \
+        stack[s]<-start; \
+        s <-(+ s 1); \
+        stack[s]<-stop; \
+        s <-(+ s 1); \
+        while (> s 0) { \
+            s <-(- s 1); \
+            stop <- (with stack (index s));\
+            s <-(- s 1); \
+            start <- (with stack (index s));\
+            if (< start stop) { \
+                pivot <- (with x(index stop)); \
+                j <- start; \
+                i <- 0; \
+                for(i <- start ; i <= (- stop 1) ; i = i + 1 ) { \
+                    if (<= (with x (index i)) pivot) { \
+                        holder <- (with x(index i)); \
+                        x[i]<-(with x(index j)); \
+                        x[j]<-holder; \
+                        j <- (+ j 1); \
+                    }\
+                }\
+                holder <- (with x(index j)); \
+                x[j]<-(with x(index stop )); \
+                x[stop]<-holder;\
+                p <- j; \
+                \
+                if (> (- p start) (- stop p)) { \
+                    stack[s]<-start; \
+                    s <-(+ s 1); \
+                    stack[s]<-(- p 1); \
+                    s <-(+ s 1); \
+                    stack[s]<-(+ p 1); \
+                    s <-(+ s 1); \
+                    stack[s]<-stop; \
+                    s <-(+ s 1); \
+                } \
+                else { \
+                    stack[s]<-(+ p 1); \
+                    s <-(+ s 1); \
+                    stack[s]<-stop; \
+                    s <-(+ s 1); \
+                    stack[s]<-start; \
+                    s <-(+ s 1); \
+                    stack[s]<-(- p 1); \
+                    s <-(+ s 1); \
+                } \
+            } } }")
+    (qs_name,qs_expr) = quicksort["decl"]
+    qs_v = qs_expr.eval(env)
+    env.insert(0,(qs_name,VRefCell(qs_v)))
+    print "{} defined".format(qs_name)
 
-        
     while True:
         inp = raw_input("imp> ")
 
@@ -857,9 +917,73 @@ def shell_imp ():
             print "Exception: {}".format(e)
 
 def printTest (exp,env):
+    qs_check=[id for (id,_) in env if id=="quicksort"]
+    if not qs_check:
+        quicksort = parse_imp("procedure quicksort ( x ) {\
+        var s = 0; \
+        var i = 0; \
+        var p = 0; \
+        var j = 0; \
+        var pivot = 0; \
+        var start = 0; \
+        var holder = 0; \
+        var stop = (with x (- (length) 1)); \
+        var stack = (new-array 64); \
+        stack[s]<-start; \
+        s <-(+ s 1); \
+        stack[s]<-stop; \
+        s <-(+ s 1); \
+        while (> s 0) { \
+            s <-(- s 1); \
+            stop <- (with stack (index s));\
+            s <-(- s 1); \
+            start <- (with stack (index s));\
+            if (< start stop) { \
+                pivot <- (with x(index stop)); \
+                j <- start; \
+                i <- 0; \
+                for(i <- start ; i <= (- stop 1) ; i = i + 1 ) { \
+                    if (<= (with x (index i)) pivot) { \
+                        holder <- (with x(index i)); \
+                        x[i]<-(with x(index j)); \
+                        x[j]<-holder; \
+                        j <- (+ j 1); \
+                    }\
+                }\
+                holder <- (with x(index j)); \
+                x[j]<-(with x(index stop )); \
+                x[stop]<-holder;\
+                p <- j; \
+                \
+                if (> (- p start) (- stop p)) { \
+                    stack[s]<-start; \
+                    s <-(+ s 1); \
+                    stack[s]<-(- p 1); \
+                    s <-(+ s 1); \
+                    stack[s]<-(+ p 1); \
+                    s <-(+ s 1); \
+                    stack[s]<-stop; \
+                    s <-(+ s 1); \
+                } \
+                else { \
+                    stack[s]<-(+ p 1); \
+                    s <-(+ s 1); \
+                    stack[s]<-stop; \
+                    s <-(+ s 1); \
+                    stack[s]<-start; \
+                    s <-(+ s 1); \
+                    stack[s]<-(- p 1); \
+                    s <-(+ s 1); \
+                } \
+            } } }")
+        (qs_name,qs_expr) = quicksort["decl"]
+        qs_v = qs_expr.eval(env)
+        env.insert(0,(qs_name,VRefCell(qs_v)))
+        print "{} defined".format(qs_name)
+
     print "func> {}".format(exp)
     result = parse_imp(exp)
-
+    
     if result["result"] == "statement":
         stmt = result["stmt"]
         # print "Abstract representation:", exp
@@ -877,6 +1001,7 @@ def printTest (exp,env):
         v = expr.eval(env)
         env.insert(0,(name,VRefCell(v)))
         print "{} defined".format(name)
+        print expr
 
 if __name__ == '__main__':
 
@@ -929,11 +1054,11 @@ if __name__ == '__main__':
     ##Question 4 Tester
     global_env = initial_env_imp()
     print "Question 4: Mutable Array Objects"
-    printTest("var x = (new-array 10);",global_env)
-    printTest("print x;",global_env)
-    printTest("x[3]<-(+ 3 10);",global_env)
-    printTest("print (with x (length));",global_env)
-    printTest("print (with x (index 3));",global_env)
+    # printTest("var x = (new-array 10);",global_env)
+    # printTest("print x;",global_env)
+    # printTest("x[3]<-(+ 3 10);",global_env)
+    # printTest("print (with x (length));",global_env)
+    # printTest("print (with x (index 3));",global_env)
     printTest("var y = (new-array 10);",global_env)
     printTest("var a = 0;",global_env)
     printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { y[a]<-(+ a 10);}",global_env)
@@ -942,8 +1067,6 @@ if __name__ == '__main__':
     printTest("var mult = (function (x) (* 2 x));",global_env)
     printTest("print (with y (map mult));",global_env)
     #printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { print a;}",global_env)
-
-    #shell_imp()
 
     printTest("procedure quicksort ( x ) {\
         var s = 0; \
@@ -965,7 +1088,7 @@ if __name__ == '__main__':
             s <-(- s 1); \
             start <- (with stack (index s));\
             if (< start stop) { \
-                pivot <- (with x(index start)); \
+                pivot <- (with x(index stop)); \
                 j <- start; \
                 i <- 0; \
                 for(i <- start ; i <= (- stop 1) ; i = i + 1 ) { \
@@ -1001,14 +1124,13 @@ if __name__ == '__main__':
                     stack[s]<-(- p 1); \
                     s <-(+ s 1); \
                 } \
-            }\
-        } }",global_env)
+            } } }",global_env)
     printTest("{\
                 y[0]<-8;\
                 y[1]<-4;\
                 y[2]<-9;\
                 y[3]<-2;\
-                y[4]<-6;\
+                y[4]<-(- 0 6);\
                 y[5]<-1;\
                 y[6]<-3;\
                 y[7]<-7;\
@@ -1019,3 +1141,4 @@ if __name__ == '__main__':
     printTest("quicksort (y);",global_env)
     printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { print (with y (index a));}",global_env)
     printTest("print y;",global_env)
+    #shell_imp()
