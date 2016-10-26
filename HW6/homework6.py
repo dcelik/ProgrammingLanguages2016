@@ -497,7 +497,7 @@ def arr_oper_map(arr,function):
     raise Exception ("Runtime error: trying to length of non-array")
 
 def arr_partition_hoare(obj,first,last):
-    if obj.type = "array":
+    if obj.type == "array":
         array_list = obj.array
         pivot = array_list[first]
         i = first
@@ -517,33 +517,32 @@ def arr_partition_hoare(obj,first,last):
                 array_list[j] = holder
     raise Exception ("Runtime error: trying to partition non-array")
 
-def arr_partition_lomuto(obj,first,last):
-    if obj.type = "array":
-        array_list = obj.array
-        pivot = array_list[last]
-        j = first
-        for i in xrange(first,last):
-            if array_list[i] <= pivot:
-                holder = array_list[i]
-                array_list[i] = array_list[j]
-                array_list[j] = holder
-                j = j + 1
-        holder = array_list[j]
-        array_list[j] = array_list[last]
-        array_list[last] = holder
-        obj.array = array_list
-        return j
-    raise Exception ("Runtime error: trying to partition non-array")
+def arr_partition_lomuto(array_list,first,last):
+    pivot = array_list[last]
+    j = first
+    for i in xrange(first,last):
+        if array_list[i] <= pivot:
+            holder = array_list[i]
+            array_list[i] = array_list[j]
+            array_list[j] = holder
+            j = j + 1
+    holder = array_list[j]
+    array_list[j] = array_list[last]
+    array_list[last] = holder
+    obj.array = array_list
+    return j
 
-def arr_quicksort(obj,first = 1, last = None):
-    if obj.type = "array":
-        if last = None:
+def arr_quicksort(arr,first = 1, last = None):
+    if arr.type == "array":
+        obj = arr.value
+        if last == None:
             last = obj.length-1
         if first < last:
             p = arr_partition_lomuto(obj,first,last)
             arr_quicksort(obj,first,p-1)
             arr_quicksort(obj,p+1,last)
-            return obj
+            arr.value = obj
+            return VNone()
     raise Exception ("Runtime error: trying to quicksort non-array")
 
 ############################################################
@@ -945,3 +944,66 @@ if __name__ == '__main__':
     #printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { print a;}",global_env)
 
     #shell_imp()
+
+    printTest("procedure quicksort ( x ) {\
+        var s = 0; \
+        var i = 0; \
+        var p = 0; \
+        var start = 0; \
+        var holder = 0; \
+        var stop = (with x (- (length) 1)); \
+        var stack = (new-array 64); \
+        stack[s]<-start; \
+        s <-(+ s 1); \
+        stack[s]<-stop; \
+        s <-(+ s 1); \
+        while (> s 0) { \
+            s <-(- s 1); \
+            stop <- (with stack (index s));\
+            s <-(- s 1); \
+            start <- (with stack (index s));\
+            if (< start stop) { \
+                var pivot = (with x(index start)); \
+                var j = start; \
+                var i = 0; \
+                for(i <- start ; i <= stop ; i = i + 1 ) { \
+                    print \"i\";\
+                    print i;\
+                    if (<= (with x (index i)) pivot) { \
+                        holder <- (with x(index i)); \
+                        x[i]<-(with x(index j)); \
+                        x[j]<-holder; \
+                        j <- (+ j 1); \
+                        print \"j\";\
+                        print j;\
+                    }\
+                }\
+                holder <- (with x(index stop)); \
+                x[stop]<-(with x(index j )); \
+                x[j]<-holder;\
+                p <- j; \
+                print \"p\";\
+                print p;\
+                if (> (- p start) (- stop p)) { \
+                    stack[s]<-start; \
+                    s <-(+ s 1); \
+                    stack[s]<-(- i 1); \
+                    s <-(+ s 1); \
+                    stack[s]<-(+ i 1); \
+                    s <-(+ s 1); \
+                    stack[s]<-stop; \
+                    s <-(+ s 1); \
+                } \
+                else { \
+                    stack[s]<-(+ i 1); \
+                    s <-(+ s 1); \
+                    stack[s]<-stop; \
+                    s <-(+ s 1); \
+                    stack[s]<-start; \
+                    s <-(+ s 1); \
+                    stack[s]<-(- i 1); \
+                    s <-(+ s 1); \
+                } \
+            }\
+        } }",global_env)
+    printTest("quicksort (y);",global_env)
