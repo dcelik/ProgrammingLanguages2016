@@ -13,7 +13,34 @@
 # Emails: deniz.celik@students.olin.edu
 #         jacob.riedel@students.olin.edu
 #
-# Remarks: 
+# Remarks: Our quicksort algorithm was taken from slide 28 of:
+#
+#    http://csg.sph.umich.edu/abecasis/class/2008/615.07.pdf
+#    Transcript if site gets taken down:
+#
+#        void quicksort(Item a[], int start, int stop)
+#       {
+#            int i, s = 0, stack 0, stack[64];
+#            stack[s++] = start;
+#            stack[s++] = stop;
+#            while ( s > 0)
+#            {
+#                stop = stack[--s];
+#                start = stack[--s];
+#                if (start >= stop) continue;
+#
+#                i = partition(a, start, stop);
+#                if (i - start > stop - i)
+#                {
+#                    stack[s++] = start; stack start; stack[s++] = i - 1;
+#                    stack[s++] = i + 1; stack[s++] = stop;
+#                }
+#                else {
+#                    stack[s++] = i + 1; stack[s++] = stop;
+#                    stack[s++] = start; stack[s++] = i - 1;
+#                }
+#            }
+#        }
 #        
 
 
@@ -207,10 +234,10 @@ class EWhile (Exp):
 class EFor(Exp):
 
     def __init__(self,init,cond,mod,exp):
-        self._init = init #binding
-        self._cond = cond #conditional
-        self._mod = mod #value for new binding
-        self._exp = exp #eval every loop
+        self._init = init
+        self._cond = cond
+        self._mod = mod
+        self._exp = exp
 
     def __str__ (self):
         return "EFor({},{},{},{})".format(str(self._init),str(self._cond),str(self._mod),str(self._exp))
@@ -452,13 +479,11 @@ def str_oper_concat(s1,s2):
     raise Exception ("Runtime error: trying to get concat of non-strings")
 
 def str_oper_startswith(s1,s2):
-    #checks if s1 starts with s2
     if s1.type == "string" and s2.type == "string":
         return s1.value[:len(s2.value)]==s2.value
     raise Exception ("Runtime error: trying to apply startswith on non-strings")
 
 def str_oper_endswith(s1,s2):
-    #checks if s1 ends with s2
     if s1.type == "string" and s2.type == "string":
         return s1.value[-len(s2.value):]==s2.value
     raise Exception ("Runtime error: trying to apply endswith on non-strings")
@@ -495,55 +520,6 @@ def arr_oper_map(arr,function):
     if arr.type == "array":
         return [function.apply([e]) for e in arr.value]
     raise Exception ("Runtime error: trying to length of non-array")
-
-def arr_partition_hoare(obj,first,last):
-    if obj.type == "array":
-        array_list = obj.array
-        pivot = array_list[first]
-        i = first
-        j = last
-        while True:
-            while array_list[i] < pivot:
-                i = i + 1
-                
-            while array_list[j] > pivot:
-                j = j-1
-            if i >= j:
-                obj.array = array_list
-                return j
-            else:
-                holder = array_list[i]
-                array_list[i] = array_list[j]
-                array_list[j] = holder
-    raise Exception ("Runtime error: trying to partition non-array")
-
-def arr_partition_lomuto(array_list,first,last):
-    pivot = array_list[last]
-    j = first
-    for i in xrange(first,last):
-        if array_list[i] <= pivot:
-            holder = array_list[i]
-            array_list[i] = array_list[j]
-            array_list[j] = holder
-            j = j + 1
-    holder = array_list[j]
-    array_list[j] = array_list[last]
-    array_list[last] = holder
-    obj.array = array_list
-    return j
-
-def arr_quicksort(arr,first = 1, last = None):
-    if arr.type == "array":
-        obj = arr.value
-        if last == None:
-            last = obj.length-1
-        if first < last:
-            p = arr_partition_lomuto(obj,first,last)
-            arr_quicksort(obj,first,p-1)
-            arr_quicksort(obj,p+1,last)
-            arr.value = obj
-            return VNone()
-    raise Exception ("Runtime error: trying to quicksort non-array")
 
 ############################################################
 # IMPERATIVE SURFACE SYNTAX
@@ -729,7 +705,6 @@ def parse_imp (input):
 
     pWITH = "(" + Keyword("with") + pEXPR + pEXPR + ")"
     pWITH.setParseAction(lambda result: EWithObj(result[2],result[3]))
-    #pWITH.setParseAction(lambda result: EWithObj(result[2],result[3]))
     
     pCALL = "(" + pEXPR + pEXPRS + ")"
     pCALL.setParseAction(lambda result: ECall(result[1],result[2]))
@@ -743,7 +718,6 @@ def parse_imp (input):
 
     pDECL_PROC = Keyword("procedure") + pNAME + "(" + pNAMES + ")" + pSTMT
     pDECL_PROC.setParseAction(lambda result: (result[1], EFunction(result[3], mkFunBody(result[3],result[5]))))
-    #pDECL_PROC.setParseAction(lambda result: (result[1], EProcedure(result[3], mkFunBody(result[3],result[5]))))
 
     # hack to get pDECL to match only pDECL_VAR (but still leave room
     # to add to pDECL later)
@@ -983,7 +957,7 @@ def printTest (exp,env):
 
     print "func> {}".format(exp)
     result = parse_imp(exp)
-    
+
     if result["result"] == "statement":
         stmt = result["stmt"]
         # print "Abstract representation:", exp
@@ -1001,64 +975,63 @@ def printTest (exp,env):
         v = expr.eval(env)
         env.insert(0,(name,VRefCell(v)))
         print "{} defined".format(name)
-        print expr
 
 if __name__ == '__main__':
 
     ##Question 1 Tester
-    # print "Question 1: C-Style For loop"
-    # print "For ( <name> <- <expr> ; <name> <cond> <expr> ; <name> = <name> <oper> <expr>) { <stmts> }"
-    # print "example: For ( x <- 10 ; x < 20 ; x = x + 1) { print x; }"
-    # print ""
-    # global_env = initial_env_imp()
-    # printTest("var a = 0;",global_env)
-    # printTest("print (+ 1 2);",global_env)
-    # printTest("print (not (zero? (- 0 5)));",global_env)
-    # printTest("for ( a <- 10 ; a != 20 ; a = a + 1 ) { print a;}",global_env)
-    # printTest("for ( a <- 10 ; a < 20 ; a = a + 1 ) { print a;}",global_env)
-    # printTest("for ( a <- 30 ; a > 20 ; a = a - 1 ) { print a;}",global_env)
-    # printTest("for ( a <- 30 ; a >= 20 ; a = a - 1 ) { print a;}",global_env)
-    # printTest("for ( a <- 10 ; a <= 20 ; a = a + 1 ) { print a;}",global_env)
+    print "Question 1: C-Style For loop"
+    print "For ( <name> <- <expr> ; <name> <cond> <expr> ; <name> = <name> <oper> <expr>) { <stmts> }"
+    print "example: For ( x <- 10 ; x < 20 ; x = x + 1) { print x; }"
+    print ""
+    global_env = initial_env_imp()
+    printTest("var a = 0;",global_env)
+    printTest("print (+ 1 2);",global_env)
+    printTest("print (not (zero? (- 0 5)));",global_env)
+    printTest("for ( a <- 10 ; a != 20 ; a = a + 1 ) { print a;}",global_env)
+    printTest("for ( a <- 10 ; a < 20 ; a = a + 1 ) { print a;}",global_env)
+    printTest("for ( a <- 30 ; a > 20 ; a = a - 1 ) { print a;}",global_env)
+    printTest("for ( a <- 30 ; a >= 20 ; a = a - 1 ) { print a;}",global_env)
+    printTest("for ( a <- 10 ; a <= 20 ; a = a + 1 ) { print a;}",global_env)
 
     ##Question 2 Tester
-    # print "Question 2: Immutable Strings"
-    # global_env = initial_env_imp()
-    # printTest("print \"Hi, I'm a \\\"string\\\" named Paul\";",global_env)
-    # printTest("print (length \"Hi, I'm a \\\"string\\\" named Paul\");",global_env)
-    # printTest("print (substring \"Hi, I'm a \\\"string\\\" named Paul\" 0 10);",global_env)
-    # printTest("print (concat \"Hi, I'm a \\\"string\\\" named Paul\" \" Giamatti\");",global_env)
-    # printTest("print (startswith \"Hi, I'm a \\\"string\\\" named Paul\" \"Hi, I'm \");",global_env)
-    # printTest("print (startswith \"Hi, I'm a \\\"string\\\" named Paul\" \"Hello, I'm \");",global_env)
-    # printTest("print (endswith \"Hi, I'm a \\\"string\\\" named Paul\" \"Paul\");",global_env)
-    # printTest("print (endswith \"Hi, I'm a \\\"string\\\" named Paul\" \"named P\");",global_env)
-    # printTest("print (lower \"Hi, I'm a \\\"string\\\" named Paul\");",global_env)
-    # printTest("print (upper \"Hi, I'm a \\\"string\\\" named Paul\");",global_env)
+    print "Question 2: Immutable Strings"
+    global_env = initial_env_imp()
+    printTest("print \"Hi, I'm a \\\"string\\\" named Paul\";",global_env)
+    printTest("print (length \"Hi, I'm a \\\"string\\\" named Paul\");",global_env)
+    printTest("print (substring \"Hi, I'm a \\\"string\\\" named Paul\" 0 10);",global_env)
+    printTest("print (concat \"Hi, I'm a \\\"string\\\" named Paul\" \" Giamatti\");",global_env)
+    printTest("print (startswith \"Hi, I'm a \\\"string\\\" named Paul\" \"Hi, I'm \");",global_env)
+    printTest("print (startswith \"Hi, I'm a \\\"string\\\" named Paul\" \"Hello, I'm \");",global_env)
+    printTest("print (endswith \"Hi, I'm a \\\"string\\\" named Paul\" \"Paul\");",global_env)
+    printTest("print (endswith \"Hi, I'm a \\\"string\\\" named Paul\" \"named P\");",global_env)
+    printTest("print (lower \"Hi, I'm a \\\"string\\\" named Paul\");",global_env)
+    printTest("print (upper \"Hi, I'm a \\\"string\\\" named Paul\");",global_env)
 
     ##Question 3 Tester
-    # print "Question 3: Procedures"
-    # global_env = initial_env_imp()
-    # printTest("var x = 10;",global_env)
-    # printTest("procedure t1 ( ) { var a = 0; a <- 10; print a; }",global_env)
-    # printTest("procedure test (val) { var a = 0; a <- val; print a; }",global_env)
-    # printTest("procedure plusn (n v) { var temp = (+ n v); v <- temp; print v; }",global_env)
-    # printTest("var f = ( function (a b c) (* a (* b c)));",global_env)
-    # printTest("print (f 2 3 4);",global_env)
-    # printTest("print (f x x x);",global_env)
-    # printTest("plusn (5 10);",global_env)
-    # printTest("plusn (127 x);",global_env)
-    # printTest("plusn ((+ 1 2) (+ 3 4));",global_env)
-    # #printTest("print (+ (test 10) 30);",global_env)
-    # printTest("print (+ (f 2 3 4) 30);",global_env)
-    # printTest("f (2 3 4);",global_env)
+    print "Question 3: Procedures"
+    global_env = initial_env_imp()
+    printTest("var x = 10;",global_env)
+    printTest("procedure t1 ( ) { var a = 0; a <- 10; print a; }",global_env)
+    printTest("procedure test (val) { var a = 0; a <- val; print a; }",global_env)
+    printTest("procedure plusn (n v) { var temp = (+ n v); v <- temp; print v; }",global_env)
+    printTest("var f = ( function (a b c) (* a (* b c)));",global_env)
+    printTest("print (f 2 3 4);",global_env)
+    printTest("print (f x x x);",global_env)
+    printTest("plusn (5 10);",global_env)
+    printTest("plusn (127 x);",global_env)
+    printTest("plusn ((+ 1 2) (+ 3 4));",global_env)
+    #printTest("print (+ (test 10) 30);",global_env)
+    printTest("print (+ (f 2 3 4) 30);",global_env)
+    printTest("f (2 3 4);",global_env)
 
     ##Question 4 Tester
     global_env = initial_env_imp()
     print "Question 4: Mutable Array Objects"
-    # printTest("var x = (new-array 10);",global_env)
-    # printTest("print x;",global_env)
-    # printTest("x[3]<-(+ 3 10);",global_env)
-    # printTest("print (with x (length));",global_env)
-    # printTest("print (with x (index 3));",global_env)
+    printTest("var x = (new-array 10);",global_env)
+    printTest("print x;",global_env)
+    printTest("x[3]<-(+ 3 10);",global_env)
+    printTest("print (with x (length));",global_env)
+    printTest("print (with x (index 3));",global_env)
     printTest("var y = (new-array 10);",global_env)
     printTest("var a = 0;",global_env)
     printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { y[a]<-(+ a 10);}",global_env)
@@ -1066,65 +1039,7 @@ if __name__ == '__main__':
     printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { print a; print (with y (index a));}",global_env)
     printTest("var mult = (function (x) (* 2 x));",global_env)
     printTest("print (with y (map mult));",global_env)
-    #printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { print a;}",global_env)
-
-    printTest("procedure quicksort ( x ) {\
-        var s = 0; \
-        var i = 0; \
-        var p = 0; \
-        var j = 0; \
-        var pivot = 0; \
-        var start = 0; \
-        var holder = 0; \
-        var stop = (with x (- (length) 1)); \
-        var stack = (new-array 64); \
-        stack[s]<-start; \
-        s <-(+ s 1); \
-        stack[s]<-stop; \
-        s <-(+ s 1); \
-        while (> s 0) { \
-            s <-(- s 1); \
-            stop <- (with stack (index s));\
-            s <-(- s 1); \
-            start <- (with stack (index s));\
-            if (< start stop) { \
-                pivot <- (with x(index stop)); \
-                j <- start; \
-                i <- 0; \
-                for(i <- start ; i <= (- stop 1) ; i = i + 1 ) { \
-                    if (<= (with x (index i)) pivot) { \
-                        holder <- (with x(index i)); \
-                        x[i]<-(with x(index j)); \
-                        x[j]<-holder; \
-                        j <- (+ j 1); \
-                    }\
-                }\
-                holder <- (with x(index j)); \
-                x[j]<-(with x(index stop )); \
-                x[stop]<-holder;\
-                p <- j; \
-                \
-                if (> (- p start) (- stop p)) { \
-                    stack[s]<-start; \
-                    s <-(+ s 1); \
-                    stack[s]<-(- p 1); \
-                    s <-(+ s 1); \
-                    stack[s]<-(+ p 1); \
-                    s <-(+ s 1); \
-                    stack[s]<-stop; \
-                    s <-(+ s 1); \
-                } \
-                else { \
-                    stack[s]<-(+ p 1); \
-                    s <-(+ s 1); \
-                    stack[s]<-stop; \
-                    s <-(+ s 1); \
-                    stack[s]<-start; \
-                    s <-(+ s 1); \
-                    stack[s]<-(- p 1); \
-                    s <-(+ s 1); \
-                } \
-            } } }",global_env)
+    printTest("for ( a <- 0 ; a < 10 ; a = a + 1 ) { print a;}",global_env)
     printTest("{\
                 y[0]<-8;\
                 y[1]<-4;\
