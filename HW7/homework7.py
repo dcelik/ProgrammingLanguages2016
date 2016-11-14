@@ -656,6 +656,64 @@ def parse_imp (input):
 
     pEXPR = Forward()
 
+    pNOT = Keyword("not") + pEXPR
+
+    pLET = Keyword("let") + "(" + pNAME + "=" + pEXPR + ZeroOrMore( "," + pNAME + "=" + pEXPR )+ ")" + pEXPR
+
+    pDICT = "{" + Optional(pNAME + ":" + pEXPR) + ZeroOrMore("," + pNAME + ":" + pEXPR) + "}"
+
+    pARRAY = "[" + Optional(pEXPR) + ZeroOrMore("," + pEXPR) + "]"
+
+    pBODY = Forward()
+
+    pFUNC = Keyword("fun") + Optional(pNAME) + "(" + OneOrMore(pNAME) + ")" + pBODY
+
+    pADD = Keyword("+") + pEXPR
+
+    pSUB = Keyword("-") + pEXPR
+
+    pMUL = Keyword("*") + pEXPR
+
+    pAND = Keyword("and") + pEXPR
+
+    pOR = Keyword("or") + pEXPR
+
+    pGTR = Keyword(">") + pEXPR
+
+    pGTR_EQ = Keyword(">=") + pEXPR
+
+    pLSS = Keyword("<") + pEXPR
+
+    pLSS_EQ = Keyword("<=") + pEXPR
+
+    pEQ = Keyword("==") + pEXPR
+
+    pNOT_EQ = Keyword("<>") + pEXPR
+
+    pCOND = Keyword("?") + pEXPR + ":" + pEXPR
+
+    pCALL = "(" + Optional(pEXPR) + ZeroOrMore("," + pEXPR) + ")"
+
+    pACCESS = "[" + pEXPR + "]"
+
+    pFINAL = pEXPR + (pMUL | pADD | pSUB | pGTR | pGTR_EQ | pLSS | pLSS_EQ | pEQ | pNOT_EQ | pAND | pOR |  pCOND | pCALL | pACCESS)
+
+    pEXPR << (pINTEGER | pBOOLEAN | pSTRING | pLET | pDICT | pARRAY | pNOT | pIDENTIFIER | pFUNC | pFINAL)
+
+
+    pVAR = Keyword("var") + pNAME + ";"
+
+    pVAR_DEF = Keyword("var") + pNAME + "=" + pEXPR + ";"\
+
+    pDEF = Keyword("def") + pNAME + "(" + Optional(pNAME) + ZeroOrMore("," + pNAME) + ")" + pBODY 
+
+    pDECL = (pVAR | pVAR_DEF | pDEF)
+
+
+
+
+
+
     pEXPRS = ZeroOrMore(pEXPR)
     pEXPRS.setParseAction(lambda result: [result])
 
