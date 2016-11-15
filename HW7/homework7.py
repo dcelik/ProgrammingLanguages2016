@@ -224,27 +224,19 @@ class EWhile (Exp):
 
 class EFor(Exp):
 
-    def __init__(self,init,cond,mod,exp):
-        self._init = init
-        self._cond = cond
-        self._mod = mod
+    def __init__(self,iterator,array,exp):
+        self._iter = iterator
+        self._array = array
         self._exp = exp
 
     def __str__ (self):
-        return "EFor({},{},{},{})".format(str(self._init),str(self._cond),str(self._mod),str(self._exp))
+        return "EFor({} in {},{})".format(str(self._iter),str(self._array),str(self._exp))
 
     def eval (self,env):
-        self._init.eval(env)
-        c = self._cond.eval(env)
-        if c.type != "boolean":
-            raise Exception ("Runtime error: while condition not a Boolean")
-
-        while c.value:
-            self._exp.eval(env)
-            self._mod.eval(env)
-            c = self._cond.eval(env)
-            if c.type != "boolean":
-                raise Exception ("Runtime error: while condition not a Boolean")
+        arr = self._array.eval(env).value
+        for x in arr:
+            new_env = [(self._iter,VRefCell(x))] + env
+            self._exp.eval(new_env)
         return VNone()
 
 class EArray(Exp):
@@ -307,9 +299,9 @@ class VRefCell (Value):
 class VClosure (Value):
     
     def __init__ (self,params,body,env,name=None):
-        self.param = params
+        self.params = params
         self.body = body
-        extra = [(name,self)] if name else []
+        extra = [(name,VRefCell(self))] if name else []
         self.env = extra + env
         self.type = "function"
 
@@ -467,7 +459,7 @@ def oper_obj_update(obj,ind,val):
 # cf http://pyparsing.wikispaces.com/
 
 from pyparsing import Word, Literal, ZeroOrMore, OneOrMore, Keyword, Forward, alphas, alphanums, NoMatch
-from pyparsing import Group, QuotedString, Optional, Suppress, NotAny
+from pyparsing import Group, QuotedString, Optional, Suppress, NotAny, FollowedBy, StringEnd
 
 
 def initial_env ():
@@ -510,7 +502,8 @@ def parse (input):
     #
 
 
-    idChars = alphas+"_+*-?!=<>"
+    #idChars = alphas+"_+*-?!=<>"
+    idChars = alphas+"_"
 
     pIDENTIFIER = Word(idChars, idChars+"0123456789")
     pIDENTIFIER.setParseAction(lambda result: EPrimCall(oper_deref,[EId(result[0])]))
@@ -578,13 +571,13 @@ def parse (input):
     pSUB = "-" + pEXPR
     pSUB.setParseAction(lambda result: (oper_minus, result[1]))
 
-    pMUL = Keyword("*") + pEXPR
+    pMUL = "*" + pEXPR
     pMUL.setParseAction(lambda result: (oper_times, result[1]))
 
-    pAND = Keyword("and") + pEXPR
+    pAND = "and" + pEXPR
     pAND.setParseAction(lambda result: ("ADD", result[1]))
 
-    pOR = Keyword("or") + pEXPR
+    pOR = "or" + pEXPR
     pOR.setParseAction(lambda result: ("OR", result[1]))
 
     pGTR = ">" + pEXPR
@@ -599,13 +592,13 @@ def parse (input):
     pLSS_EQ = "<=" + pEXPR
     pLSS_EQ.setParseAction(lambda result: (oper_less_equal, result[1]))
 
-    pEQ = Keyword("==") + pEXPR
+    pEQ = "==" + pEXPR
     pEQ.setParseAction(lambda result: (oper_equal, result[1]))
 
     pNOT_EQ = "<> " + pEXPR
     pNOT_EQ.setParseAction(lambda result: (oper_not_equal, result[1]))
 
-    pCOND = Keyword("?") + pEXPR + ":" + pEXPR
+    pCOND = "?" + pEXPR + ":" + pEXPR
     pCOND.setParseAction(lambda result: ("COND", result[1], result[3]))
 
     pCALL = "(" + Group(Optional(pEXPR) + ZeroOrMore(Suppress(",") + pEXPR)) + ")"
@@ -628,7 +621,6 @@ def parse (input):
     pNON_FINAL = (pINTEGER | pBOOLEAN | pSTRING |  pNOT | pLET | pEXPR_PAREN | pARRAY | pFUN_REC | pFUN | pDICT | pIDENTIFIER)
 
     pFINAL = pNON_FINAL + (pMUL | pADD | pSUB | pGTR_EQ | pGTR | pLSS_EQ | pLSS | pEQ | pNOT_EQ | pAND | pOR | pCOND | pCALL | pACCESS)
-    #pFINAL.setDebug()
     pFINAL.setParseAction(finalparse)
 
     pEXPR << ( pFINAL | pINTEGER | pBOOLEAN | pSTRING |  pNOT | pLET | pEXPR_PAREN | pARRAY | pFUN_REC | pFUN | pDICT | pIDENTIFIER )
@@ -678,7 +670,12 @@ def parse (input):
     # pSTMT_FOR = Keyword("for") + "(" + pSTMT_UPDATE + Group(pEXPR + pNAME + pEXPR) + ";" + pNAME + "=" + pEXPR + pEXPR + pEXPR + ")"+ pSTMT_BLOCK
     # pSTMT_FOR.setParseAction(parse_for)
 
+    def parse_for(result):
+        print result
+        return EFor(result[2],result[4],result[6])
+
     pSTMT_FOR = Keyword("for") + "(" + pNAME + Keyword("in") + pEXPR + ")" + pBODY
+    pSTMT_FOR.setParseAction(parse_for)
 
     pSTMT = (pSTMT_EVAL | pSTMT_VAR | pSTMT_PRINT | pSTMT_ASSIGN | pSTMT_COND_ELSE | pSTMT_COND | pSTMT_WHILE | pSTMT_FOR)
 
@@ -780,23 +777,25 @@ def parse (input):
     pTOP_STMT.setParseAction(lambda result: {"result":"statement",
                                              "stmt":result[0]})
 
+
     pTOP_DECL = pDECL.copy()
     pTOP_DECL.setParseAction(lambda result: {"result":"declaration",
                                              "decl":result[0]})
 
-    pABSTRACT = "#abs" + pSTMT
-    pABSTRACT.setParseAction(lambda result: {"result":"abstract",
-                                             "stmt":result[1]})
+    #pABSTRACT = "#abs" + pSTMT
+    #pABSTRACT.setParseAction(lambda result: {"result":"abstract",
+    #                                         "stmt":result[1]})
 
-    pQUIT = Keyword("#quit")
-    pQUIT.setParseAction(lambda result: {"result":"quit"})
+    #pQUIT = Keyword("#quit")
+    #pQUIT.setParseAction(lambda result: {"result":"quit"})
     
-    pTOP = (pQUIT | pABSTRACT | pTOP_DECL | pTOP_STMT )
+    #pTOP = (pQUIT | pABSTRACT | pTOP_DECL | pTOP_STMT )
+
+    pTOP = OneOrMore(pTOP_DECL | pTOP_STMT) + FollowedBy(StringEnd())
 
     return pTOP
     result = pTOP.parseString(input)[0]
     return result    # the first element of the result is the expression
-
 
 def shell ():
     # A simple shell
@@ -836,7 +835,7 @@ def printTest (exp,env):
     print "func> {}".format(exp)
     #result = parse(exp)
     result = parse(exp).parseString(exp)[0]
-    #print result
+    print result
 
     if result["result"] == "statement":
         stmt = result["stmt"]
@@ -858,12 +857,41 @@ def printTest (exp,env):
         print "{} defined".format(name)
 
 def execute(filename):
-    print parse(filename).parseFile(filename)
+    result = parse(filename).parseFile(filename)
+    env = initial_env()
+    call_main = {'result': 'statement', 'stmt': ECall(EPrimCall(oper_deref,[EId("main")]),[])}
+    result.append(call_main)
+
+    for res in result:
+
+        # Statement
+        if res["result"] == "statement":
+            stmt = res["stmt"]
+            stmt.eval(env)
+
+        # Declaration
+        elif res["result"] == "declaration":
+            (name,expr) = res["decl"]
+            v = expr.eval(env)
+            env.insert(0,(name,VRefCell(v)))
+            #print "{} defined".format(name)
+
+
 
 if __name__ == '__main__':
     print "Homework 7"
     global_env = initial_env()
-    printTest("print let ( x = 5 , y = 5 ) (x>=y) ; ",global_env)
+    # printTest("var val = 99;",global_env)
+    # printTest("var x = [10,20,30];",global_env)
+    # printTest("for (val in x) { print val;}",global_env)
+    # printTest("print val;",global_env)
+    # printTest("var identity = fun x (x) { x; };",global_env)
+    # printTest("print identity(10);",global_env)
+    # printTest("var sum = fun s (n) { if (n == 0) { 0; } else { n + s(n-1); } };",global_env)
+    # print global_env
+    # printTest("print sum;",global_env)
+    # printTest("print sum(100);",global_env)
+    # printTest("print let ( x = 5 , y = 5 ) (x>=y) ; ",global_env)
     # printTest("print let ( x = 5 , y = 5 ) ( x > y ) ; ",global_env)
     # printTest("print let ( x = 5 , y = 5 ) (x <= y) ; ",global_env)
     # printTest("print let ( x = 5 , y = 5 ) ( x < y ) ; ",global_env)
@@ -883,15 +911,12 @@ if __name__ == '__main__':
     # printTest("x[1] = 10;",global_env)
     # printTest("print x;",global_env)
     # printTest("x[1] = 10;",global_env)
+    # printTest("var gn = 10;",global_env)
+    # printTest("var x = gn;",global_env)
+    # printTest("print x;",global_env)
+    # printTest("print x+2;",global_env)
+    # printTest("var global_number = 10;\n\ndef main () {\n var x = global_number;\n print x;\n print x+2;\n print x*2;\n print x+2*2;\n print x*2+2;\n print (x-2)+2;\n print (x+2)*2;\n print x*2+x*2;\n}",global_env)
 
-    printTest("var gn = 10;",global_env)
-    printTest("var x = gn;",global_env)
-    printTest("print x;",global_env)
-    printTest("print x -2;",global_env)
-
-    #printTest("\n\ndef main () {\n var x = global_number;\n print \"Hello World!\";\n}",global_env)
-
-    #printTest("\n\ndef main () {\n var x = global_number;\n print x;\n print x+2;\n print x*2;\n print x+2*2;\n print x*2+2;\n print (x-2)+2;\n print (x+2)*2;\n print x*2+x*2;\n}",global_env)
-
-    #execute("C:\Users\deniz\Downloads\sample-arithmetic.pj")
+    #printTest("main();",global_env)
+    execute("C:\Users\deniz\Downloads\sample-arithmetic.pj")
 
