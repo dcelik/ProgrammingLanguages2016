@@ -14,7 +14,7 @@
 #         jacob.riedel@students.olin.edu
 #
 
-import sys
+import sys, copy
 
 #
 # Expressions
@@ -211,15 +211,18 @@ class EWhile (Exp):
     def __str__ (self):
         return "EWhile({},{})".format(str(self._cond),str(self._exp))
 
-    def eval (self,env):
+    def eval (self,env): 
         c = self._cond.eval(env)
         if c.type != "boolean":
             raise Exception ("Runtime error: while condition not a Boolean")
+        
+        raw_exp = copy.deepcopy(self._exp)
         while c.value:
-            self._exp.eval(env)
+            raw_exp.eval(env)
             c = self._cond.eval(env)
             if c.type != "boolean":
                 raise Exception ("Runtime error: while condition not a Boolean")
+            raw_exp = copy.deepcopy(self._exp)
         return VNone()
 
 class EFor(Exp):
@@ -234,17 +237,16 @@ class EFor(Exp):
 
     def eval (self,env):
         arr = self._array.eval(env).value
+        raw_exp = copy.deepcopy(self._exp)
         for x in arr:
             new_env = [(self._iter,VRefCell(x))] + env
-            self._exp.eval(new_env)
+            raw_exp.eval(new_env)
+            raw_exp = copy.deepcopy(self._exp)
+            #self._exp.eval(new_env)
         return VNone()
 
 class EArray(Exp):
     def __init__(self,lst):
-        print "PRE_EVAL",
-        print lst
-        if len(lst)>0:
-            print lst[0]
         self._arr = lst
 
     def __str__ (self):
@@ -257,11 +259,8 @@ class EArray(Exp):
                 eval = temp.eval(env)
                 if type(eval) != EValue:
                     self._arr[i] = EValue(eval)
-                else:
+                else: 
                     self._arr[i] = eval
-                print eval
-        print "POST_EVAL",
-        print self._arr
         return VArray(self._arr)
 
 class EDict(Exp):
@@ -366,6 +365,10 @@ class VDict(Value):
 # Primitive operations
 
 def oper_plus (v1,v2): 
+    if type(v1) == EValue:
+        v1 = v1._value
+    if type(v2) == EValue:
+        v2 = v2._value
     if v1.type == "integer" and v2.type == "integer":
         return VInteger(v1.value + v2.value)
     if v1.type == "array" and v2.type == "array":
@@ -375,18 +378,22 @@ def oper_plus (v1,v2):
     raise Exception ("Runtime error: trying to apply '+' to non-numbers, non-arrays or non-strings")
 
 def oper_minus (v1,v2):
+    if type(v1) == EValue:
+        v1 = v1._value
+    if type(v2) == EValue:
+        v2 = v2._value
     if v1.type == "integer" and v2.type == "integer":
         return VInteger(v1.value - v2.value)
     raise Exception ("Runtime error: trying to subtract non-numbers")
 
 def oper_times (v1,v2):
+    if type(v1) == EValue:
+        v1 = v1._value
+    if type(v2) == EValue:
+        v2 = v2._value
     if v1.type == "integer" and v2.type == "integer":
         return VInteger(v1.value * v2.value)
     raise Exception ("Runtime error: trying to multiply non-numbers")
-
-def oper_neg(v1):
-    if v1.type == "integer":
-        return VInteger(v1.value*-1)
 
 def oper_zero (v1):
     if v1.type == "integer":
@@ -459,8 +466,9 @@ def oper_len(obj):
     raise Exception ("Runtime error: trying to get length of non-string or non-array")
 
 def oper_index(obj,ind):
-    print "INDEx"
-    if (obj.type == "array" or obj.type == "dict" or obj.type == "string") and ind.type == "integer":
+    if (obj.type == "array" or obj.type == "string") and (ind.type == "integer"):
+        return obj.value[ind.value]
+    if obj.type == "dict" and (ind.type == "integer" or ind.type == "string" or ind.type == "boolean"):
         return obj.value[ind.value]
     raise Exception ("Runtime error: trying to get value in non-array, non-dict, or non-string, or using a non-integer index")
 
@@ -468,7 +476,7 @@ def oper_obj_update(obj,ind,val):
     if obj.type == "array" and ind.type == "integer":
         obj.value[ind.value] = EValue(val)
         return VNone()
-    if obj.typ == "dict" and (ind.type == "integer" or ind.type == "boolean" or ind.type == "string"):
+    if obj.type == "dict" and (ind.type == "integer" or ind.type == "boolean" or ind.type == "string"):
         obj.value[ind.value] = EValue(val)
         return VNone()
     raise Exception ("Runtime error: trying to update value in non-array or with non-integer index")
@@ -811,7 +819,7 @@ def parse (input):
     
     #pTOP = (pQUIT | pABSTRACT | pTOP_DECL | pTOP_STMT )
 
-    pTOP = OneOrMore(pTOP_DECL | pTOP_STMT) + FollowedBy(StringEnd())
+    pTOP = OneOrMore(pTOP_DECL | pTOP_STMT) #+ FollowedBy(StringEnd())
 
     return pTOP
     result = pTOP.parseString(input)[0]
@@ -845,7 +853,7 @@ def parse_test():
     pEXPR_PAREN.setParseAction(lambda result: result[1])
 
     pNOT = Keyword("not") + pEXPR
-    pNOT.setParseAction(lambda result: EPrimCall(oper_not, result[1]))
+    pNOT.setParseAction(lambda result: EPrimCall(oper_not, [result[1]]))
 
     def parse_let(result):
         bindings = [(result[2],ERefCell(result[4]))]
@@ -880,7 +888,7 @@ def parse_test():
     pFUN_REC = Keyword("fun") + pNAME + "(" + Group(Optional(pNAME) + ZeroOrMore(Suppress(",") + pNAME)) + ")" + pBODY
     pFUN_REC.setParseAction(lambda result: EFunction(result[3],mkFunBody(result[3],result[5]),name=result[1]))
 
-    pCORE = (pINTEGER | pBOOLEAN | pSTRING | pARRAY | pDICT | pEXPR_PAREN | pIDENTIFIER)
+    pCORE = (pINTEGER | pBOOLEAN | pSTRING | pARRAY | pDICT | pEXPR_PAREN | pNOT | pIDENTIFIER)
 
     pCALL = "(" + Group(Optional(pEXPR) + ZeroOrMore(Suppress(",") + pEXPR)) + ")"
     pCALL.setParseAction(lambda result: ("CALL", result[1]))
@@ -948,10 +956,10 @@ def parse_test():
     pEQ = "==" + pP4
     pEQ.setParseAction(lambda result: (oper_equal, result[1]))
 
-    pNOT_EQ = "<> " + pP4
+    pNOT_EQ = "<>" + pP4
     pNOT_EQ.setParseAction(lambda result: (oper_not_equal, result[1]))
 
-    pP4_back = (pGTR | pGTR_EQ | pLSS | pLSS_EQ | pEQ | pNOT_EQ | Empty())
+    pP4_back = (pNOT_EQ | pGTR | pGTR_EQ | pLSS | pLSS_EQ | pEQ | Empty())
 
     pP4 << pP3 + pP4_back
     pP4.setParseAction(parse_oper)
@@ -959,7 +967,7 @@ def parse_test():
     pP5 = Forward()
 
     pAND = "and" + pP5
-    pAND.setParseAction(lambda result: ("ADD", result[1]))
+    pAND.setParseAction(lambda result: ("AND", result[1]))
 
     pOR = "or" + pP5
     pOR.setParseAction(lambda result: ("OR", result[1]))
@@ -992,8 +1000,9 @@ def parse_test():
             return result
 
     pP6 << pP5 + pP6_back
+    pP6.setParseAction(parse_oper_cond)
 
-    pEXPR << (pLET | pFUN_REC | pFUN | pNOT | pP6)
+    pEXPR << (pLET | pFUN_REC | pFUN | pP6)
 
     pDECL_VAR = Keyword("var") + pNAME + ";"
     pDECL_VAR.setParseAction(lambda result: (result[1],EValue(VNone())))
@@ -1093,11 +1102,11 @@ def printTest (exp,env):
     #result = parse(exp)
     #result = parse(exp).parseString(exp)[0]
     result = parse_test().parseString(exp)[0]
-    #print result
+    print result
 
     if result["result"] == "statement":
         stmt = result["stmt"]
-        #print stmt
+        print stmt
         #print "Abstract representation:", exp
         v = stmt.eval(env)
 
@@ -1142,71 +1151,39 @@ if __name__ == '__main__':
     for arg in sys.argv[1:]:
         print "Running file {}".format(arg)
         execute(arg)
-    
+    exit()
+
     print "Homework 7"
     global_env = initial_env()
-    #printTest("def reverse (arr) { var result = []; var n = len(arr); while (n > 0) { result = result + [arr[n-1]]; n = n - 1; } print result; }",global_env)
-    printTest("var arr3 = [1000,2000,20+20];",global_env)
-    printTest("print arr3;",global_env)
-    #print global_env[1][1]
-    #printTest("reverse(arr3);",global_env)
-    #printTest("print arr3;",global_env)
-    printTest("var result = [];",global_env)
-    printTest("var n = len(arr3);",global_env)
-    printTest("while (n > 0) { print result; print arr3[n-1]; print [arr3[n-1]]; n = n - 1;}",global_env)
+  
 
-    #printTest("print 10*2+2;",global_env)
-    # printTest("print 10*2*3;",global_env)
-    # printTest("print 10*2+10*2;",global_env)
-    # printTest("var val = 99;",global_env)
-    # printTest("var x = [10,20,30];",global_env)
-    # printTest("for (val in x) { print val;}",global_env)
-    # printTest("print val;",global_env)
-    # printTest("var identity = fun x (x) { x; };",global_env)
-    # printTest("print 5*identity(7);",global_env)
-    # printTest("print identity(10);",global_env)
-    #printTest("var sum = fun s (n) { if (n == 0) { 0; } else { n + s(n-1); } };",global_env)
-    # print global_env
-    #printTest("print sum;",global_env)
-    #printTest("print sum(1350);",global_env)
-    # printTest("print let ( x = 5 , y = 5 ) (x>=y) ; ",global_env)
-    # printTest("print let ( x = 5 , y = 5 ) ( x > y ) ; ",global_env)
-    # printTest("print let ( x = 5 , y = 5 ) (x <= y) ; ",global_env)
-    # printTest("print let ( x = 5 , y = 5 ) ( x < y ) ; ",global_env)
-    # printTest("print { h : \"a\" , r : \"a\" , m : \"b\" , e : \"dead\" };",global_env)
-    # printTest("print {x:10,y:20,c:\"red\"};",global_env)
-    # printTest("print [1000,2000,3000], [10,20,30];",global_env)
-    # printTest("if (10 > 0) { 0; }",global_env)
-    # printTest("if (10 > 0) { print 0; } else { print 1; }",global_env)
-    # printTest("if (0 > 0) { print 0; } else { print 1; }",global_env)
-    # printTest("var x = 10;",global_env)
-    # printTest("print x;",global_env)
-    # printTest("x = 12;",global_env)
-    # printTest("print x;",global_env)
-    # printTest("var x = [10,20,30];",global_env)
-    # printTest("print x;",global_env)
-    # printTest("print x[1],x[2];",global_env)
-    # printTest("x[1] = 10;",global_env)
-    # printTest("print x;",global_env)
-    # printTest("x[1] = 10;",global_env)
+    printTest("var global_number = 10;",global_env)
+    printTest("var x = global_number;",global_env)
+    printTest("var y = global_number+1;",global_env)
+    printTest("print x<>y;",global_env)
+    printTest("def main () { var x1 = global_number; var y1 = global_number+1; print true;}",global_env)
+  #   printTest("def main () {\
+  # var x = global_number;\
+  # var y = global_number+1;\
+  # \}",global_env)
+#   print true;\
+#   print false;\
+#   print true and true,true;\
+#   print false or true,true;\
+#   print false or false, false;\
+#   print x == y, false;\
+#   print (x > y), false;\
+# \}",global_env)
 
-    # printTest("var gn = 10;",global_env)
-    # printTest("var x = gn;",global_env)
-    # printTest("print x;",global_env)
-    # printTest("print x+2;",global_env)
-    # printTest("print x*2;",global_env)
-    # printTest("print x+2*2;",global_env)
-    # printTest("print x*2+2;",global_env)
-    # printTest("print (x-2)+2;",global_env)
-    # printTest("print (x+2)*2;",global_env)
-    # printTest("print x*2+x*2;",global_env)
-
-    # printTest("print x-2+2;",global_env)
-    #printTest("print 10-2-3;",global_env)
-    #printTest("print 10-3-2;",global_env)
-    #printTest("print 10+(0-2)+(0-3);",global_env)
-    #printTest("var global_number = 10;\n\ndef main () {\n var x = global_number;\n print x;\n print x+2;\n print x*2;\n print x+2*2;\n print x*2+2;\n print (x-2)+2;\n print (x+2)*2;\n print x*2+x*2;\n}",global_env)
-
-    #printTest("main();",global_env)
-    #execute("sample-arithmetic.pj")
-
+#   print x==y,x>y,x>=y,x<y,x<=y,x<>y;\
+#   print y==x,y>x,y>=x,y<x,y<=x,y<>x;\
+#   print x==y or x>y, x>=y;\
+#   print x==y and x>y, false;\
+#   print not x==y, x<>y;\
+#   print not true and not false,false;\
+#   print not true or not false,true;\
+#   print not false and true, true;\
+# \
+#   print true ? true : false, true;\
+#   print false ? true : false, false;\
+# }",global_env)
