@@ -265,6 +265,14 @@ class EDict(Exp):
         return "EDict({})".format(",".join(str(k)+":"+str(v) for (k,v) in self._dict.items()))
 
     def eval (self,env):
+        for i in (self._dict.keys()):
+            temp = self._dict[i]
+            if type(temp) != EValue:
+                eval = temp.eval(env)
+                if type(eval) != EValue:
+                    self._dict[i] = EValue(eval)
+                else: 
+                    self._dict[i] = eval
         return VDict(self._dict)
 
 #
@@ -863,7 +871,7 @@ def execute(filename):
 
 if __name__ == '__main__':
     sys.setrecursionlimit(100000)
-    
+
     for arg in sys.argv[1:]:
         print "Running file {}".format(arg)
         execute(arg)
