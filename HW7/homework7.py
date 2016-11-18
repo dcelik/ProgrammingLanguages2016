@@ -1,11 +1,4 @@
 ############################################################
-# Simple imperative language
-# C-like surface syntac
-# with S-expression syntax for expressions
-# (no recursive closures)
-#
-
-############################################################
 # HOMEWORK 7
 #
 # Team members: Deniz Celik, Jacob Riedel
@@ -39,7 +32,6 @@ class EPrimCall (Exp):
     #
     # simplifying the prim call
     # it takes an explicit function as first argument
-
     def __init__ (self,prim,es):
         self._prim = prim
         self._exps = es
@@ -52,8 +44,6 @@ class EPrimCall (Exp):
         return apply(self._prim,vs)
 
 class ERefCell (Exp):
-    # this could (should) be turned into a primitive
-    # operation.  (WHY?)
 
     def __init__ (self,initialExp):
         self._initial = initialExp
@@ -215,7 +205,8 @@ class EWhile (Exp):
         c = self._cond.eval(env)
         if c.type != "boolean":
             raise Exception ("Runtime error: while condition not a Boolean")
-        
+        # Copy the expression, eval it so we have original exp still
+        # Use this to be able to eval Array's with dynamic Exprs
         raw_exp = copy.deepcopy(self._exp)
         while c.value:
             raw_exp.eval(env)
@@ -236,6 +227,7 @@ class EFor(Exp):
         return "EFor({} in {},{})".format(str(self._iter),str(self._array),str(self._exp))
 
     def eval (self,env):
+        # Same issue as with EWhile
         arr = self._array.eval(env).value
         raw_exp = copy.deepcopy(self._exp)
         for x in arr:
@@ -253,6 +245,8 @@ class EArray(Exp):
         return "EArray([{}])".format(",".join(str(v) for v in self._arr))
 
     def eval (self,env):
+        # Band-aid fix incase we want to place dynamic Exprs in an EArray
+        # Checks if its an EValue after Eval, if not make it one
         for i in xrange(len(self._arr)):
             temp = self._arr[i]
             if type(temp) != EValue:
@@ -290,7 +284,6 @@ class VInteger (Value):
     def __str__ (self):
         return str(self.value)
 
-    
 class VBoolean (Value):
     # Value representation of Booleans
     
@@ -364,7 +357,8 @@ class VDict(Value):
 
 # Primitive operations
 
-def oper_plus (v1,v2): 
+def oper_plus (v1,v2):
+    # Make sure we can handle the addition of two EValue's
     if type(v1) == EValue:
         v1 = v1._value
     if type(v2) == EValue:
@@ -378,6 +372,7 @@ def oper_plus (v1,v2):
     raise Exception ("Runtime error: trying to apply '+' to non-numbers, non-arrays or non-strings")
 
 def oper_minus (v1,v2):
+    # Make sure we can handle the subtraction of two EValue's
     if type(v1) == EValue:
         v1 = v1._value
     if type(v2) == EValue:
@@ -387,6 +382,7 @@ def oper_minus (v1,v2):
     raise Exception ("Runtime error: trying to subtract non-numbers")
 
 def oper_times (v1,v2):
+    # Make sure we can handle the multiplication of two EValue's
     if type(v1) == EValue:
         v1 = v1._value
     if type(v2) == EValue:
@@ -412,6 +408,7 @@ def oper_update (v1,v2):
     raise Exception ("Runtime error: updating a non-reference value")
  
 def oper_print (v1,*args):
+    #Use comma after print to remove \n
     print v1,
     for i in args:
         print ",", 
@@ -497,6 +494,7 @@ from pyparsing import Group, QuotedString, Optional, Suppress, NotAny, FollowedB
 def initial_env ():
     # A sneaky way to allow functions to refer to functions that are not
     # yet defined at top level, or recursive functions
+    # Only len function here
     env = []
     env.insert(0,
                ("len",
@@ -505,327 +503,65 @@ def initial_env ():
                                   env))))
     return env
 
-def parse (input):
-    # parse a string into an element of the abstract representation
+def parse ():
+    # Create a parser object to parse an element of the abstract representation
 
     # Grammar:
-    #
-    # <expr> ::= <integer>
-    #            true
-    #            false
-    #            <identifier>
-    #            ( if <expr> <expr> <expr> )
-    #            ( function ( <name ... ) <expr> )    
-    #            ( <expr> <expr> ... )
-    #
-    # <decl> ::= var name = expr ; 
-    #
-    # <stmt> ::= if <expr> <stmt> else <stmt>
-    #            while <expr> <stmt>
-    #            name <- <expr> ;
-    #            print <expr> ;
-    #            <block>
-    #            for ( name <- <expr> ; <name> <expr> <expr> ; <name> = <expr> <expr> <expr> ) <block>
-    #
-    # <block> ::= { <decl> ... <stmt> ... }
-    #
-    # <toplevel> ::= <decl>
-    #                <stmt>
-    #
+    # Note: No left associativity is maintained or guaranteed
 
+    # expr ::= let ( id = expr , ... ) expr
+    #         fun id ( id , ... ) body
+    #         fun ( id , ... ) body
+    #         not expr
+    #         p6
 
-    #idChars = alphas+"_+*-?!=<>"
-    idChars = alphas+"_"
+    # p6 ::= p5 p6_back
 
-    pIDENTIFIER = Word(idChars, idChars+"0123456789")
-    pIDENTIFIER.setParseAction(lambda result: EPrimCall(oper_deref,[EId(result[0])]))
+    # p6_back ::= ? p6 : p6 | E
 
-    # A name is like an identifier but it does not return an EId...
-    pNAME = Word(idChars,idChars+"0123456789")
+    # p5 ::= p4 p5_back
 
-    pSTRING = QuotedString('"',escChar='\\')
-    pSTRING.setParseAction(lambda result: EValue(VString(result[0])))
+    # p5_back ::= and p5 | or p5 | E
 
-    pNAMES = ZeroOrMore(pNAME)
-    pNAMES.setParseAction(lambda result: [result])
+    # p4 ::= p3 p4_back
 
-    pINTEGER = Word("0123456789")
-    pINTEGER.setParseAction(lambda result: EValue(VInteger(int(result[0]))))
+    # p4_back ::= (== p4 | > p4 | >= p4 | < p4 | <= p4 | <> p4 | E)
 
-    pBOOLEAN = Keyword("true") | Keyword("false")
-    pBOOLEAN.setParseAction(lambda result: EValue(VBoolean(result[0]=="true")))
+    # p3 ::= p2 p3_back
 
-    pEXPR = Forward()
+    # p3_back ::= + p3 | - p3 | E
 
-    pEXPR_PAREN = "(" + pEXPR + ")"
-    pEXPR_PAREN.setParseAction(lambda result: result[1])
+    # p2 ::= p1 p2_back
 
-    pNOT = Keyword("not") + pEXPR
-    pNOT.setParseAction(lambda result: EPrimCall(oper_not, result[1]))
+    # p2_back ::= * p2 | E
 
-    def parse_let(result):
-        bindings = [(result[2],ERefCell(result[4]))]
-        for vs in result[5]:
-            bindings.append((vs[0],ERefCell(vs[2])))
-        return ELet(bindings,result[7])
+    # p1 ::= core p1_back
 
-    pLET = Keyword("let") + "(" + pNAME + "=" + pEXPR + Group(ZeroOrMore( Suppress(",") + Group(pNAME + "=" + pEXPR) ))+ ")" + pEXPR
-    pLET.setParseAction(parse_let)
+    # p1_back ::= ( expr, ... ) | [ expr ] | E
 
-    def parse_dict(result):
-        vals = {result[1][0]:result[1][2]}
-        for b in result[2]:
-            vals[b[0]]=b[2]
-        return EDict(vals)
+    # core ::= integer literal
+    #          boolean literal
+    #          string literal
+    #          id
+    #          [ expr , ... ]
+    #          { id : expr , ... }
+    #          ( expr )
 
-    pDICT = "{" + Group(Optional(pNAME + ":" + pEXPR)) + Group(ZeroOrMore(Group(Suppress(",") + pNAME + ":" + pEXPR))) + "}"
-    pDICT.setParseAction(parse_dict)
+    # stmt ::= expr ;
+    #          id = expr ;
+    #          print expr , ... ;
+    #          expr [ expr ] = expr ;
+    #          if ( expr ) body
+    #          if ( expr ) body else body
+    #          while ( expr ) body
+    #          for ( id in expr ) body
 
-    pARRAY = "[" + Group(Optional(pEXPR) + ZeroOrMore(Suppress(",") + pEXPR)) + "]"
-    pARRAY.setParseAction(lambda result: EArray(result[1]))
+    # body ::= { decl ... stmt ... }
 
-    pBODY = Forward()
+    # decl ::= var id ;
+    #          var id = expr ;
+    #          def id ( id , ... ) body
 
-    def mkFunBody (params,body):
-        bindings = [ (p,ERefCell(EId(p))) for p in params ]
-        return ELet(bindings,body)
-
-    pFUN = Keyword("fun") + "(" + Group(Optional(pNAME) + ZeroOrMore(Suppress(",") + pNAME)) + ")" + pBODY
-    pFUN.setParseAction(lambda result: EFunction(result[2],mkFunBody(result[2],result[4])))
-
-    pFUN_REC = Keyword("fun") + pNAME + "(" + Group(Optional(pNAME) + ZeroOrMore(Suppress(",") + pNAME)) + ")" + pBODY
-    pFUN_REC.setParseAction(lambda result: EFunction(result[3],mkFunBody(result[3],result[5]),name=result[1]))
-
-    # left-recursive fix parser
-    pADD = "+" + pEXPR
-    pADD.setParseAction(lambda result: (oper_plus, result[1]))
-
-    pSUB = "-" + pEXPR
-    pSUB.setParseAction(lambda result: (oper_minus, result[1]))
-
-    pMUL = "*" + pEXPR
-    pMUL.setParseAction(lambda result: (oper_times, result[1]))
-
-    pAND = "and" + pEXPR
-    pAND.setParseAction(lambda result: ("ADD", result[1]))
-
-    pOR = "or" + pEXPR
-    pOR.setParseAction(lambda result: ("OR", result[1]))
-
-    pGTR = ">" + pEXPR
-    pGTR.setParseAction(lambda result: (oper_greater, result[1]))
-
-    pGTR_EQ = ">=" + pEXPR
-    pGTR_EQ.setParseAction(lambda result: (oper_greater_equal, result[1]))
-
-    pLSS = "<" + pEXPR
-    pLSS.setParseAction(lambda result: (oper_less, result[1]))
-
-    pLSS_EQ = "<=" + pEXPR
-    pLSS_EQ.setParseAction(lambda result: (oper_less_equal, result[1]))
-
-    pEQ = "==" + pEXPR
-    pEQ.setParseAction(lambda result: (oper_equal, result[1]))
-
-    pNOT_EQ = "<> " + pEXPR
-    pNOT_EQ.setParseAction(lambda result: (oper_not_equal, result[1]))
-
-    pCOND = "?" + pEXPR + ":" + pEXPR
-    pCOND.setParseAction(lambda result: ("COND", result[1], result[3]))
-
-    pCALL = "(" + Group(Optional(pEXPR) + ZeroOrMore(Suppress(",") + pEXPR)) + ")"
-    pCALL.setParseAction(lambda result: ("CALL", result[1]))
-
-    pACCESS = "[" + pEXPR + "]" + NotAny("=")
-    pACCESS.setParseAction(lambda result: (oper_index, result[1]))
-
-    def finalparse(result):
-        if result[1][0] == "AND":
-            return EAnd(result[0],result[1][1])
-        if result[1][0] == "OR":
-            return EOr(result[0],result[1][1])
-        if result[1][0] == "COND":
-            return EIf(result[0],result[1][1],result[1][2])
-        if result[1][0] == "CALL":
-            return ECall(result[0],result[1][1])
-        return EPrimCall(result[1][0],[result[0],result[1][1]]) 
-
-    pNON_FINAL = (pINTEGER | pBOOLEAN | pSTRING |  pNOT | pLET | pEXPR_PAREN | pARRAY | pFUN_REC | pFUN | pDICT | pIDENTIFIER)
-
-    pFINAL = pNON_FINAL + (pMUL | pADD | pSUB | pGTR_EQ | pGTR | pLSS_EQ | pLSS | pEQ | pNOT_EQ | pAND | pOR | pCOND | pCALL | pACCESS)
-    pFINAL.setParseAction(finalparse)
-
-    pEXPR << ( pFINAL | pINTEGER | pBOOLEAN | pSTRING |  pNOT | pLET | pEXPR_PAREN | pARRAY | pFUN_REC | pFUN | pDICT | pIDENTIFIER )
-
-    pDECL_VAR = Keyword("var") + pNAME + ";"
-    pDECL_VAR.setParseAction(lambda result: (result[1],EValue(VNone())))
-
-    pDECL_VAR_INST = Keyword("var") + pNAME + "=" + pEXPR + ";"
-    pDECL_VAR_INST.setParseAction(lambda result: (result[1],result[3]))
-
-    pDEF = Keyword("def") + pNAME + "(" + Group(Optional(pNAME) + ZeroOrMore(Suppress(",") + pNAME)) + ")" + pBODY 
-    pDEF.setParseAction(lambda result: (result[1], EFunction(result[3],mkFunBody(result[3],result[5]),name=result[1])))
-
-    pDECL = (pDECL_VAR | pDECL_VAR_INST | pDEF)
-
-    pSTMT_EVAL = pEXPR + ";"
-    pSTMT_EVAL.setParseAction(lambda result: result[0])
-
-    pSTMT_VAR = pNAME + "=" + pEXPR + ";"
-    pSTMT_VAR.setParseAction(lambda result: EPrimCall(oper_update,[EId(result[0]),result[2]]))
-
-    pSTMT_PRINT = Keyword("print") + Group(pEXPR + ZeroOrMore(Suppress(",") + pEXPR)) + ";"
-    pSTMT_PRINT.setParseAction(lambda result: EPrimCall(oper_print,result[1]))
-
-    pSTMT_ASSIGN = pEXPR + "[" + pEXPR + "]" + "=" + pEXPR + ";"
-    pSTMT_ASSIGN.setParseAction(lambda result: EPrimCall(oper_obj_update,[result[0],result[2],result[5]]))
-
-    pSTMT_COND = "if" + pEXPR + pBODY
-    pSTMT_COND.setParseAction(lambda result: EIf(result[1],result[2],EValue(VBoolean(True))))
-
-    pSTMT_COND_ELSE = "if" + pEXPR + pBODY + "else" + pBODY
-    pSTMT_COND_ELSE.setParseAction(lambda result: EIf(result[1],result[2],result[4]))
-
-    pSTMT_WHILE = Keyword("while") + pEXPR + pBODY
-    pSTMT_WHILE.setParseAction(lambda result: EWhile(result[1],result[2]))
-
-    # def parse_for(result):
-    #     init = result[2]
-    #     cond = ECall(EPrimCall(oper_deref,[EId(result[3][1])]),[result[3][0],result[3][2]])
-
-    #     if result[3][1] == "!=":
-    #         cond = ECall(EPrimCall(oper_deref,[EId("not")]),[ECall(EPrimCall(oper_deref,[EId("zero?")]),[ECall(EPrimCall(oper_deref,[EId("-")]),[result[3][0],result[3][2]])])])
-
-    #     mod = EPrimCall(oper_update,[EId(result[5]),ECall(result[8],[result[7],result[9]])])
-    #     return EFor(init,cond,mod,result[11])
-
-    # pSTMT_FOR = Keyword("for") + "(" + pSTMT_UPDATE + Group(pEXPR + pNAME + pEXPR) + ";" + pNAME + "=" + pEXPR + pEXPR + pEXPR + ")"+ pSTMT_BLOCK
-    # pSTMT_FOR.setParseAction(parse_for)
-
-    pSTMT_FOR = Keyword("for") + "(" + pNAME + Keyword("in") + pEXPR + ")" + pBODY
-    pSTMT_FOR.setParseAction(lambda result: EFor(result[2],result[4],result[6]))
-
-    pSTMT = (pSTMT_EVAL | pSTMT_VAR | pSTMT_PRINT | pSTMT_ASSIGN | pSTMT_COND_ELSE | pSTMT_COND | pSTMT_WHILE | pSTMT_FOR)
-
-    def mkBlock (decls,stmts):
-        bindings = [ (n,ERefCell(expr)) for (n,expr) in decls ]
-        return ELet(bindings,EDo(stmts))
-
-    pBODY << "{" + Group(ZeroOrMore(pDECL)) + Group(ZeroOrMore(pSTMT)) + "}"
-    pBODY.setParseAction(lambda result: mkBlock(result[1],result[2]))
-
-    # pEXPRS = ZeroOrMore(pEXPR)
-    # pEXPRS.setParseAction(lambda result: [result])
-
-    # pIF = "(" + Keyword("if") + pEXPR + pEXPR + pEXPR + ")"
-    # pIF.setParseAction(lambda result: EIf(result[2],result[3],result[4]))
-
-    # def mkFunBody (params,body):
-    #     bindings = [ (p,ERefCell(EId(p))) for p in params ]
-    #     return ELet(bindings,body)
-
-    # pFUN = "(" + Keyword("function") + "(" + pNAMES + ")" + pEXPR + ")"
-    # pFUN.setParseAction(lambda result: EFunction(result[3],mkFunBody(result[3],result[5])))
-
-    # pARRAY = "(" + Keyword("new-array") + pEXPR + ")"
-    # pARRAY.setParseAction(lambda result:EArray(result[2]))
-
-    # pWITH = "(" + Keyword("with") + pEXPR + pEXPR + ")"
-    # pWITH.setParseAction(lambda result: EWithObj(result[2],result[3]))
-    
-    # pCALL = "(" + pEXPR + pEXPRS + ")"
-    # pCALL.setParseAction(lambda result: ECall(result[1],result[2]))
-
-    # pEXPR << (pINTEGER | pBOOLEAN | pSTRING | pARRAY | pWITH | pIDENTIFIER | pIF | pFUN | pCALL)
-
-    # pSTMT = Forward()
-
-    # pDECL_VAR = "var" + pNAME + "=" + pEXPR + ";"
-    # pDECL_VAR.setParseAction(lambda result: (result[1],result[3]))
-
-    # pDECL_PROC = Keyword("procedure") + pNAME + "(" + pNAMES + ")" + pSTMT
-    # pDECL_PROC.setParseAction(lambda result: (result[1], EFunction(result[3], mkFunBody(result[3],result[5]))))
-
-    # # hack to get pDECL to match only pDECL_VAR (but still leave room
-    # # to add to pDECL later)
-    # pDECL = ( pDECL_PROC | pDECL_VAR | NoMatch() )
-
-    # pDECLS = ZeroOrMore(pDECL)
-    # pDECLS.setParseAction(lambda result: [result])
-
-    # pSTMT_IF_1 = "if" + pEXPR + pSTMT + "else" + pSTMT
-    # pSTMT_IF_1.setParseAction(lambda result: EIf(result[1],result[2],result[4]))
-
-    # pSTMT_IF_2 = "if" + pEXPR + pSTMT
-    # pSTMT_IF_2.setParseAction(lambda result: EIf(result[1],result[2],EValue(VBoolean(True))))
-   
-    # pSTMT_WHILE = "while" + pEXPR + pSTMT
-    # pSTMT_WHILE.setParseAction(lambda result: EWhile(result[1],result[2]))
-
-    # pSTMT_PRINT = "print" + pEXPR + ";"
-    # pSTMT_PRINT.setParseAction(lambda result: EPrimCall(oper_print,[result[1]]));
-
-    # pSTMT_UPDATE = pNAME + "<-" + pEXPR + ";"
-    # pSTMT_UPDATE.setParseAction(lambda result: EPrimCall(oper_update,[EId(result[0]),result[2]]))
-
-    # pSTMT_UPDATE_ARR = pEXPR + "[" + pEXPR + "]" + "<-" + pEXPR + ";"
-    # pSTMT_UPDATE_ARR.setParseAction(lambda result:EPrimCall(arr_oper_update,[result[0],result[2],result[5]]))
-
-    # pSTMT_PROC = pEXPR + "(" + pEXPRS + ")" + ";"
-    # pSTMT_PROC.setParseAction(lambda result: ECall(result[0],result[2]))
-
-    # pSTMTS = ZeroOrMore(pSTMT)
-    # pSTMTS.setParseAction(lambda result: [result])
-
-    # def mkBlock (decls,stmts):
-    #     bindings = [ (n,ERefCell(expr)) for (n,expr) in decls ]
-    #     return ELet(bindings,EDo(stmts))
-        
-    # pSTMT_BLOCK = "{" + pDECLS + pSTMTS + "}"
-    # pSTMT_BLOCK.setParseAction(lambda result: mkBlock(result[1],result[2]))
-
-    # def parse_for(result):
-    #     init = result[2]
-    #     cond = ECall(EPrimCall(oper_deref,[EId(result[3][1])]),[result[3][0],result[3][2]])
-
-    #     if result[3][1] == "!=":
-    #         cond = ECall(EPrimCall(oper_deref,[EId("not")]),[ECall(EPrimCall(oper_deref,[EId("zero?")]),[ECall(EPrimCall(oper_deref,[EId("-")]),[result[3][0],result[3][2]])])])
-
-    #     mod = EPrimCall(oper_update,[EId(result[5]),ECall(result[8],[result[7],result[9]])])
-    #     return EFor(init,cond,mod,result[11])
-
-    # pSTMT_FOR = Keyword("for") + "(" + pSTMT_UPDATE + Group(pEXPR + pNAME + pEXPR) + ";" + pNAME + "=" + pEXPR + pEXPR + pEXPR + ")"+ pSTMT_BLOCK
-    # pSTMT_FOR.setParseAction(parse_for)
-    
-    # pSTMT << ( pSTMT_IF_1 | pSTMT_IF_2 | pSTMT_WHILE | pSTMT_PRINT | pSTMT_UPDATE_ARR | pSTMT_UPDATE |  pSTMT_BLOCK | pSTMT_FOR | pSTMT_PROC)
-
-
-    # can't attach a parse action to pSTMT because of recursion, so let's duplicate the parser
-    pTOP_STMT = pSTMT.copy()
-    pTOP_STMT.setParseAction(lambda result: {"result":"statement",
-                                             "stmt":result[0]})
-
-
-    pTOP_DECL = pDECL.copy()
-    pTOP_DECL.setParseAction(lambda result: {"result":"declaration",
-                                             "decl":result[0]})
-
-    #pABSTRACT = "#abs" + pSTMT
-    #pABSTRACT.setParseAction(lambda result: {"result":"abstract",
-    #                                         "stmt":result[1]})
-
-    #pQUIT = Keyword("#quit")
-    #pQUIT.setParseAction(lambda result: {"result":"quit"})
-    
-    #pTOP = (pQUIT | pABSTRACT | pTOP_DECL | pTOP_STMT )
-
-    pTOP = OneOrMore(pTOP_DECL | pTOP_STMT) #+ FollowedBy(StringEnd())
-
-    return pTOP
-    result = pTOP.parseString(input)[0]
-    return result    # the first element of the result is the expression
-
-def parse_test():
 
     idChars = alphas+"_"
 
@@ -1048,12 +784,10 @@ def parse_test():
     pBODY << "{" + Group(ZeroOrMore(pDECL)) + Group(ZeroOrMore(pSTMT)) + "}"
     pBODY.setParseAction(lambda result: mkBlock(result[1],result[2]))
 
-
     # can't attach a parse action to pSTMT because of recursion, so let's duplicate the parser
     pTOP_STMT = pSTMT.copy()
     pTOP_STMT.setParseAction(lambda result: {"result":"statement",
                                              "stmt":result[0]})
-
 
     pTOP_DECL = pDECL.copy()
     pTOP_DECL.setParseAction(lambda result: {"result":"declaration",
@@ -1067,25 +801,18 @@ def shell ():
     # A simple shell
     # Repeatedly read a line of input, parse it, and evaluate the result
 
-    print "Homework 6 - Imp Language"
-    print "#quit to quit, #abs to see abstract representation"
+    print "Homework 7 - PJ Language"
     env = initial_env()
     while True:
         inp = raw_input("inp> ")
 
         try:
-            result = parse(inp).parseString(inp)[0]
+            result = parse().parseString(inp)[0]
 
             if result["result"] == "statement":
                 stmt = result["stmt"]
-                # print "Abstract representation:", exp
+                print "Abstract representation:", exp
                 v = stmt.eval(env)
-
-            elif result["result"] == "abstract":
-                print result["stmt"]
-
-            elif result["result"] == "quit":
-                return
 
             elif result["result"] == "declaration":
                 (name,expr) = result["decl"]
@@ -1093,28 +820,19 @@ def shell ():
                 env.insert(0,(name,VRefCell(v)))
                 print "{} defined".format(name)
                 
-                
         except Exception as e:
             print "Exception: {}".format(e)
 
 def printTest (exp,env):
     print "func> {}".format(exp)
-    #result = parse(exp)
-    #result = parse(exp).parseString(exp)[0]
-    result = parse_test().parseString(exp)[0]
+    result = parse().parseString(exp)[0]
     print result
 
     if result["result"] == "statement":
         stmt = result["stmt"]
-        print stmt
+        #print stmt
         #print "Abstract representation:", exp
         v = stmt.eval(env)
-
-    elif result["result"] == "abstract":
-        print result["stmt"]
-
-    elif result["result"] == "quit":
-        return
 
     elif result["result"] == "declaration":
         #print result
@@ -1124,8 +842,7 @@ def printTest (exp,env):
         #print "{} defined".format(name)
 
 def execute(filename):
-    result = parse(filename).parseFile(filename)
-    result = parse_test().parseFile(filename)
+    result = parse().parseFile(filename)
     env = initial_env()
     call_main = {'result': 'statement', 'stmt': ECall(EPrimCall(oper_deref,[EId("main")]),[])}
     result.append(call_main)
@@ -1142,48 +859,12 @@ def execute(filename):
             (name,expr) = res["decl"]
             v = expr.eval(env)
             env.insert(0,(name,VRefCell(v)))
-            #print "{} defined".format(name)
-
 
 
 if __name__ == '__main__':
     sys.setrecursionlimit(100000)
+    
     for arg in sys.argv[1:]:
         print "Running file {}".format(arg)
         execute(arg)
     exit()
-
-    print "Homework 7"
-    global_env = initial_env()
-  
-
-    printTest("var global_number = 10;",global_env)
-    printTest("var x = global_number;",global_env)
-    printTest("var y = global_number+1;",global_env)
-    printTest("print x<>y;",global_env)
-    printTest("def main () { var x1 = global_number; var y1 = global_number+1; print true;}",global_env)
-  #   printTest("def main () {\
-  # var x = global_number;\
-  # var y = global_number+1;\
-  # \}",global_env)
-#   print true;\
-#   print false;\
-#   print true and true,true;\
-#   print false or true,true;\
-#   print false or false, false;\
-#   print x == y, false;\
-#   print (x > y), false;\
-# \}",global_env)
-
-#   print x==y,x>y,x>=y,x<y,x<=y,x<>y;\
-#   print y==x,y>x,y>=x,y<x,y<=x,y<>x;\
-#   print x==y or x>y, x>=y;\
-#   print x==y and x>y, false;\
-#   print not x==y, x<>y;\
-#   print not true and not false,false;\
-#   print not true or not false,true;\
-#   print not false and true, true;\
-# \
-#   print true ? true : false, true;\
-#   print false ? true : false, false;\
-# }",global_env)
