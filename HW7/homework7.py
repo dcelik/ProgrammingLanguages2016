@@ -7,6 +7,17 @@
 #         jacob.riedel@students.olin.edu
 #
 
+
+# Functionality:  Parser handles left recusive grammer
+#                 Not left associative
+#                 Can pass several files into the language at once
+#                 EArray and EDict has fix that may not be prefered
+
+# Bugs (Known):   Logic.pj returns incorrect value because 'and', 'not', 'or' are not left associative
+#                 Ex:  print not true or not false,true;
+#                 This prints false, because our grammar groups as not (true or (not false))
+#                 We recognize this righ associativity and see no way to easily fix it without using parans around the terms
+
 import sys, copy
 
 #
