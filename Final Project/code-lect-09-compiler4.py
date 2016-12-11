@@ -201,10 +201,10 @@ class EIf (Exp):
         jump = "L{}".format(fresh())
         result = self._cond.compile()
         result += ["LOAD-ADDR",
-                   "PL_"+jump,
+                   "@"+jump,
                    "JUMP-TRUE"]
         result += self._else.compile()
-        result += ["PL_"+jump+":"]
+        result += ["#"+jump]
         result += self._then.compile()
         return result
 
@@ -380,9 +380,9 @@ class EFunction (Exp):
             result += ["LOAD-FUN","PUSH-ENV"]
         result += ["PUSH-ENV-ARGS"]
         result += self._body.compile()
-        result += ["PL_"+addr_cont+":",
+        result += ["#"+addr_cont,
                    "LOAD-ADDR",
-                   "PL_"+addr_fun,
+                   "@"+addr_fun,
                    "LOAD-FUN"]
         return result
         
@@ -1139,7 +1139,11 @@ def execute (code,start_pc,start_env):
 
 def translate_into_c(code):
     pc = 0
+    jump_labels = []
     while True:
+
+        if pc in jump_labels:
+            print "PL_{}:\n".format(pc)
 
         op = code[pc]
 
@@ -1181,7 +1185,8 @@ def translate_into_c(code):
             pc += 1
 
         elif op == "LOAD-ADDR":
-            print "addr = &&{}\n".format(code[pc+1])
+            print "addr = &&PL_{}\n".format(code[pc+1])
+            jump_labels.append(code[pc+1])
             pc += 2
 
         elif op == "LOAD-FUN":
@@ -1300,8 +1305,7 @@ code = ["LOAD",
             VInteger(0),
             "PUSH-ARGS",
             "LOAD-ADDR",
-            "PL_8",   #loop
-            "PL_8:",
+            8,   #loop
             "LOAD-FUN",  #loop
             "PUSH-ENV",
             "PUSH-ENV-ARGS",
@@ -1312,7 +1316,7 @@ code = ["LOAD",
              "PRIM-CALL",
              oper_zero,
              "LOAD-ADDR",
-             "PL_55", #done
+             55, #done
              "JUMP-TRUE",
              "CLEAR-ARGS",
              "LOOKUP",
@@ -1349,7 +1353,6 @@ code = ["LOAD",
              0,
              "LOAD-ADDR-ENV",
              "JUMP",  
-             "PL_55:",
              "LOOKUP",   #done
              2,
              "RETURN"]
