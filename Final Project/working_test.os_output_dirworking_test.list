@@ -1,4 +1,4 @@
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 1
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s 			page 1
 
 
    1              		.file	"working_test.c"
@@ -58,7 +58,7 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 1
   58              		.text
   59              	LHOTE2:
   60              		.section	.text.unlikely,"x"
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 2
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s 			page 2
 
 
   61              	LCOLDB3:
@@ -118,7 +118,7 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 1
  101 00a5 8D1480   		leal	(%eax,%eax,4), %edx
  102 00a8 C1E204   		sall	$4, %edx
  103 00ab 81C20000 		addl	$_args, %edx
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 3
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s 			page 3
 
 
  103      0000
@@ -178,7 +178,7 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 1
  140 0140 0F84CB01 		je	L14
  140      0000
  141              	L7:
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 4
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s 			page 4
 
 
  142 0146 89DF     		movl	%ebx, %edi
@@ -238,7 +238,7 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 1
  175 01da 89DE     		movl	%ebx, %esi
  176 01dc 8B3C24   		movl	(%esp), %edi
  177 01df B114     		movb	$20, %cl
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 5
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s 			page 5
 
 
  178 01e1 F3A5     		rep movsl
@@ -298,7 +298,7 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 1
  218 026f C1E004   		sall	$4, %eax
  219 0272 B114     		movb	$20, %cl
  220 0274 05000000 		addl	$_env, %eax
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 6
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s 			page 6
 
 
  220      00
@@ -358,7 +358,7 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 1
  263      00
  264 02f7 B9140000 		movl	$20, %ecx
  264      00
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 7
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s 			page 7
 
 
  265 02fc F3A5     		rep movsl
@@ -418,7 +418,7 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 1
  307      000000
  308 001a 89442404 		movl	%eax, 4(%esp)
  309 001e 89542408 		movl	%edx, 8(%esp)
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 8
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s 			page 8
 
 
  310 0022 E8000000 		call	_printf
@@ -445,23 +445,23 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 1
  329              		.comm	_result, 80, 6
  330              		.comm	_addr, 4, 2
  331              		.ident	"GCC: (tdm-1) 4.9.2"
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s 			page 9
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s 			page 9
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 working_test.c
-C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s:9      .text:00000000 _oper_plus
-C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s:27     .text:00000010 _oper_minus
-C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s:45     .text:00000020 _oper_times
-C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s:67     .text:00000040 _oper_zero
-C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s:86     .text:00000060 _func
+C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s:9      .text:00000000 _oper_plus
+C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s:27     .text:00000010 _oper_minus
+C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s:45     .text:00000020 _oper_times
+C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s:67     .text:00000040 _oper_zero
+C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s:86     .text:00000060 _func
                             *COM*:00000050 _result
                             *COM*:000000a0 _args
-C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s:326    .bss:00000004 _args_index
+C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s:326    .bss:00000004 _args_index
                             *COM*:00000004 _addr
                             *COM*:00000500 _env
-C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s:321    .bss:00000000 _env_index
-C:\Users\deniz\AppData\Local\Temp\cctjCgIa.s:300    .text.startup:00000000 _main
+C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s:321    .bss:00000000 _env_index
+C:\Users\deniz\AppData\Local\Temp\cc03EWOA.s:300    .text.startup:00000000 _main
 
 UNDEFINED SYMBOLS
 ___main

@@ -5,7 +5,7 @@ typedef struct tClosure{
     long long val;
     void* addr;
     int envLen;
-    struct tClosure * p_env[16];
+    struct tClosure * p_env[32];
 } tClosure;
 
 void* addr;
@@ -13,11 +13,13 @@ void* addr;
 //RESULT
 tClosure result;
 //ARGS
-tClosure args[2];
+tClosure args[32];
 int args_index = 0;
 //ENV
-tClosure env[16];
-int env_index = 3;
+tClosure env[32];
+int env_index = 0;
+//For loop i
+int i;
 
 
 long long oper_plus(tClosure clo[]){
@@ -41,33 +43,39 @@ long long func(){
     result.envLen = 0;
 
     tClosure addr1;
+    addr1.val = -1;
     addr1.addr = &&PL_start0;
     addr1.envLen = 0;
     env[0] = addr1;
+    env_index++;
 
     tClosure addr2;
+    addr2.val = -1;
     addr2.addr = &&PL_start16;
     addr2.envLen = 0;
     env[1] = addr2;
+    env_index++;
 
     tClosure addr3;
+    addr3.val = -1;
     addr3.addr = &&PL_start32;
     addr3.envLen = 0;
     env[2] = addr3;
+    env_index++;
 
     tClosure addr4;
+    addr4.val = -1;
     addr4.addr = &&PL_start45;
     addr4.envLen = 0;
     env[3] = addr4;
+    env_index++;
 
     goto FUNC_START;
 
     PL_start0:
 
-    env[env_index]=args[0];
-    env_index++;
-    if(args_index==2){
-        env[env_index]=args[1];
+    for (i=0;i<=args_index-1;i++){
+        env[env_index] = args[i];
         env_index++;
     }
 
@@ -93,17 +101,17 @@ long long func(){
     result = env[2];
 
     addr = result.addr;
-    *env = **result.p_env;
+    for (i = 0;i<result.envLen;i++){
+        env[i] = *result.p_env[i];
+    }
     env_index = result.envLen;
 
     goto *addr;
 
     PL_start16:
 
-    env[env_index]=args[0];
-    env_index++;
-    if(args_index==2){
-        env[env_index]=args[1];
+    for (i=0;i<=args_index-1;i++){
+        env[env_index] = args[i];
         env_index++;
     }
 
@@ -129,17 +137,17 @@ long long func(){
     result = env[2];
 
     addr = result.addr;
-    *env = **result.p_env;
+    for (i = 0;i<result.envLen;i++){
+        env[i] = *result.p_env[i];
+    }
     env_index = result.envLen;
 
     goto *addr;
 
     PL_start32:
 
-    env[env_index]=args[0];
-    env_index++;
-    if(args_index==2){
-        env[env_index]=args[1];
+    for (i=0;i<=args_index-1;i++){
+        env[env_index] = args[i];
         env_index++;
     }
 
@@ -160,17 +168,17 @@ long long func(){
     result = env[1];
 
     addr = result.addr;
-    *env = **result.p_env;
+    for (i = 0;i<result.envLen;i++){
+        env[i] = *result.p_env[i];
+    }
     env_index = result.envLen;
 
     goto *addr;
 
     PL_start45:
 
-    env[env_index]=args[0];
-    env_index++;
-    if(args_index==2){
-        env[env_index]=args[1];
+    for (i=0;i<=args_index-1;i++){
+        env[env_index] = args[i];
         env_index++;
     }
 
@@ -189,16 +197,16 @@ long long func(){
     PL_B20:
 
     result.addr = addr;
-    *result.p_env = env;
+    for (i = 0;i<env_index;i++){
+        *result.p_env[i] = env[i];
+    }
     result.envLen = env_index;
 
     env[env_index]=result;
     env_index++;
 
-    env[env_index]=args[0];
-    env_index++;
-    if(args_index==2){
-        env[env_index]=args[1];
+    for (i=0;i<=args_index-1;i++){
+        env[env_index] = args[i];
         env_index++;
     }
 
@@ -276,7 +284,9 @@ long long func(){
     result = env[4];
 
     addr = result.addr;
-    *env = **result.p_env;
+    for (i = 0;i<result.envLen;i++){
+        env[i] = *result.p_env[i];
+    }
     env_index = result.envLen;
 
     goto *addr;
@@ -292,10 +302,15 @@ long long func(){
 
     result = env[7];
 
+    printf("%d",*result.p_env);
+
     addr = result.addr;
-    *env = **result.p_env;
+    for (i = 0;i<result.envLen;i++){
+        env[i] = *result.p_env[i];
+    }
     env_index = result.envLen;
 
+    return 0;
     goto *addr;
 
     PL_A19:
@@ -303,8 +318,12 @@ long long func(){
     addr = &&PL_B20;
 
     result.addr = addr;
-    *result.p_env = env;
+    for (i = 0;i<env_index;i++){
+        *result.p_env[i] = env[i];
+    }
     result.envLen = env_index;
+
+    printf("%d \n",**result.p_env);
 
     args[args_index] = result;
     args_index++;
@@ -320,16 +339,14 @@ long long func(){
 
     PL_B23:
 
-    env[env_index]=args[0];
-    env_index++;
-    if(args_index==2){
-        env[env_index]=args[1];
+    for (i=0;i<=args_index-1;i++){
+        env[env_index] = args[i];
         env_index++;
     }
 
     args_index = 0;
 
-    result.val = 200;
+    result.val = 0;
 
     args[args_index] = result;
     args_index++;
@@ -341,13 +358,17 @@ long long func(){
 
     result = env[5];
 
+    //return result.val;
+
     args[args_index] = result;
     args_index++;
 
     result = env[4];
 
     addr = result.addr;
-    *env = **result.p_env;
+    for (i = 0;i<result.envLen;i++){
+        env[i] = *result.p_env[i];
+    }
     env_index = result.envLen;
 
     goto *addr;
@@ -357,11 +378,15 @@ long long func(){
     addr = &&PL_B23;
 
     result.addr = addr;
-    *result.p_env = env;
+    for (i = 0;i<env_index;i++){
+        *result.p_env[i] = env[i];
+    }
     result.envLen = env_index;
 
     addr = result.addr;
-    *env = **result.p_env;
+    for (i = 0;i<result.envLen;i++){
+        env[i] = *result.p_env[i];
+    }
     env_index = result.envLen;
 
     goto *addr;
