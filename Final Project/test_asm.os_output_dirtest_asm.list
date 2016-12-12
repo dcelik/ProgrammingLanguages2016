@@ -1,4 +1,4 @@
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 1
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 1
 
 
    1              		.file	"test_asm.c"
@@ -58,7 +58,7 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 1
   59 003f 55       		pushl	%ebp
   60 0040 89E5     		movl	%esp, %ebp
   61 0042 8B4508   		movl	8(%ebp), %eax
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 2
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 2
 
 
   62 0045 8B00     		movl	(%eax), %eax
@@ -118,7 +118,7 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 1
  116 00b0 01000000 		.long	1
  117 00b4 04000000 		.long	4
  118 00b8 03000000 		.long	3
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 3
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 3
 
 
  119 00bc 03000000 		.long	3
@@ -178,7 +178,7 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 1
  156      0000
  157 00b6 C7050800 		movl	$1, _result+8
  157      00000100 
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 4
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 4
 
 
  157      0000
@@ -238,7 +238,7 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 1
  192 0157 89500C   		movl	%edx, 12(%eax)
  193 015a 8B151000 		movl	_result+16, %edx
  193      0000
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 5
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 5
 
 
  194 0160 895010   		movl	%edx, 16(%eax)
@@ -298,7 +298,7 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 1
  228 01f6 8B151000 		movl	_result+16, %edx
  228      0000
  229 01fc 895010   		movl	%edx, 16(%eax)
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 6
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 6
 
 
  230 01ff A1040000 		movl	_env_index, %eax
@@ -358,7 +358,7 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 1
  267 0291 7552     		jne	L12
  268 0293 8B150000 		movl	_env, %edx
  268      0000
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 7
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 7
 
 
  269 0299 A1040000 		movl	_env_index, %eax
@@ -418,7 +418,7 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 1
  306 032d C1E002   		sall	$2, %eax
  307 0330 05000000 		addl	$_args, %eax
  307      00
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 8
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 8
 
 
  308 0335 8B150000 		movl	_result, %edx
@@ -450,10 +450,26 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 1
  324 037f C7050800 		movl	$1, _result+8
  324      00000100 
  324      0000
- 325 0389 C9       		leave
- 326 038a C3       		ret
- 327              		.ident	"GCC: (tdm-1) 4.9.2"
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s 			page 9
+ 325 0389 A1040000 		movl	_result+4, %eax
+ 325      00
+ 326 038e A3000000 		movl	%eax, _addr
+ 326      00
+ 327 0393 A1000000 		movl	_env, %eax
+ 327      00
+ 328 0398 C7442404 		movl	$4, 4(%esp)
+ 328      04000000 
+ 329 03a0 890424   		movl	%eax, (%esp)
+ 330 03a3 E8000000 		call	_realloc
+ 330      00
+ 331 03a8 8944241C 		movl	%eax, 28(%esp)
+ 332 03ac A1100000 		movl	_result+16, %eax
+ 332      00
+ 333 03b1 A3000000 		movl	%eax, _env
+ 333      00
+ 334 03b6 C9       		leave
+ 335 03b7 C3       		ret
+ 336              		.ident	"GCC: (tdm-1) 4.9.2"
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 9
 
 
 DEFINED SYMBOLS
@@ -461,15 +477,15 @@ DEFINED SYMBOLS
                             *COM*:00000004 _addr
                             *COM*:00000014 _result
                             *COM*:00000028 _args
-C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s:8      .bss:00000000 _args_index
+C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s:8      .bss:00000000 _args_index
                             *COM*:00000004 _env
-C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s:13     .bss:00000004 _env_index
-C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s:18     .text:00000000 _oper_plus
-C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s:31     .text:00000014 _oper_minus
-C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s:45     .text:0000002a _oper_times
-C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s:58     .text:0000003f _oper_zero
-C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s:71     .data:00000000 _code
-C:\Users\deniz\AppData\Local\Temp\ccCxQ2K1.s:135    .text:00000051 _main
+C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s:13     .bss:00000004 _env_index
+C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s:18     .text:00000000 _oper_plus
+C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s:31     .text:00000014 _oper_minus
+C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s:45     .text:0000002a _oper_times
+C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s:58     .text:0000003f _oper_zero
+C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s:71     .data:00000000 _code
+C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s:135    .text:00000051 _main
 
 UNDEFINED SYMBOLS
 ___main

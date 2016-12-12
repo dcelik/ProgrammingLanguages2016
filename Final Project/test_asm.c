@@ -49,10 +49,10 @@ int main(){
     result.val = -1;
     result.isInt = 0;
     result.envLen = 0;
-    result.p_env = (tClosure *)malloc(sizeof(tClosure)*result.envLen);
-    env = (tClosure *)malloc(sizeof(tClosure)*0);
+    result.p_env = (tClosure *)malloc(sizeof(tClosure)*1);
+    env = (tClosure *)malloc(sizeof(tClosure)*1);
 
-    //LOAD 
+    //LOAD
     //10
     result.val = 10;
     result.isInt = 1;
@@ -61,7 +61,7 @@ int main(){
     args[args_index] = result;
     args_index++;
 
-    //LOAD 
+    //LOAD
     //0
     result.val = 0;
     result.isInt = 1;
@@ -70,7 +70,7 @@ int main(){
     args[args_index] = result;
     args_index++;
 
-    //LOAD-ADDR 
+    //LOAD-ADDR
     //@loop
     addr = &&LOOP;
 
@@ -103,7 +103,7 @@ int main(){
     //CLEAR-ARGS
     args_index = 0;
 
-    //LOOKUP 
+    //LOOKUP
     //1
     result = env[1];
 
@@ -116,6 +116,10 @@ int main(){
     result.val = oper_zero(args);
     result.isInt = 1;
 
+    //LOAD-ADDR-ENV
+    addr = result.addr;
+    temp_env = realloc(env,sizeof(result.p_env));
+    env = result.p_env;
     //return env[0].val;
 
 
