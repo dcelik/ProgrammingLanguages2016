@@ -862,7 +862,7 @@ def shell_comp ():
     code = ["#start0","PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_plus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP","#start16",
                 "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_minus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP","#start32",
                 "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","PRIM-CALL",oper_zero,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",1,"LOAD-ADDR-ENV","JUMP","#start45",
-                "PUSH-ENV-ARGS","LOOKUP",0,"RETURN"]
+                "PUSH-ENV-ARGS","LOOKUP",0,"RETURN","#START_FUNC"]
     
     # # primitives are first (first NUM_PRIMITIVES entries) and then everything else
     # # including the "DONE" continuation
@@ -1013,11 +1013,13 @@ def assemble_c (code):
     with open("auto_build.c",'w') as t:
         t.write("#include <stdlib.h>\
                 \n#include <stdio.h>\
-              \n\ntypedef struct tClosure{\
+                \n#define array_size 12\
+                \n\
+                \ntypedef struct tClosure{\
                 \n    long long val;\
                 \n    void* addr;\
                 \n    int envLen;\
-                \n    struct tClosure * p_env[16];\
+                \n    struct tClosure* p_env;\
                 \n} tClosure;\
                 \n\
                 \nvoid* addr;\
@@ -1025,12 +1027,13 @@ def assemble_c (code):
                 \n//RESULT\
                 \ntClosure result;\
                 \n//ARGS\
-                \ntClosure args[2];\
+                \ntClosure args[array_size];\
                 \nint args_index = 0;\
                 \n//ENV\
-                \ntClosure env[16];\
+                \ntClosure env[array_size];\
                 \nint env_index = 0;\
                 \n\
+                \nint i;\
                 \n\
                 \nlong long oper_plus(tClosure clo[]){\
                 \n    return clo[0].val+clo[1].val;\
@@ -1051,25 +1054,37 @@ def assemble_c (code):
                 \n    //Setup result\
                 \n    result.val = -1;\
                 \n    result.envLen = 0;\
+                \n    result.p_env = (tClosure*)malloc(sizeof(tClosure)*array_size);\
+                \n\
                 \n    tClosure addr1;\
                 \n    addr1.addr = &&PL_start0;\
                 \n    addr1.envLen = 0;\
+                \n    addr1.p_env = (tClosure*)malloc(sizeof(tClosure)*array_size);\
                 \n    env[0] = addr1;\
+                \n    env_index++;\
                 \n\
                 \n    tClosure addr2;\
                 \n    addr2.addr = &&PL_start16;\
                 \n    addr2.envLen = 0;\
+                \n    addr2.p_env = (tClosure*)malloc(sizeof(tClosure)*array_size);\
                 \n    env[1] = addr2;\
+                \n    env_index++;\
                 \n\
                 \n    tClosure addr3;\
                 \n    addr3.addr = &&PL_start32;\
                 \n    addr3.envLen = 0;\
+                \n    addr3.p_env = (tClosure*)malloc(sizeof(tClosure)*array_size);\
                 \n    env[2] = addr3;\
+                \n    env_index++;\
                 \n\
                 \n    tClosure addr4;\
                 \n    addr4.addr = &&PL_start45;\
                 \n    addr4.envLen = 0;\
-                \n    env[3] = addr4;\n")
+                \n    addr4.p_env = (tClosure*)malloc(sizeof(tClosure)*array_size);\
+                \n    env[3] = addr4;\
+                \n    env_index++;\
+                \n\
+                \n    goto PL_START_FUNC;\n")
 
         while index<len(code):
             op = code[index]
@@ -1107,8 +1122,13 @@ def assemble_c (code):
                 elif op == "LOAD-ADDR-ENV":
                     t.write("\n")
                     t.write("    addr = result.addr;\
-                           \n    *env = **result.p_env;\
-                           \n    env_index = result.envLen;\n")
+                            \n    memcpy(env,result.p_env,result.envLen*sizeof(tClosure));\
+                            \n    env_index = result.envLen;\n")  
+                    # t.write("    addr = result.addr;\
+                    #         \n    for (i = 0; i<result.envLen;i++){\
+                    #         \n        env[i] = result.p_env[i];\
+                    #         \n    }\
+                    #         \n    env_index = result.envLen;\n")                             
                     index += 1
 
                 elif op == "JUMP":
@@ -1118,12 +1138,10 @@ def assemble_c (code):
                           
                 elif op == "PUSH-ENV-ARGS":
                     t.write("\n")
-                    t.write("    env[env_index]=args[0];\
-                           \n    env_index++;\
-                           \n    if(args_index==2){\
-                           \n        env[env_index]=args[1];\
-                           \n        env_index++;\
-                           \n    }\n")
+                    t.write("    for (i=0;i<args_index;i++){\
+                            \n        env[env_index] = args[i];\
+                            \n        env_index++;\
+                            \n    }\n")
                     index += 1
                   
                 elif op == "PUSH-ENV":
@@ -1138,7 +1156,14 @@ def assemble_c (code):
 
                 elif op == "LOAD-FUN":
                     t.write("\n")
-                    t.write("    result.addr = addr;\n    *result.p_env = env;\n    result.envLen = env_index;\n")
+                    t.write("    result.addr = addr;\
+                            \n    memcpy(result.p_env,env,env_index*sizeof(tClosure));\
+                            \n    result.envLen = env_index;\n")
+                    # t.write("    result.addr = addr;\
+                    #         \n    for (i = 0; i<env_index;i++){\
+                    #         \n        result.p_env[i] = env[i];\
+                    #         \n    }\
+                    #         \n    result.envLen = env_index;\n")
                     index += 1
 
                 elif op == "PRIM-CALL":
@@ -1527,28 +1552,29 @@ def decode (c):
 
 
 code = ["LOAD",
-        VInteger(10),
+        VInteger(200000),
         "PUSH-ARGS",
         "LOAD",
         VInteger(0),
         "PUSH-ARGS",
         "LOAD-ADDR",
-        8,   #loop
+        "@loop",
+        "#loop",   #loop
         "LOAD-FUN",  #loop
         "PUSH-ENV",
         "PUSH-ENV-ARGS",
         "CLEAR-ARGS",
         "LOOKUP",
-        1,
+        5,
         "PUSH-ARGS",
         "PRIM-CALL",
         oper_zero,
         "LOAD-ADDR",
-        55, #done
+        "@done", #done
         "JUMP-TRUE",
         "CLEAR-ARGS",
         "LOOKUP",
-        1,
+        5,
         "PUSH-ARGS",
         "LOAD",
         VInteger(1),
@@ -1560,10 +1586,10 @@ code = ["LOAD",
         "PUSH-ENV-ARGS",
         "CLEAR-ARGS",
         "LOOKUP",
-        1,
+        5,
         "PUSH-ARGS",
         "LOOKUP",
-        2,
+        6,
         "PUSH-ARGS",
         "PRIM-CALL",
         oper_plus,
@@ -1572,17 +1598,21 @@ code = ["LOAD",
         "PUSH-ENV-ARGS",
         "CLEAR-ARGS",
         "LOOKUP",
-        3,
+        7,
+        "PUSH-ARGS",
+        "LOOKUP",
+        8,
         "PUSH-ARGS",
         "LOOKUP",
         4,
-        "PUSH-ARGS",
-        "LOOKUP",
-        0,
         "LOAD-ADDR-ENV",
-        "JUMP",  
+        "JUMP",
+        "#done",  
         "LOOKUP",   #done
-        2,
+        6,
         "RETURN"]
-    
-translate_into_c(code)
+start = ["#start0","PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_plus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP","#start16",
+                "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_minus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP","#start32",
+                "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","PRIM-CALL",oper_zero,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",1,"LOAD-ADDR-ENV","JUMP","#start45",
+                "PUSH-ENV-ARGS","LOOKUP",0,"RETURN","#START_FUNC"]    
+assemble_c(start+code)
