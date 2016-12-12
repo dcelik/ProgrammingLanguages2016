@@ -1,342 +1,3378 @@
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccbnNqxc.s 			page 1
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 1
 
 
    1              		.file	"auto_build.c"
-   2              		.comm	_addr, 4, 2
-   3              		.comm	_result, 80, 6
-   4              		.comm	_args, 160, 6
-   5              		.globl	_args_index
-   6              		.bss
-   7              		.align 4
-   8              	_args_index:
-   9 0000 00000000 		.space 4
-  10              		.comm	_env, 1280, 6
-  11              		.globl	_env_index
-  12              		.align 4
-  13              	_env_index:
-  14 0004 00000000 		.space 4
-  15              		.text
-  16              		.globl	_oper_plus
-  18              	_oper_plus:
-  19 0000 55       		pushl	%ebp
-  20 0001 89E5     		movl	%esp, %ebp
-  21 0003 53       		pushl	%ebx
-  22 0004 8B4508   		movl	8(%ebp), %eax
-  23 0007 8B08     		movl	(%eax), %ecx
-  24 0009 8B5804   		movl	4(%eax), %ebx
-  25 000c 8B4508   		movl	8(%ebp), %eax
-  26 000f 83C050   		addl	$80, %eax
-  27 0012 8B5004   		movl	4(%eax), %edx
-  28 0015 8B00     		movl	(%eax), %eax
-  29 0017 01C8     		addl	%ecx, %eax
-  30 0019 11DA     		adcl	%ebx, %edx
-  31 001b 5B       		popl	%ebx
-  32 001c 5D       		popl	%ebp
-  33 001d C3       		ret
-  34              		.globl	_oper_minus
-  36              	_oper_minus:
-  37 001e 55       		pushl	%ebp
-  38 001f 89E5     		movl	%esp, %ebp
-  39 0021 53       		pushl	%ebx
-  40 0022 8B4508   		movl	8(%ebp), %eax
-  41 0025 8B08     		movl	(%eax), %ecx
-  42 0027 8B5804   		movl	4(%eax), %ebx
-  43 002a 8B4508   		movl	8(%ebp), %eax
-  44 002d 83C050   		addl	$80, %eax
-  45 0030 8B5004   		movl	4(%eax), %edx
-  46 0033 8B00     		movl	(%eax), %eax
-  47 0035 29C1     		subl	%eax, %ecx
-  48 0037 19D3     		sbbl	%edx, %ebx
-  49 0039 89C8     		movl	%ecx, %eax
-  50 003b 89DA     		movl	%ebx, %edx
-  51 003d 5B       		popl	%ebx
-  52 003e 5D       		popl	%ebp
-  53 003f C3       		ret
-  54              		.globl	_oper_times
-  56              	_oper_times:
-  57 0040 55       		pushl	%ebp
-  58 0041 89E5     		movl	%esp, %ebp
-  59 0043 57       		pushl	%edi
-  60 0044 56       		pushl	%esi
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccbnNqxc.s 			page 2
+   2              		.text
+   3              	Ltext0:
+   4              		.cfi_sections	.debug_frame
+   5              		.comm	_addr, 4, 2
+   6              		.comm	_result, 80, 6
+   7              		.comm	_args, 160, 6
+   8              		.globl	_args_index
+   9              		.bss
+  10              		.align 4
+  11              	_args_index:
+  12 0000 00000000 		.space 4
+  13              		.comm	_env, 1280, 6
+  14              		.globl	_env_index
+  15              		.data
+  16              		.align 4
+  17              	_env_index:
+  18 0000 03000000 		.long	3
+  19              		.text
+  20              		.globl	_oper_plus
+  22              	_oper_plus:
+  23              	LFB6:
+  24              		.file 1 "C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final
+   1:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** #include <stdlib.h>
+   2:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** #include <stdio.h>
+   3:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+   4:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** typedef struct tClosure{
+   5:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     long long val;
+   6:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     void* addr;
+   7:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     int envLen;
+   8:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     struct tClosure * p_env[16];
+   9:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** } tClosure;
+  10:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  11:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** void* addr;
+  12:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  13:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** //RESULT
+  14:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** tClosure result;
+  15:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** //ARGS
+  16:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** tClosure args[2];
+  17:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** int args_index = 0;
+  18:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** //ENV
+  19:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** tClosure env[16];
+  20:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** int env_index = 3;
+  21:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  22:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  23:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** long long oper_plus(tClosure clo[]){
+  25              		.loc 1 23 0
+  26              		.cfi_startproc
+  27 0000 55       		pushl	%ebp
+  28              		.cfi_def_cfa_offset 8
+  29              		.cfi_offset 5, -8
+  30 0001 89E5     		movl	%esp, %ebp
+  31              		.cfi_def_cfa_register 5
+  32 0003 53       		pushl	%ebx
+  33              		.cfi_offset 3, -12
+  24:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     return clo[0].val+clo[1].val;
+  34              		.loc 1 24 0
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 2
 
 
-  61 0045 53       		pushl	%ebx
-  62 0046 8B4508   		movl	8(%ebp), %eax
-  63 0049 8B08     		movl	(%eax), %ecx
-  64 004b 8B5804   		movl	4(%eax), %ebx
-  65 004e 8B4508   		movl	8(%ebp), %eax
-  66 0051 83C050   		addl	$80, %eax
-  67 0054 8B5004   		movl	4(%eax), %edx
-  68 0057 8B00     		movl	(%eax), %eax
-  69 0059 89DF     		movl	%ebx, %edi
-  70 005b 0FAFF8   		imull	%eax, %edi
-  71 005e 89D6     		movl	%edx, %esi
-  72 0060 0FAFF1   		imull	%ecx, %esi
-  73 0063 01FE     		addl	%edi, %esi
-  74 0065 F7E1     		mull	%ecx
-  75 0067 8D0C16   		leal	(%esi,%edx), %ecx
-  76 006a 89CA     		movl	%ecx, %edx
-  77 006c 5B       		popl	%ebx
-  78 006d 5E       		popl	%esi
-  79 006e 5F       		popl	%edi
-  80 006f 5D       		popl	%ebp
-  81 0070 C3       		ret
-  82              		.globl	_oper_zero
-  84              	_oper_zero:
-  85 0071 55       		pushl	%ebp
-  86 0072 89E5     		movl	%esp, %ebp
-  87 0074 8B4508   		movl	8(%ebp), %eax
-  88 0077 8B5004   		movl	4(%eax), %edx
-  89 007a 8B00     		movl	(%eax), %eax
-  90 007c 09D0     		orl	%edx, %eax
-  91 007e 85C0     		testl	%eax, %eax
-  92 0080 0F94C0   		sete	%al
-  93 0083 89C1     		movl	%eax, %ecx
-  94 0085 0FB6C1   		movzbl	%cl, %eax
-  95 0088 BA000000 		movl	$0, %edx
-  95      00
-  96 008d 5D       		popl	%ebp
-  97 008e C3       		ret
-  98              		.globl	_func
- 100              	_func:
- 101 008f 55       		pushl	%ebp
- 102 0090 89E5     		movl	%esp, %ebp
- 103 0092 57       		pushl	%edi
- 104 0093 56       		pushl	%esi
- 105 0094 53       		pushl	%ebx
- 106 0095 83EC0C   		subl	$12, %esp
- 107 0098 C7050000 		movl	$-1, _result
- 107      0000FFFF 
- 107      FFFF
- 108 00a2 C7050400 		movl	$-1, _result+4
- 108      0000FFFF 
- 108      FFFF
- 109 00ac C7050C00 		movl	$0, _result+12
- 109      00000000 
- 109      0000
- 110 00b6 8B150400 		movl	_env_index, %edx
- 110      0000
- 111 00bc 89D0     		movl	%edx, %eax
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccbnNqxc.s 			page 3
+  35 0004 8B4508   		movl	8(%ebp), %eax
+  36 0007 8B08     		movl	(%eax), %ecx
+  37 0009 8B5804   		movl	4(%eax), %ebx
+  38 000c 8B4508   		movl	8(%ebp), %eax
+  39 000f 83C050   		addl	$80, %eax
+  40 0012 8B5004   		movl	4(%eax), %edx
+  41 0015 8B00     		movl	(%eax), %eax
+  42 0017 01C8     		addl	%ecx, %eax
+  43 0019 11DA     		adcl	%ebx, %edx
+  25:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** }
+  44              		.loc 1 25 0
+  45 001b 5B       		popl	%ebx
+  46              		.cfi_restore 3
+  47 001c 5D       		popl	%ebp
+  48              		.cfi_restore 5
+  49              		.cfi_def_cfa 4, 4
+  50 001d C3       		ret
+  51              		.cfi_endproc
+  52              	LFE6:
+  53              		.globl	_oper_minus
+  55              	_oper_minus:
+  56              	LFB7:
+  26:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** long long oper_minus(tClosure clo[]){
+  57              		.loc 1 26 0
+  58              		.cfi_startproc
+  59 001e 55       		pushl	%ebp
+  60              		.cfi_def_cfa_offset 8
+  61              		.cfi_offset 5, -8
+  62 001f 89E5     		movl	%esp, %ebp
+  63              		.cfi_def_cfa_register 5
+  64 0021 53       		pushl	%ebx
+  65              		.cfi_offset 3, -12
+  27:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     return clo[0].val-clo[1].val;
+  66              		.loc 1 27 0
+  67 0022 8B4508   		movl	8(%ebp), %eax
+  68 0025 8B08     		movl	(%eax), %ecx
+  69 0027 8B5804   		movl	4(%eax), %ebx
+  70 002a 8B4508   		movl	8(%ebp), %eax
+  71 002d 83C050   		addl	$80, %eax
+  72 0030 8B5004   		movl	4(%eax), %edx
+  73 0033 8B00     		movl	(%eax), %eax
+  74 0035 29C1     		subl	%eax, %ecx
+  75 0037 19D3     		sbbl	%edx, %ebx
+  76 0039 89C8     		movl	%ecx, %eax
+  77 003b 89DA     		movl	%ebx, %edx
+  28:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** }
+  78              		.loc 1 28 0
+  79 003d 5B       		popl	%ebx
+  80              		.cfi_restore 3
+  81 003e 5D       		popl	%ebp
+  82              		.cfi_restore 5
+  83              		.cfi_def_cfa 4, 4
+  84 003f C3       		ret
+  85              		.cfi_endproc
+  86              	LFE7:
+  87              		.globl	_oper_times
+  89              	_oper_times:
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 3
 
 
- 112 00be C1E002   		sall	$2, %eax
- 113 00c1 01D0     		addl	%edx, %eax
- 114 00c3 C1E004   		sall	$4, %eax
- 115 00c6 05000000 		addl	$_env, %eax
- 115      00
- 116 00cb 89C2     		movl	%eax, %edx
- 117 00cd BB000000 		movl	$_args, %ebx
- 117      00
- 118 00d2 B8140000 		movl	$20, %eax
- 118      00
- 119 00d7 89D7     		movl	%edx, %edi
- 120 00d9 89DE     		movl	%ebx, %esi
- 121 00db 89C1     		movl	%eax, %ecx
- 122 00dd F3A5     		rep movsl
- 123 00df A1040000 		movl	_env_index, %eax
- 123      00
- 124 00e4 83C001   		addl	$1, %eax
- 125 00e7 A3040000 		movl	%eax, _env_index
- 125      00
- 126 00ec A1000000 		movl	_args_index, %eax
- 126      00
- 127 00f1 83F802   		cmpl	$2, %eax
- 128 00f4 7536     		jne	L10
- 129 00f6 8B150400 		movl	_env_index, %edx
- 129      0000
- 130 00fc 89D0     		movl	%edx, %eax
- 131 00fe C1E002   		sall	$2, %eax
- 132 0101 01D0     		addl	%edx, %eax
- 133 0103 C1E004   		sall	$4, %eax
- 134 0106 05000000 		addl	$_env, %eax
- 134      00
- 135 010b 89C2     		movl	%eax, %edx
- 136 010d BB500000 		movl	$_args+80, %ebx
- 136      00
- 137 0112 B8140000 		movl	$20, %eax
- 137      00
- 138 0117 89D7     		movl	%edx, %edi
- 139 0119 89DE     		movl	%ebx, %esi
- 140 011b 89C1     		movl	%eax, %ecx
- 141 011d F3A5     		rep movsl
- 142 011f A1040000 		movl	_env_index, %eax
- 142      00
- 143 0124 83C001   		addl	$1, %eax
- 144 0127 A3040000 		movl	%eax, _env_index
- 144      00
- 145              	L10:
- 146 012c C7050000 		movl	$0, _args_index
- 146      00000000 
- 146      0000
- 147 0136 BA000000 		movl	$_result, %edx
- 147      00
- 148 013b BB000000 		movl	$_env, %ebx
- 148      00
- 149 0140 B8140000 		movl	$20, %eax
- 149      00
- 150 0145 89D7     		movl	%edx, %edi
- 151 0147 89DE     		movl	%ebx, %esi
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccbnNqxc.s 			page 4
+  90              	LFB8:
+  29:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** long long oper_times(tClosure clo[]){
+  91              		.loc 1 29 0
+  92              		.cfi_startproc
+  93 0040 55       		pushl	%ebp
+  94              		.cfi_def_cfa_offset 8
+  95              		.cfi_offset 5, -8
+  96 0041 89E5     		movl	%esp, %ebp
+  97              		.cfi_def_cfa_register 5
+  98 0043 57       		pushl	%edi
+  99 0044 56       		pushl	%esi
+ 100 0045 53       		pushl	%ebx
+ 101              		.cfi_offset 7, -12
+ 102              		.cfi_offset 6, -16
+ 103              		.cfi_offset 3, -20
+  30:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     return clo[0].val*clo[1].val;
+ 104              		.loc 1 30 0
+ 105 0046 8B4508   		movl	8(%ebp), %eax
+ 106 0049 8B08     		movl	(%eax), %ecx
+ 107 004b 8B5804   		movl	4(%eax), %ebx
+ 108 004e 8B4508   		movl	8(%ebp), %eax
+ 109 0051 83C050   		addl	$80, %eax
+ 110 0054 8B5004   		movl	4(%eax), %edx
+ 111 0057 8B00     		movl	(%eax), %eax
+ 112 0059 89DF     		movl	%ebx, %edi
+ 113 005b 0FAFF8   		imull	%eax, %edi
+ 114 005e 89D6     		movl	%edx, %esi
+ 115 0060 0FAFF1   		imull	%ecx, %esi
+ 116 0063 01FE     		addl	%edi, %esi
+ 117 0065 F7E1     		mull	%ecx
+ 118 0067 8D0C16   		leal	(%esi,%edx), %ecx
+ 119 006a 89CA     		movl	%ecx, %edx
+  31:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** }
+ 120              		.loc 1 31 0
+ 121 006c 5B       		popl	%ebx
+ 122              		.cfi_restore 3
+ 123 006d 5E       		popl	%esi
+ 124              		.cfi_restore 6
+ 125 006e 5F       		popl	%edi
+ 126              		.cfi_restore 7
+ 127 006f 5D       		popl	%ebp
+ 128              		.cfi_restore 5
+ 129              		.cfi_def_cfa 4, 4
+ 130 0070 C3       		ret
+ 131              		.cfi_endproc
+ 132              	LFE8:
+ 133              		.globl	_oper_zero
+ 135              	_oper_zero:
+ 136              	LFB9:
+  32:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** long long oper_zero(tClosure clo[]){
+ 137              		.loc 1 32 0
+ 138              		.cfi_startproc
+ 139 0071 55       		pushl	%ebp
+ 140              		.cfi_def_cfa_offset 8
+ 141              		.cfi_offset 5, -8
+ 142 0072 89E5     		movl	%esp, %ebp
+ 143              		.cfi_def_cfa_register 5
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 4
 
 
- 152 0149 89C1     		movl	%eax, %ecx
- 153 014b F3A5     		rep movsl
- 154 014d 8B150000 		movl	_args_index, %edx
- 154      0000
- 155 0153 89D0     		movl	%edx, %eax
- 156 0155 C1E002   		sall	$2, %eax
- 157 0158 01D0     		addl	%edx, %eax
- 158 015a C1E004   		sall	$4, %eax
- 159 015d 05000000 		addl	$_args, %eax
- 159      00
- 160 0162 89C2     		movl	%eax, %edx
- 161 0164 BB000000 		movl	$_result, %ebx
- 161      00
- 162 0169 B8140000 		movl	$20, %eax
- 162      00
- 163 016e 89D7     		movl	%edx, %edi
- 164 0170 89DE     		movl	%ebx, %esi
- 165 0172 89C1     		movl	%eax, %ecx
- 166 0174 F3A5     		rep movsl
- 167 0176 A1000000 		movl	_args_index, %eax
- 167      00
- 168 017b 83C001   		addl	$1, %eax
- 169 017e A3000000 		movl	%eax, _args_index
- 169      00
- 170 0183 BA000000 		movl	$_result, %edx
- 170      00
- 171 0188 BB500000 		movl	$_env+80, %ebx
- 171      00
- 172 018d B8140000 		movl	$20, %eax
- 172      00
- 173 0192 89D7     		movl	%edx, %edi
- 174 0194 89DE     		movl	%ebx, %esi
- 175 0196 89C1     		movl	%eax, %ecx
- 176 0198 F3A5     		rep movsl
- 177 019a 8B150000 		movl	_args_index, %edx
- 177      0000
- 178 01a0 89D0     		movl	%edx, %eax
- 179 01a2 C1E002   		sall	$2, %eax
- 180 01a5 01D0     		addl	%edx, %eax
- 181 01a7 C1E004   		sall	$4, %eax
- 182 01aa 05000000 		addl	$_args, %eax
- 182      00
- 183 01af 89C2     		movl	%eax, %edx
- 184 01b1 BB000000 		movl	$_result, %ebx
- 184      00
- 185 01b6 B8140000 		movl	$20, %eax
- 185      00
- 186 01bb 89D7     		movl	%edx, %edi
- 187 01bd 89DE     		movl	%ebx, %esi
- 188 01bf 89C1     		movl	%eax, %ecx
- 189 01c1 F3A5     		rep movsl
- 190 01c3 A1000000 		movl	_args_index, %eax
- 190      00
- 191 01c8 83C001   		addl	$1, %eax
- 192 01cb A3000000 		movl	%eax, _args_index
- 192      00
- 193 01d0 C7042400 		movl	$_args, (%esp)
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccbnNqxc.s 			page 5
+  33:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     //true->1
+  34:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     //false->0
+  35:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     return clo[0].val==0;
+ 144              		.loc 1 35 0
+ 145 0074 8B4508   		movl	8(%ebp), %eax
+ 146 0077 8B5004   		movl	4(%eax), %edx
+ 147 007a 8B00     		movl	(%eax), %eax
+ 148 007c 09D0     		orl	%edx, %eax
+ 149 007e 85C0     		testl	%eax, %eax
+ 150 0080 0F94C0   		sete	%al
+ 151 0083 89C1     		movl	%eax, %ecx
+ 152 0085 0FB6C1   		movzbl	%cl, %eax
+ 153 0088 BA000000 		movl	$0, %edx
+ 153      00
+  36:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** }
+ 154              		.loc 1 36 0
+ 155 008d 5D       		popl	%ebp
+ 156              		.cfi_restore 5
+ 157              		.cfi_def_cfa 4, 4
+ 158 008e C3       		ret
+ 159              		.cfi_endproc
+ 160              	LFE9:
+ 161              		.globl	_func
+ 163              	_func:
+ 164              	LFB10:
+  37:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  38:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** long long func(){
+ 165              		.loc 1 38 0
+ 166              		.cfi_startproc
+ 167 008f 55       		pushl	%ebp
+ 168              		.cfi_def_cfa_offset 8
+ 169              		.cfi_offset 5, -8
+ 170 0090 89E5     		movl	%esp, %ebp
+ 171              		.cfi_def_cfa_register 5
+ 172 0092 57       		pushl	%edi
+ 173 0093 56       		pushl	%esi
+ 174 0094 53       		pushl	%ebx
+ 175 0095 81EC4C01 		subl	$332, %esp
+ 175      0000
+ 176              		.cfi_offset 7, -12
+ 177              		.cfi_offset 6, -16
+ 178              		.cfi_offset 3, -20
+  39:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     //Setup result
+  40:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.val = -1;
+ 179              		.loc 1 40 0
+ 180 009b C7050000 		movl	$-1, _result
+ 180      0000FFFF 
+ 180      FFFF
+ 181 00a5 C7050400 		movl	$-1, _result+4
+ 181      0000FFFF 
+ 181      FFFF
+  41:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.envLen = 0;
+ 182              		.loc 1 41 0
+ 183 00af C7050C00 		movl	$0, _result+12
+ 183      00000000 
+ 183      0000
+  42:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 5
 
 
- 193      000000
- 194 01d7 E824FEFF 		call	_oper_plus
- 194      FF
- 195 01dc A3000000 		movl	%eax, _result
- 195      00
- 196 01e1 89150400 		movl	%edx, _result+4
- 196      0000
- 197 01e7 C7050000 		movl	$0, _args_index
- 197      00000000 
+  43:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     tClosure addr1;
+  44:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr1.addr = &&PL_start0;
+ 184              		.loc 1 44 0
+ 185 00b9 C745A87C 		movl	$L10, -88(%ebp)
+ 185      010000
+  45:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr1.envLen = 0;
+ 186              		.loc 1 45 0
+ 187 00c0 C745AC00 		movl	$0, -84(%ebp)
+ 187      000000
+  46:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env[0] = addr1;
+ 188              		.loc 1 46 0
+ 189 00c7 BB000000 		movl	$_env, %ebx
+ 189      00
+ 190 00cc 8D45A0   		leal	-96(%ebp), %eax
+ 191 00cf BA140000 		movl	$20, %edx
+ 191      00
+ 192 00d4 89DF     		movl	%ebx, %edi
+ 193 00d6 89C6     		movl	%eax, %esi
+ 194 00d8 89D1     		movl	%edx, %ecx
+ 195 00da F3A5     		rep movsl
+  47:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  48:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     tClosure addr2;
+  49:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr2.addr = &&PL_start16;
+ 196              		.loc 1 49 0
+ 197 00dc C78558FF 		movl	$L11, -168(%ebp)
+ 197      FFFF3F03 
  197      0000
- 198 01f1 8B150000 		movl	_args_index, %edx
- 198      0000
- 199 01f7 89D0     		movl	%edx, %eax
- 200 01f9 C1E002   		sall	$2, %eax
- 201 01fc 01D0     		addl	%edx, %eax
- 202 01fe C1E004   		sall	$4, %eax
- 203 0201 05000000 		addl	$_args, %eax
+  50:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr2.envLen = 0;
+ 198              		.loc 1 50 0
+ 199 00e6 C7855CFF 		movl	$0, -164(%ebp)
+ 199      FFFF0000 
+ 199      0000
+  51:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env[1] = addr2;
+ 200              		.loc 1 51 0
+ 201 00f0 BB500000 		movl	$_env+80, %ebx
+ 201      00
+ 202 00f5 8D8550FF 		leal	-176(%ebp), %eax
+ 202      FFFF
+ 203 00fb BA140000 		movl	$20, %edx
  203      00
- 204 0206 89C2     		movl	%eax, %edx
- 205 0208 BB000000 		movl	$_result, %ebx
- 205      00
- 206 020d B8140000 		movl	$20, %eax
- 206      00
- 207 0212 89D7     		movl	%edx, %edi
- 208 0214 89DE     		movl	%ebx, %esi
- 209 0216 89C1     		movl	%eax, %ecx
- 210 0218 F3A5     		rep movsl
- 211 021a A1000000 		movl	_args_index, %eax
- 211      00
- 212 021f 83C001   		addl	$1, %eax
- 213 0222 A3000000 		movl	%eax, _args_index
+ 204 0100 89DF     		movl	%ebx, %edi
+ 205 0102 89C6     		movl	%eax, %esi
+ 206 0104 89D1     		movl	%edx, %ecx
+ 207 0106 F3A5     		rep movsl
+  52:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  53:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     tClosure addr3;
+  54:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr3.addr = &&PL_start32;
+ 208              		.loc 1 54 0
+ 209 0108 C78508FF 		movl	$L12, -248(%ebp)
+ 209      FFFFFE04 
+ 209      0000
+  55:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr3.envLen = 0;
+ 210              		.loc 1 55 0
+ 211 0112 C7850CFF 		movl	$0, -244(%ebp)
+ 211      FFFF0000 
+ 211      0000
+  56:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env[2] = addr3;
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 6
+
+
+ 212              		.loc 1 56 0
+ 213 011c BBA00000 		movl	$_env+160, %ebx
  213      00
- 214 0227 BA000000 		movl	$_result, %edx
- 214      00
- 215 022c BBA00000 		movl	$_env+160, %ebx
+ 214 0121 8D8500FF 		leal	-256(%ebp), %eax
+ 214      FFFF
+ 215 0127 BA140000 		movl	$20, %edx
  215      00
- 216 0231 B8140000 		movl	$20, %eax
- 216      00
- 217 0236 89D7     		movl	%edx, %edi
- 218 0238 89DE     		movl	%ebx, %esi
- 219 023a 89C1     		movl	%eax, %ecx
- 220 023c F3A5     		rep movsl
- 221 023e A1080000 		movl	_result+8, %eax
- 221      00
- 222 0243 A3000000 		movl	%eax, _addr
- 222      00
- 223 0248 A1100000 		movl	_result+16, %eax
- 223      00
- 224 024d BA000000 		movl	$_env, %edx
- 224      00
- 225 0252 89C3     		movl	%eax, %ebx
- 226 0254 B8140000 		movl	$20, %eax
- 226      00
- 227 0259 89D7     		movl	%edx, %edi
- 228 025b 89DE     		movl	%ebx, %esi
- 229 025d 89C1     		movl	%eax, %ecx
- 230 025f F3A5     		rep movsl
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccbnNqxc.s 			page 6
+ 216 012c 89DF     		movl	%ebx, %edi
+ 217 012e 89C6     		movl	%eax, %esi
+ 218 0130 89D1     		movl	%edx, %ecx
+ 219 0132 F3A5     		rep movsl
+  57:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  58:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     tClosure addr4;
+  59:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr4.addr = &&PL_start45;
+ 220              		.loc 1 59 0
+ 221 0134 C785B8FE 		movl	$L13, -328(%ebp)
+ 221      FFFF7006 
+ 221      0000
+  60:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr4.envLen = 0;
+ 222              		.loc 1 60 0
+ 223 013e C785BCFE 		movl	$0, -324(%ebp)
+ 223      FFFF0000 
+ 223      0000
+  61:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env[3] = addr4;
+ 224              		.loc 1 61 0
+ 225 0148 BBF00000 		movl	$_env+240, %ebx
+ 225      00
+ 226 014d 8D85B0FE 		leal	-336(%ebp), %eax
+ 226      FFFF
+ 227 0153 BA140000 		movl	$20, %edx
+ 227      00
+ 228 0158 89DF     		movl	%ebx, %edi
+ 229 015a 89C6     		movl	%eax, %esi
+ 230 015c 89D1     		movl	%edx, %ecx
+ 231 015e F3A5     		rep movsl
+  62:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  63:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     goto FUNC_START;
+ 232              		.loc 1 63 0
+ 233 0160 90       		nop
+ 234              	L14:
+  64:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  65:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     PL_start0:
+  66:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  67:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env[env_index]=args[0];
+  68:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index++;
+  69:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     if(args_index==2){
+  70:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env[env_index]=args[1];
+  71:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env_index++;
+  72:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     }
+  73:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  74:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index = 0;
+  75:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  76:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[0];
+  77:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  78:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+  79:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+  80:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 7
 
 
- 231 0261 A10C0000 		movl	_result+12, %eax
- 231      00
- 232 0266 A3040000 		movl	%eax, _env_index
- 232      00
- 233 026b A1000000 		movl	_addr, %eax
- 233      00
- 234 0270 FFE0     		jmp	*%eax
- 236              		.section .rdata,"dr"
- 237              	LC0:
- 238 0000 416E7377 		.ascii "Answer: %lli\0"
- 238      65723A20 
- 238      256C6C69 
- 238      00
- 239 000d 000000   		.text
- 240              		.globl	_main
- 242              	_main:
- 243 0272 55       		pushl	%ebp
- 244 0273 89E5     		movl	%esp, %ebp
- 245 0275 83E4F0   		andl	$-16, %esp
- 246 0278 83EC10   		subl	$16, %esp
- 247 027b E8000000 		call	___main
- 247      00
- 248 0280 E80AFEFF 		call	_func
- 248      FF
- 249 0285 89442404 		movl	%eax, 4(%esp)
- 250 0289 89542408 		movl	%edx, 8(%esp)
- 251 028d C7042400 		movl	$LC0, (%esp)
- 251      000000
- 252 0294 E8000000 		call	_printf
+  81:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[1];
+  82:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  83:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+  84:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+  85:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  86:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.val = oper_plus(args);
+  87:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  88:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index = 0;
+  89:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  90:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+  91:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+  92:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  93:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[2];
+  94:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  95:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr = result.addr;
+  96:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     *env = **result.p_env;
+  97:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index = result.envLen;
+  98:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+  99:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     goto *addr;
+ 100:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 101:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     PL_start16:
+ 102:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 103:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env[env_index]=args[0];
+ 104:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index++;
+ 105:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     if(args_index==2){
+ 106:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env[env_index]=args[1];
+ 107:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env_index++;
+ 108:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     }
+ 109:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 110:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index = 0;
+ 111:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 112:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[0];
+ 113:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 114:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 115:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 116:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 117:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[1];
+ 118:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 119:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 120:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 121:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 122:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.val = oper_minus(args);
+ 123:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 124:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index = 0;
+ 125:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 126:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 127:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 128:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 129:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[2];
+ 130:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 131:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr = result.addr;
+ 132:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     *env = **result.p_env;
+ 133:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index = result.envLen;
+ 134:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 135:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     goto *addr;
+ 136:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 137:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     PL_start32:
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 8
+
+
+ 138:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 139:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env[env_index]=args[0];
+ 140:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index++;
+ 141:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     if(args_index==2){
+ 142:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env[env_index]=args[1];
+ 143:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env_index++;
+ 144:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     }
+ 145:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 146:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index = 0;
+ 147:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 148:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[0];
+ 149:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 150:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 151:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 152:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 153:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.val = oper_zero(args);
+ 154:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 155:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index = 0;
+ 156:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 157:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 158:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 159:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 160:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[1];
+ 161:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 162:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr = result.addr;
+ 163:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     *env = **result.p_env;
+ 164:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index = result.envLen;
+ 165:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 166:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     goto *addr;
+ 167:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 168:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     PL_start45:
+ 169:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 170:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env[env_index]=args[0];
+ 171:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index++;
+ 172:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     if(args_index==2){
+ 173:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env[env_index]=args[1];
+ 174:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env_index++;
+ 175:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     }
+ 176:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 177:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[0];
+ 178:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 179:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     return result.val;
+ 180:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 181:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     FUNC_START:
+ 182:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 183:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index = 0;
+ 235              		.loc 1 183 0
+ 236 0161 C7050000 		movl	$0, _args_index
+ 236      00000000 
+ 236      0000
+ 184:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 185:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr = &&PL_A19;
+ 237              		.loc 1 185 0
+ 238 016b C7050000 		movl	$L22, _addr
+ 238      0000810C 
+ 238      0000
+ 186:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 9
+
+
+ 187:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     goto *addr;
+ 239              		.loc 1 187 0
+ 240 0175 A1000000 		movl	_addr, %eax
+ 240      00
+ 241 017a EB42     		jmp	L17
+ 242              	L10:
+  67:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index++;
+ 243              		.loc 1 67 0
+ 244 017c 8B150000 		movl	_env_index, %edx
+ 244      0000
+ 245 0182 89D0     		movl	%edx, %eax
+ 246 0184 C1E002   		sall	$2, %eax
+ 247 0187 01D0     		addl	%edx, %eax
+ 248 0189 C1E004   		sall	$4, %eax
+ 249 018c 05000000 		addl	$_env, %eax
+ 249      00
+ 250 0191 89C2     		movl	%eax, %edx
+ 251 0193 BB000000 		movl	$_args, %ebx
+ 251      00
+ 252 0198 B8140000 		movl	$20, %eax
  252      00
- 253 0299 B8000000 		movl	$0, %eax
- 253      00
- 254 029e C9       		leave
- 255 029f C3       		ret
- 256              		.ident	"GCC: (tdm-1) 4.9.2"
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccbnNqxc.s 			page 7
+ 253 019d 89D7     		movl	%edx, %edi
+ 254 019f 89DE     		movl	%ebx, %esi
+ 255 01a1 89C1     		movl	%eax, %ecx
+ 256 01a3 F3A5     		rep movsl
+  68:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     if(args_index==2){
+ 257              		.loc 1 68 0
+ 258 01a5 A1000000 		movl	_env_index, %eax
+ 258      00
+ 259 01aa 83C001   		addl	$1, %eax
+ 260 01ad A3000000 		movl	%eax, _env_index
+ 260      00
+  69:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env[env_index]=args[1];
+ 261              		.loc 1 69 0
+ 262 01b2 A1000000 		movl	_args_index, %eax
+ 262      00
+ 263 01b7 83F802   		cmpl	$2, %eax
+ 264 01ba 7404     		je	L15
+ 265 01bc EB38     		jmp	L16
+ 266              	L17:
+ 267 01be FFE0     		jmp	*%eax
+ 268              	L15:
+  70:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env_index++;
+ 269              		.loc 1 70 0
+ 270 01c0 8B150000 		movl	_env_index, %edx
+ 270      0000
+ 271 01c6 89D0     		movl	%edx, %eax
+ 272 01c8 C1E002   		sall	$2, %eax
+ 273 01cb 01D0     		addl	%edx, %eax
+ 274 01cd C1E004   		sall	$4, %eax
+ 275 01d0 05000000 		addl	$_env, %eax
+ 275      00
+ 276 01d5 89C2     		movl	%eax, %edx
+ 277 01d7 BB500000 		movl	$_args+80, %ebx
+ 277      00
+ 278 01dc B8140000 		movl	$20, %eax
+ 278      00
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 10
+
+
+ 279 01e1 89D7     		movl	%edx, %edi
+ 280 01e3 89DE     		movl	%ebx, %esi
+ 281 01e5 89C1     		movl	%eax, %ecx
+ 282 01e7 F3A5     		rep movsl
+  71:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     }
+ 283              		.loc 1 71 0
+ 284 01e9 A1000000 		movl	_env_index, %eax
+ 284      00
+ 285 01ee 83C001   		addl	$1, %eax
+ 286 01f1 A3000000 		movl	%eax, _env_index
+ 286      00
+ 287              	L16:
+  74:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 288              		.loc 1 74 0
+ 289 01f6 C7050000 		movl	$0, _args_index
+ 289      00000000 
+ 289      0000
+  76:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 290              		.loc 1 76 0
+ 291 0200 BA000000 		movl	$_result, %edx
+ 291      00
+ 292 0205 BB000000 		movl	$_env, %ebx
+ 292      00
+ 293 020a B8140000 		movl	$20, %eax
+ 293      00
+ 294 020f 89D7     		movl	%edx, %edi
+ 295 0211 89DE     		movl	%ebx, %esi
+ 296 0213 89C1     		movl	%eax, %ecx
+ 297 0215 F3A5     		rep movsl
+  78:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 298              		.loc 1 78 0
+ 299 0217 8B150000 		movl	_args_index, %edx
+ 299      0000
+ 300 021d 89D0     		movl	%edx, %eax
+ 301 021f C1E002   		sall	$2, %eax
+ 302 0222 01D0     		addl	%edx, %eax
+ 303 0224 C1E004   		sall	$4, %eax
+ 304 0227 05000000 		addl	$_args, %eax
+ 304      00
+ 305 022c 89C2     		movl	%eax, %edx
+ 306 022e BB000000 		movl	$_result, %ebx
+ 306      00
+ 307 0233 B8140000 		movl	$20, %eax
+ 307      00
+ 308 0238 89D7     		movl	%edx, %edi
+ 309 023a 89DE     		movl	%ebx, %esi
+ 310 023c 89C1     		movl	%eax, %ecx
+ 311 023e F3A5     		rep movsl
+  79:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 312              		.loc 1 79 0
+ 313 0240 A1000000 		movl	_args_index, %eax
+ 313      00
+ 314 0245 83C001   		addl	$1, %eax
+ 315 0248 A3000000 		movl	%eax, _args_index
+ 315      00
+  81:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 316              		.loc 1 81 0
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 11
+
+
+ 317 024d BA000000 		movl	$_result, %edx
+ 317      00
+ 318 0252 BB500000 		movl	$_env+80, %ebx
+ 318      00
+ 319 0257 B8140000 		movl	$20, %eax
+ 319      00
+ 320 025c 89D7     		movl	%edx, %edi
+ 321 025e 89DE     		movl	%ebx, %esi
+ 322 0260 89C1     		movl	%eax, %ecx
+ 323 0262 F3A5     		rep movsl
+  83:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 324              		.loc 1 83 0
+ 325 0264 8B150000 		movl	_args_index, %edx
+ 325      0000
+ 326 026a 89D0     		movl	%edx, %eax
+ 327 026c C1E002   		sall	$2, %eax
+ 328 026f 01D0     		addl	%edx, %eax
+ 329 0271 C1E004   		sall	$4, %eax
+ 330 0274 05000000 		addl	$_args, %eax
+ 330      00
+ 331 0279 89C2     		movl	%eax, %edx
+ 332 027b BB000000 		movl	$_result, %ebx
+ 332      00
+ 333 0280 B8140000 		movl	$20, %eax
+ 333      00
+ 334 0285 89D7     		movl	%edx, %edi
+ 335 0287 89DE     		movl	%ebx, %esi
+ 336 0289 89C1     		movl	%eax, %ecx
+ 337 028b F3A5     		rep movsl
+  84:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 338              		.loc 1 84 0
+ 339 028d A1000000 		movl	_args_index, %eax
+ 339      00
+ 340 0292 83C001   		addl	$1, %eax
+ 341 0295 A3000000 		movl	%eax, _args_index
+ 341      00
+  86:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 342              		.loc 1 86 0
+ 343 029a C7042400 		movl	$_args, (%esp)
+ 343      000000
+ 344 02a1 E85AFDFF 		call	_oper_plus
+ 344      FF
+ 345 02a6 A3000000 		movl	%eax, _result
+ 345      00
+ 346 02ab 89150400 		movl	%edx, _result+4
+ 346      0000
+  88:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 347              		.loc 1 88 0
+ 348 02b1 C7050000 		movl	$0, _args_index
+ 348      00000000 
+ 348      0000
+  90:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 349              		.loc 1 90 0
+ 350 02bb 8B150000 		movl	_args_index, %edx
+ 350      0000
+ 351 02c1 89D0     		movl	%edx, %eax
+ 352 02c3 C1E002   		sall	$2, %eax
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 12
+
+
+ 353 02c6 01D0     		addl	%edx, %eax
+ 354 02c8 C1E004   		sall	$4, %eax
+ 355 02cb 05000000 		addl	$_args, %eax
+ 355      00
+ 356 02d0 89C2     		movl	%eax, %edx
+ 357 02d2 BB000000 		movl	$_result, %ebx
+ 357      00
+ 358 02d7 B8140000 		movl	$20, %eax
+ 358      00
+ 359 02dc 89D7     		movl	%edx, %edi
+ 360 02de 89DE     		movl	%ebx, %esi
+ 361 02e0 89C1     		movl	%eax, %ecx
+ 362 02e2 F3A5     		rep movsl
+  91:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 363              		.loc 1 91 0
+ 364 02e4 A1000000 		movl	_args_index, %eax
+ 364      00
+ 365 02e9 83C001   		addl	$1, %eax
+ 366 02ec A3000000 		movl	%eax, _args_index
+ 366      00
+  93:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 367              		.loc 1 93 0
+ 368 02f1 BA000000 		movl	$_result, %edx
+ 368      00
+ 369 02f6 BBA00000 		movl	$_env+160, %ebx
+ 369      00
+ 370 02fb B8140000 		movl	$20, %eax
+ 370      00
+ 371 0300 89D7     		movl	%edx, %edi
+ 372 0302 89DE     		movl	%ebx, %esi
+ 373 0304 89C1     		movl	%eax, %ecx
+ 374 0306 F3A5     		rep movsl
+  95:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     *env = **result.p_env;
+ 375              		.loc 1 95 0
+ 376 0308 A1080000 		movl	_result+8, %eax
+ 376      00
+ 377 030d A3000000 		movl	%eax, _addr
+ 377      00
+  96:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index = result.envLen;
+ 378              		.loc 1 96 0
+ 379 0312 A1100000 		movl	_result+16, %eax
+ 379      00
+ 380 0317 BA000000 		movl	$_env, %edx
+ 380      00
+ 381 031c 89C3     		movl	%eax, %ebx
+ 382 031e B8140000 		movl	$20, %eax
+ 382      00
+ 383 0323 89D7     		movl	%edx, %edi
+ 384 0325 89DE     		movl	%ebx, %esi
+ 385 0327 89C1     		movl	%eax, %ecx
+ 386 0329 F3A5     		rep movsl
+  97:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 387              		.loc 1 97 0
+ 388 032b A10C0000 		movl	_result+12, %eax
+ 388      00
+ 389 0330 A3000000 		movl	%eax, _env_index
+ 389      00
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 13
+
+
+  99:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 390              		.loc 1 99 0
+ 391 0335 A1000000 		movl	_addr, %eax
+ 391      00
+ 392 033a E97FFEFF 		jmp	L17
+ 392      FF
+ 393              	L11:
+ 103:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index++;
+ 394              		.loc 1 103 0
+ 395 033f 8B150000 		movl	_env_index, %edx
+ 395      0000
+ 396 0345 89D0     		movl	%edx, %eax
+ 397 0347 C1E002   		sall	$2, %eax
+ 398 034a 01D0     		addl	%edx, %eax
+ 399 034c C1E004   		sall	$4, %eax
+ 400 034f 05000000 		addl	$_env, %eax
+ 400      00
+ 401 0354 89C2     		movl	%eax, %edx
+ 402 0356 BB000000 		movl	$_args, %ebx
+ 402      00
+ 403 035b B8140000 		movl	$20, %eax
+ 403      00
+ 404 0360 89D7     		movl	%edx, %edi
+ 405 0362 89DE     		movl	%ebx, %esi
+ 406 0364 89C1     		movl	%eax, %ecx
+ 407 0366 F3A5     		rep movsl
+ 104:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     if(args_index==2){
+ 408              		.loc 1 104 0
+ 409 0368 A1000000 		movl	_env_index, %eax
+ 409      00
+ 410 036d 83C001   		addl	$1, %eax
+ 411 0370 A3000000 		movl	%eax, _env_index
+ 411      00
+ 105:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env[env_index]=args[1];
+ 412              		.loc 1 105 0
+ 413 0375 A1000000 		movl	_args_index, %eax
+ 413      00
+ 414 037a 83F802   		cmpl	$2, %eax
+ 415 037d 7536     		jne	L18
+ 106:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env_index++;
+ 416              		.loc 1 106 0
+ 417 037f 8B150000 		movl	_env_index, %edx
+ 417      0000
+ 418 0385 89D0     		movl	%edx, %eax
+ 419 0387 C1E002   		sall	$2, %eax
+ 420 038a 01D0     		addl	%edx, %eax
+ 421 038c C1E004   		sall	$4, %eax
+ 422 038f 05000000 		addl	$_env, %eax
+ 422      00
+ 423 0394 89C2     		movl	%eax, %edx
+ 424 0396 BB500000 		movl	$_args+80, %ebx
+ 424      00
+ 425 039b B8140000 		movl	$20, %eax
+ 425      00
+ 426 03a0 89D7     		movl	%edx, %edi
+ 427 03a2 89DE     		movl	%ebx, %esi
+ 428 03a4 89C1     		movl	%eax, %ecx
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 14
+
+
+ 429 03a6 F3A5     		rep movsl
+ 107:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     }
+ 430              		.loc 1 107 0
+ 431 03a8 A1000000 		movl	_env_index, %eax
+ 431      00
+ 432 03ad 83C001   		addl	$1, %eax
+ 433 03b0 A3000000 		movl	%eax, _env_index
+ 433      00
+ 434              	L18:
+ 110:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 435              		.loc 1 110 0
+ 436 03b5 C7050000 		movl	$0, _args_index
+ 436      00000000 
+ 436      0000
+ 112:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 437              		.loc 1 112 0
+ 438 03bf BA000000 		movl	$_result, %edx
+ 438      00
+ 439 03c4 BB000000 		movl	$_env, %ebx
+ 439      00
+ 440 03c9 B8140000 		movl	$20, %eax
+ 440      00
+ 441 03ce 89D7     		movl	%edx, %edi
+ 442 03d0 89DE     		movl	%ebx, %esi
+ 443 03d2 89C1     		movl	%eax, %ecx
+ 444 03d4 F3A5     		rep movsl
+ 114:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 445              		.loc 1 114 0
+ 446 03d6 8B150000 		movl	_args_index, %edx
+ 446      0000
+ 447 03dc 89D0     		movl	%edx, %eax
+ 448 03de C1E002   		sall	$2, %eax
+ 449 03e1 01D0     		addl	%edx, %eax
+ 450 03e3 C1E004   		sall	$4, %eax
+ 451 03e6 05000000 		addl	$_args, %eax
+ 451      00
+ 452 03eb 89C2     		movl	%eax, %edx
+ 453 03ed BB000000 		movl	$_result, %ebx
+ 453      00
+ 454 03f2 B8140000 		movl	$20, %eax
+ 454      00
+ 455 03f7 89D7     		movl	%edx, %edi
+ 456 03f9 89DE     		movl	%ebx, %esi
+ 457 03fb 89C1     		movl	%eax, %ecx
+ 458 03fd F3A5     		rep movsl
+ 115:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 459              		.loc 1 115 0
+ 460 03ff A1000000 		movl	_args_index, %eax
+ 460      00
+ 461 0404 83C001   		addl	$1, %eax
+ 462 0407 A3000000 		movl	%eax, _args_index
+ 462      00
+ 117:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 463              		.loc 1 117 0
+ 464 040c BA000000 		movl	$_result, %edx
+ 464      00
+ 465 0411 BB500000 		movl	$_env+80, %ebx
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 15
+
+
+ 465      00
+ 466 0416 B8140000 		movl	$20, %eax
+ 466      00
+ 467 041b 89D7     		movl	%edx, %edi
+ 468 041d 89DE     		movl	%ebx, %esi
+ 469 041f 89C1     		movl	%eax, %ecx
+ 470 0421 F3A5     		rep movsl
+ 119:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 471              		.loc 1 119 0
+ 472 0423 8B150000 		movl	_args_index, %edx
+ 472      0000
+ 473 0429 89D0     		movl	%edx, %eax
+ 474 042b C1E002   		sall	$2, %eax
+ 475 042e 01D0     		addl	%edx, %eax
+ 476 0430 C1E004   		sall	$4, %eax
+ 477 0433 05000000 		addl	$_args, %eax
+ 477      00
+ 478 0438 89C2     		movl	%eax, %edx
+ 479 043a BB000000 		movl	$_result, %ebx
+ 479      00
+ 480 043f B8140000 		movl	$20, %eax
+ 480      00
+ 481 0444 89D7     		movl	%edx, %edi
+ 482 0446 89DE     		movl	%ebx, %esi
+ 483 0448 89C1     		movl	%eax, %ecx
+ 484 044a F3A5     		rep movsl
+ 120:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 485              		.loc 1 120 0
+ 486 044c A1000000 		movl	_args_index, %eax
+ 486      00
+ 487 0451 83C001   		addl	$1, %eax
+ 488 0454 A3000000 		movl	%eax, _args_index
+ 488      00
+ 122:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 489              		.loc 1 122 0
+ 490 0459 C7042400 		movl	$_args, (%esp)
+ 490      000000
+ 491 0460 E8B9FBFF 		call	_oper_minus
+ 491      FF
+ 492 0465 A3000000 		movl	%eax, _result
+ 492      00
+ 493 046a 89150400 		movl	%edx, _result+4
+ 493      0000
+ 124:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 494              		.loc 1 124 0
+ 495 0470 C7050000 		movl	$0, _args_index
+ 495      00000000 
+ 495      0000
+ 126:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 496              		.loc 1 126 0
+ 497 047a 8B150000 		movl	_args_index, %edx
+ 497      0000
+ 498 0480 89D0     		movl	%edx, %eax
+ 499 0482 C1E002   		sall	$2, %eax
+ 500 0485 01D0     		addl	%edx, %eax
+ 501 0487 C1E004   		sall	$4, %eax
+ 502 048a 05000000 		addl	$_args, %eax
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 16
+
+
+ 502      00
+ 503 048f 89C2     		movl	%eax, %edx
+ 504 0491 BB000000 		movl	$_result, %ebx
+ 504      00
+ 505 0496 B8140000 		movl	$20, %eax
+ 505      00
+ 506 049b 89D7     		movl	%edx, %edi
+ 507 049d 89DE     		movl	%ebx, %esi
+ 508 049f 89C1     		movl	%eax, %ecx
+ 509 04a1 F3A5     		rep movsl
+ 127:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 510              		.loc 1 127 0
+ 511 04a3 A1000000 		movl	_args_index, %eax
+ 511      00
+ 512 04a8 83C001   		addl	$1, %eax
+ 513 04ab A3000000 		movl	%eax, _args_index
+ 513      00
+ 129:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 514              		.loc 1 129 0
+ 515 04b0 BA000000 		movl	$_result, %edx
+ 515      00
+ 516 04b5 BBA00000 		movl	$_env+160, %ebx
+ 516      00
+ 517 04ba B8140000 		movl	$20, %eax
+ 517      00
+ 518 04bf 89D7     		movl	%edx, %edi
+ 519 04c1 89DE     		movl	%ebx, %esi
+ 520 04c3 89C1     		movl	%eax, %ecx
+ 521 04c5 F3A5     		rep movsl
+ 131:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     *env = **result.p_env;
+ 522              		.loc 1 131 0
+ 523 04c7 A1080000 		movl	_result+8, %eax
+ 523      00
+ 524 04cc A3000000 		movl	%eax, _addr
+ 524      00
+ 132:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index = result.envLen;
+ 525              		.loc 1 132 0
+ 526 04d1 A1100000 		movl	_result+16, %eax
+ 526      00
+ 527 04d6 BA000000 		movl	$_env, %edx
+ 527      00
+ 528 04db 89C3     		movl	%eax, %ebx
+ 529 04dd B8140000 		movl	$20, %eax
+ 529      00
+ 530 04e2 89D7     		movl	%edx, %edi
+ 531 04e4 89DE     		movl	%ebx, %esi
+ 532 04e6 89C1     		movl	%eax, %ecx
+ 533 04e8 F3A5     		rep movsl
+ 133:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 534              		.loc 1 133 0
+ 535 04ea A10C0000 		movl	_result+12, %eax
+ 535      00
+ 536 04ef A3000000 		movl	%eax, _env_index
+ 536      00
+ 135:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 537              		.loc 1 135 0
+ 538 04f4 A1000000 		movl	_addr, %eax
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 17
+
+
+ 538      00
+ 539 04f9 E9C0FCFF 		jmp	L17
+ 539      FF
+ 540              	L12:
+ 139:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index++;
+ 541              		.loc 1 139 0
+ 542 04fe 8B150000 		movl	_env_index, %edx
+ 542      0000
+ 543 0504 89D0     		movl	%edx, %eax
+ 544 0506 C1E002   		sall	$2, %eax
+ 545 0509 01D0     		addl	%edx, %eax
+ 546 050b C1E004   		sall	$4, %eax
+ 547 050e 05000000 		addl	$_env, %eax
+ 547      00
+ 548 0513 89C2     		movl	%eax, %edx
+ 549 0515 BB000000 		movl	$_args, %ebx
+ 549      00
+ 550 051a B8140000 		movl	$20, %eax
+ 550      00
+ 551 051f 89D7     		movl	%edx, %edi
+ 552 0521 89DE     		movl	%ebx, %esi
+ 553 0523 89C1     		movl	%eax, %ecx
+ 554 0525 F3A5     		rep movsl
+ 140:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     if(args_index==2){
+ 555              		.loc 1 140 0
+ 556 0527 A1000000 		movl	_env_index, %eax
+ 556      00
+ 557 052c 83C001   		addl	$1, %eax
+ 558 052f A3000000 		movl	%eax, _env_index
+ 558      00
+ 141:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env[env_index]=args[1];
+ 559              		.loc 1 141 0
+ 560 0534 A1000000 		movl	_args_index, %eax
+ 560      00
+ 561 0539 83F802   		cmpl	$2, %eax
+ 562 053c 7536     		jne	L19
+ 142:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env_index++;
+ 563              		.loc 1 142 0
+ 564 053e 8B150000 		movl	_env_index, %edx
+ 564      0000
+ 565 0544 89D0     		movl	%edx, %eax
+ 566 0546 C1E002   		sall	$2, %eax
+ 567 0549 01D0     		addl	%edx, %eax
+ 568 054b C1E004   		sall	$4, %eax
+ 569 054e 05000000 		addl	$_env, %eax
+ 569      00
+ 570 0553 89C2     		movl	%eax, %edx
+ 571 0555 BB500000 		movl	$_args+80, %ebx
+ 571      00
+ 572 055a B8140000 		movl	$20, %eax
+ 572      00
+ 573 055f 89D7     		movl	%edx, %edi
+ 574 0561 89DE     		movl	%ebx, %esi
+ 575 0563 89C1     		movl	%eax, %ecx
+ 576 0565 F3A5     		rep movsl
+ 143:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     }
+ 577              		.loc 1 143 0
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 18
+
+
+ 578 0567 A1000000 		movl	_env_index, %eax
+ 578      00
+ 579 056c 83C001   		addl	$1, %eax
+ 580 056f A3000000 		movl	%eax, _env_index
+ 580      00
+ 581              	L19:
+ 146:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 582              		.loc 1 146 0
+ 583 0574 C7050000 		movl	$0, _args_index
+ 583      00000000 
+ 583      0000
+ 148:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 584              		.loc 1 148 0
+ 585 057e BA000000 		movl	$_result, %edx
+ 585      00
+ 586 0583 BB000000 		movl	$_env, %ebx
+ 586      00
+ 587 0588 B8140000 		movl	$20, %eax
+ 587      00
+ 588 058d 89D7     		movl	%edx, %edi
+ 589 058f 89DE     		movl	%ebx, %esi
+ 590 0591 89C1     		movl	%eax, %ecx
+ 591 0593 F3A5     		rep movsl
+ 150:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 592              		.loc 1 150 0
+ 593 0595 8B150000 		movl	_args_index, %edx
+ 593      0000
+ 594 059b 89D0     		movl	%edx, %eax
+ 595 059d C1E002   		sall	$2, %eax
+ 596 05a0 01D0     		addl	%edx, %eax
+ 597 05a2 C1E004   		sall	$4, %eax
+ 598 05a5 05000000 		addl	$_args, %eax
+ 598      00
+ 599 05aa 89C2     		movl	%eax, %edx
+ 600 05ac BB000000 		movl	$_result, %ebx
+ 600      00
+ 601 05b1 B8140000 		movl	$20, %eax
+ 601      00
+ 602 05b6 89D7     		movl	%edx, %edi
+ 603 05b8 89DE     		movl	%ebx, %esi
+ 604 05ba 89C1     		movl	%eax, %ecx
+ 605 05bc F3A5     		rep movsl
+ 151:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 606              		.loc 1 151 0
+ 607 05be A1000000 		movl	_args_index, %eax
+ 607      00
+ 608 05c3 83C001   		addl	$1, %eax
+ 609 05c6 A3000000 		movl	%eax, _args_index
+ 609      00
+ 153:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 610              		.loc 1 153 0
+ 611 05cb C7042400 		movl	$_args, (%esp)
+ 611      000000
+ 612 05d2 E89AFAFF 		call	_oper_zero
+ 612      FF
+ 613 05d7 A3000000 		movl	%eax, _result
+ 613      00
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 19
+
+
+ 614 05dc 89150400 		movl	%edx, _result+4
+ 614      0000
+ 155:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 615              		.loc 1 155 0
+ 616 05e2 C7050000 		movl	$0, _args_index
+ 616      00000000 
+ 616      0000
+ 157:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 617              		.loc 1 157 0
+ 618 05ec 8B150000 		movl	_args_index, %edx
+ 618      0000
+ 619 05f2 89D0     		movl	%edx, %eax
+ 620 05f4 C1E002   		sall	$2, %eax
+ 621 05f7 01D0     		addl	%edx, %eax
+ 622 05f9 C1E004   		sall	$4, %eax
+ 623 05fc 05000000 		addl	$_args, %eax
+ 623      00
+ 624 0601 89C2     		movl	%eax, %edx
+ 625 0603 BB000000 		movl	$_result, %ebx
+ 625      00
+ 626 0608 B8140000 		movl	$20, %eax
+ 626      00
+ 627 060d 89D7     		movl	%edx, %edi
+ 628 060f 89DE     		movl	%ebx, %esi
+ 629 0611 89C1     		movl	%eax, %ecx
+ 630 0613 F3A5     		rep movsl
+ 158:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 631              		.loc 1 158 0
+ 632 0615 A1000000 		movl	_args_index, %eax
+ 632      00
+ 633 061a 83C001   		addl	$1, %eax
+ 634 061d A3000000 		movl	%eax, _args_index
+ 634      00
+ 160:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 635              		.loc 1 160 0
+ 636 0622 BA000000 		movl	$_result, %edx
+ 636      00
+ 637 0627 BB500000 		movl	$_env+80, %ebx
+ 637      00
+ 638 062c B8140000 		movl	$20, %eax
+ 638      00
+ 639 0631 89D7     		movl	%edx, %edi
+ 640 0633 89DE     		movl	%ebx, %esi
+ 641 0635 89C1     		movl	%eax, %ecx
+ 642 0637 F3A5     		rep movsl
+ 162:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     *env = **result.p_env;
+ 643              		.loc 1 162 0
+ 644 0639 A1080000 		movl	_result+8, %eax
+ 644      00
+ 645 063e A3000000 		movl	%eax, _addr
+ 645      00
+ 163:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index = result.envLen;
+ 646              		.loc 1 163 0
+ 647 0643 A1100000 		movl	_result+16, %eax
+ 647      00
+ 648 0648 BA000000 		movl	$_env, %edx
+ 648      00
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 20
+
+
+ 649 064d 89C3     		movl	%eax, %ebx
+ 650 064f B8140000 		movl	$20, %eax
+ 650      00
+ 651 0654 89D7     		movl	%edx, %edi
+ 652 0656 89DE     		movl	%ebx, %esi
+ 653 0658 89C1     		movl	%eax, %ecx
+ 654 065a F3A5     		rep movsl
+ 164:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 655              		.loc 1 164 0
+ 656 065c A10C0000 		movl	_result+12, %eax
+ 656      00
+ 657 0661 A3000000 		movl	%eax, _env_index
+ 657      00
+ 166:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 658              		.loc 1 166 0
+ 659 0666 A1000000 		movl	_addr, %eax
+ 659      00
+ 660 066b E94EFBFF 		jmp	L17
+ 660      FF
+ 661              	L13:
+ 170:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index++;
+ 662              		.loc 1 170 0
+ 663 0670 8B150000 		movl	_env_index, %edx
+ 663      0000
+ 664 0676 89D0     		movl	%edx, %eax
+ 665 0678 C1E002   		sall	$2, %eax
+ 666 067b 01D0     		addl	%edx, %eax
+ 667 067d C1E004   		sall	$4, %eax
+ 668 0680 05000000 		addl	$_env, %eax
+ 668      00
+ 669 0685 89C2     		movl	%eax, %edx
+ 670 0687 BB000000 		movl	$_args, %ebx
+ 670      00
+ 671 068c B8140000 		movl	$20, %eax
+ 671      00
+ 672 0691 89D7     		movl	%edx, %edi
+ 673 0693 89DE     		movl	%ebx, %esi
+ 674 0695 89C1     		movl	%eax, %ecx
+ 675 0697 F3A5     		rep movsl
+ 171:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     if(args_index==2){
+ 676              		.loc 1 171 0
+ 677 0699 A1000000 		movl	_env_index, %eax
+ 677      00
+ 678 069e 83C001   		addl	$1, %eax
+ 679 06a1 A3000000 		movl	%eax, _env_index
+ 679      00
+ 172:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env[env_index]=args[1];
+ 680              		.loc 1 172 0
+ 681 06a6 A1000000 		movl	_args_index, %eax
+ 681      00
+ 682 06ab 83F802   		cmpl	$2, %eax
+ 683 06ae 7536     		jne	L20
+ 173:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env_index++;
+ 684              		.loc 1 173 0
+ 685 06b0 8B150000 		movl	_env_index, %edx
+ 685      0000
+ 686 06b6 89D0     		movl	%edx, %eax
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 21
+
+
+ 687 06b8 C1E002   		sall	$2, %eax
+ 688 06bb 01D0     		addl	%edx, %eax
+ 689 06bd C1E004   		sall	$4, %eax
+ 690 06c0 05000000 		addl	$_env, %eax
+ 690      00
+ 691 06c5 89C2     		movl	%eax, %edx
+ 692 06c7 BB500000 		movl	$_args+80, %ebx
+ 692      00
+ 693 06cc B8140000 		movl	$20, %eax
+ 693      00
+ 694 06d1 89D7     		movl	%edx, %edi
+ 695 06d3 89DE     		movl	%ebx, %esi
+ 696 06d5 89C1     		movl	%eax, %ecx
+ 697 06d7 F3A5     		rep movsl
+ 174:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     }
+ 698              		.loc 1 174 0
+ 699 06d9 A1000000 		movl	_env_index, %eax
+ 699      00
+ 700 06de 83C001   		addl	$1, %eax
+ 701 06e1 A3000000 		movl	%eax, _env_index
+ 701      00
+ 702              	L20:
+ 177:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 703              		.loc 1 177 0
+ 704 06e6 BA000000 		movl	$_result, %edx
+ 704      00
+ 705 06eb BB000000 		movl	$_env, %ebx
+ 705      00
+ 706 06f0 B8140000 		movl	$20, %eax
+ 706      00
+ 707 06f5 89D7     		movl	%edx, %edi
+ 708 06f7 89DE     		movl	%ebx, %esi
+ 709 06f9 89C1     		movl	%eax, %ecx
+ 710 06fb F3A5     		rep movsl
+ 179:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 711              		.loc 1 179 0
+ 712 06fd A1000000 		movl	_result, %eax
+ 712      00
+ 713 0702 8B150400 		movl	_result+4, %edx
+ 713      0000
+ 714 0708 E9410800 		jmp	L30
+ 714      00
+ 715              	L23:
+ 188:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 189:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     PL_B20:
+ 190:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 191:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.addr = addr;
+ 716              		.loc 1 191 0
+ 717 070d A1000000 		movl	_addr, %eax
+ 717      00
+ 718 0712 A3080000 		movl	%eax, _result+8
+ 718      00
+ 192:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     *result.p_env = env;
+ 719              		.loc 1 192 0
+ 720 0717 C7051000 		movl	$_env, _result+16
+ 720      00000000 
+ 720      0000
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 22
+
+
+ 193:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.envLen = env_index;
+ 721              		.loc 1 193 0
+ 722 0721 A1000000 		movl	_env_index, %eax
+ 722      00
+ 723 0726 A30C0000 		movl	%eax, _result+12
+ 723      00
+ 194:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 195:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env[env_index]=result;
+ 724              		.loc 1 195 0
+ 725 072b 8B150000 		movl	_env_index, %edx
+ 725      0000
+ 726 0731 89D0     		movl	%edx, %eax
+ 727 0733 C1E002   		sall	$2, %eax
+ 728 0736 01D0     		addl	%edx, %eax
+ 729 0738 C1E004   		sall	$4, %eax
+ 730 073b 05000000 		addl	$_env, %eax
+ 730      00
+ 731 0740 89C2     		movl	%eax, %edx
+ 732 0742 BB000000 		movl	$_result, %ebx
+ 732      00
+ 733 0747 B8140000 		movl	$20, %eax
+ 733      00
+ 734 074c 89D7     		movl	%edx, %edi
+ 735 074e 89DE     		movl	%ebx, %esi
+ 736 0750 89C1     		movl	%eax, %ecx
+ 737 0752 F3A5     		rep movsl
+ 196:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index++;
+ 738              		.loc 1 196 0
+ 739 0754 A1000000 		movl	_env_index, %eax
+ 739      00
+ 740 0759 83C001   		addl	$1, %eax
+ 741 075c A3000000 		movl	%eax, _env_index
+ 741      00
+ 197:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 198:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env[env_index]=args[0];
+ 742              		.loc 1 198 0
+ 743 0761 8B150000 		movl	_env_index, %edx
+ 743      0000
+ 744 0767 89D0     		movl	%edx, %eax
+ 745 0769 C1E002   		sall	$2, %eax
+ 746 076c 01D0     		addl	%edx, %eax
+ 747 076e C1E004   		sall	$4, %eax
+ 748 0771 05000000 		addl	$_env, %eax
+ 748      00
+ 749 0776 89C2     		movl	%eax, %edx
+ 750 0778 BB000000 		movl	$_args, %ebx
+ 750      00
+ 751 077d B8140000 		movl	$20, %eax
+ 751      00
+ 752 0782 89D7     		movl	%edx, %edi
+ 753 0784 89DE     		movl	%ebx, %esi
+ 754 0786 89C1     		movl	%eax, %ecx
+ 755 0788 F3A5     		rep movsl
+ 199:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index++;
+ 756              		.loc 1 199 0
+ 757 078a A1000000 		movl	_env_index, %eax
+ 757      00
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 23
+
+
+ 758 078f 83C001   		addl	$1, %eax
+ 759 0792 A3000000 		movl	%eax, _env_index
+ 759      00
+ 200:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     if(args_index==2){
+ 760              		.loc 1 200 0
+ 761 0797 A1000000 		movl	_args_index, %eax
+ 761      00
+ 762 079c 83F802   		cmpl	$2, %eax
+ 763 079f 7536     		jne	L24
+ 201:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env[env_index]=args[1];
+ 764              		.loc 1 201 0
+ 765 07a1 8B150000 		movl	_env_index, %edx
+ 765      0000
+ 766 07a7 89D0     		movl	%edx, %eax
+ 767 07a9 C1E002   		sall	$2, %eax
+ 768 07ac 01D0     		addl	%edx, %eax
+ 769 07ae C1E004   		sall	$4, %eax
+ 770 07b1 05000000 		addl	$_env, %eax
+ 770      00
+ 771 07b6 89C2     		movl	%eax, %edx
+ 772 07b8 BB500000 		movl	$_args+80, %ebx
+ 772      00
+ 773 07bd B8140000 		movl	$20, %eax
+ 773      00
+ 774 07c2 89D7     		movl	%edx, %edi
+ 775 07c4 89DE     		movl	%ebx, %esi
+ 776 07c6 89C1     		movl	%eax, %ecx
+ 777 07c8 F3A5     		rep movsl
+ 202:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env_index++;
+ 778              		.loc 1 202 0
+ 779 07ca A1000000 		movl	_env_index, %eax
+ 779      00
+ 780 07cf 83C001   		addl	$1, %eax
+ 781 07d2 A3000000 		movl	%eax, _env_index
+ 781      00
+ 782              	L24:
+ 203:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     }
+ 204:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 205:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index = 0;
+ 783              		.loc 1 205 0
+ 784 07d7 C7050000 		movl	$0, _args_index
+ 784      00000000 
+ 784      0000
+ 206:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 207:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[5];
+ 785              		.loc 1 207 0
+ 786 07e1 BA000000 		movl	$_result, %edx
+ 786      00
+ 787 07e6 BB900100 		movl	$_env+400, %ebx
+ 787      00
+ 788 07eb B8140000 		movl	$20, %eax
+ 788      00
+ 789 07f0 89D7     		movl	%edx, %edi
+ 790 07f2 89DE     		movl	%ebx, %esi
+ 791 07f4 89C1     		movl	%eax, %ecx
+ 792 07f6 F3A5     		rep movsl
+ 208:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 24
+
+
+ 209:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 793              		.loc 1 209 0
+ 794 07f8 8B150000 		movl	_args_index, %edx
+ 794      0000
+ 795 07fe 89D0     		movl	%edx, %eax
+ 796 0800 C1E002   		sall	$2, %eax
+ 797 0803 01D0     		addl	%edx, %eax
+ 798 0805 C1E004   		sall	$4, %eax
+ 799 0808 05000000 		addl	$_args, %eax
+ 799      00
+ 800 080d 89C2     		movl	%eax, %edx
+ 801 080f BB000000 		movl	$_result, %ebx
+ 801      00
+ 802 0814 B8140000 		movl	$20, %eax
+ 802      00
+ 803 0819 89D7     		movl	%edx, %edi
+ 804 081b 89DE     		movl	%ebx, %esi
+ 805 081d 89C1     		movl	%eax, %ecx
+ 806 081f F3A5     		rep movsl
+ 210:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 807              		.loc 1 210 0
+ 808 0821 A1000000 		movl	_args_index, %eax
+ 808      00
+ 809 0826 83C001   		addl	$1, %eax
+ 810 0829 A3000000 		movl	%eax, _args_index
+ 810      00
+ 211:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 212:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.val = oper_zero(args);
+ 811              		.loc 1 212 0
+ 812 082e C7042400 		movl	$_args, (%esp)
+ 812      000000
+ 813 0835 E837F8FF 		call	_oper_zero
+ 813      FF
+ 814 083a A3000000 		movl	%eax, _result
+ 814      00
+ 815 083f 89150400 		movl	%edx, _result+4
+ 815      0000
+ 213:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 214:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env[env_index]=result;
+ 816              		.loc 1 214 0
+ 817 0845 8B150000 		movl	_env_index, %edx
+ 817      0000
+ 818 084b 89D0     		movl	%edx, %eax
+ 819 084d C1E002   		sall	$2, %eax
+ 820 0850 01D0     		addl	%edx, %eax
+ 821 0852 C1E004   		sall	$4, %eax
+ 822 0855 05000000 		addl	$_env, %eax
+ 822      00
+ 823 085a 89C2     		movl	%eax, %edx
+ 824 085c BB000000 		movl	$_result, %ebx
+ 824      00
+ 825 0861 B8140000 		movl	$20, %eax
+ 825      00
+ 826 0866 89D7     		movl	%edx, %edi
+ 827 0868 89DE     		movl	%ebx, %esi
+ 828 086a 89C1     		movl	%eax, %ecx
+ 829 086c F3A5     		rep movsl
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 25
+
+
+ 215:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index++;
+ 830              		.loc 1 215 0
+ 831 086e A1000000 		movl	_env_index, %eax
+ 831      00
+ 832 0873 83C001   		addl	$1, %eax
+ 833 0876 A3000000 		movl	%eax, _env_index
+ 833      00
+ 216:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 217:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[8];
+ 834              		.loc 1 217 0
+ 835 087b BA000000 		movl	$_result, %edx
+ 835      00
+ 836 0880 BB800200 		movl	$_env+640, %ebx
+ 836      00
+ 837 0885 B8140000 		movl	$20, %eax
+ 837      00
+ 838 088a 89D7     		movl	%edx, %edi
+ 839 088c 89DE     		movl	%ebx, %esi
+ 840 088e 89C1     		movl	%eax, %ecx
+ 841 0890 F3A5     		rep movsl
+ 218:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 219:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr = &&PL_L21;
+ 842              		.loc 1 219 0
+ 843 0892 C7050000 		movl	$L25, _addr
+ 843      0000DC0B 
+ 843      0000
+ 220:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 221:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     if(result.val==1){
+ 844              		.loc 1 221 0
+ 845 089c A1000000 		movl	_result, %eax
+ 845      00
+ 846 08a1 8B150400 		movl	_result+4, %edx
+ 846      0000
+ 847 08a7 89C1     		movl	%eax, %ecx
+ 848 08a9 83F101   		xorl	$1, %ecx
+ 849 08ac 09D1     		orl	%edx, %ecx
+ 850 08ae 89C8     		movl	%ecx, %eax
+ 851 08b0 85C0     		testl	%eax, %eax
+ 852 08b2 750A     		jne	L26
+ 222:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         goto *addr;
+ 853              		.loc 1 222 0
+ 854 08b4 A1000000 		movl	_addr, %eax
+ 854      00
+ 855 08b9 E900F9FF 		jmp	L17
+ 855      FF
+ 856              	L26:
+ 223:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     }
+ 224:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 225:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index = 0;
+ 857              		.loc 1 225 0
+ 858 08be C7050000 		movl	$0, _args_index
+ 858      00000000 
+ 858      0000
+ 226:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 227:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[5];
+ 859              		.loc 1 227 0
+ 860 08c8 BA000000 		movl	$_result, %edx
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 26
+
+
+ 860      00
+ 861 08cd BB900100 		movl	$_env+400, %ebx
+ 861      00
+ 862 08d2 B8140000 		movl	$20, %eax
+ 862      00
+ 863 08d7 89D7     		movl	%edx, %edi
+ 864 08d9 89DE     		movl	%ebx, %esi
+ 865 08db 89C1     		movl	%eax, %ecx
+ 866 08dd F3A5     		rep movsl
+ 228:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 229:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 867              		.loc 1 229 0
+ 868 08df 8B150000 		movl	_args_index, %edx
+ 868      0000
+ 869 08e5 89D0     		movl	%edx, %eax
+ 870 08e7 C1E002   		sall	$2, %eax
+ 871 08ea 01D0     		addl	%edx, %eax
+ 872 08ec C1E004   		sall	$4, %eax
+ 873 08ef 05000000 		addl	$_args, %eax
+ 873      00
+ 874 08f4 89C2     		movl	%eax, %edx
+ 875 08f6 BB000000 		movl	$_result, %ebx
+ 875      00
+ 876 08fb B8140000 		movl	$20, %eax
+ 876      00
+ 877 0900 89D7     		movl	%edx, %edi
+ 878 0902 89DE     		movl	%ebx, %esi
+ 879 0904 89C1     		movl	%eax, %ecx
+ 880 0906 F3A5     		rep movsl
+ 230:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 881              		.loc 1 230 0
+ 882 0908 A1000000 		movl	_args_index, %eax
+ 882      00
+ 883 090d 83C001   		addl	$1, %eax
+ 884 0910 A3000000 		movl	%eax, _args_index
+ 884      00
+ 231:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 232:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.val = 1;
+ 885              		.loc 1 232 0
+ 886 0915 C7050000 		movl	$1, _result
+ 886      00000100 
+ 886      0000
+ 887 091f C7050400 		movl	$0, _result+4
+ 887      00000000 
+ 887      0000
+ 233:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 234:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 888              		.loc 1 234 0
+ 889 0929 8B150000 		movl	_args_index, %edx
+ 889      0000
+ 890 092f 89D0     		movl	%edx, %eax
+ 891 0931 C1E002   		sall	$2, %eax
+ 892 0934 01D0     		addl	%edx, %eax
+ 893 0936 C1E004   		sall	$4, %eax
+ 894 0939 05000000 		addl	$_args, %eax
+ 894      00
+ 895 093e 89C2     		movl	%eax, %edx
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 27
+
+
+ 896 0940 BB000000 		movl	$_result, %ebx
+ 896      00
+ 897 0945 B8140000 		movl	$20, %eax
+ 897      00
+ 898 094a 89D7     		movl	%edx, %edi
+ 899 094c 89DE     		movl	%ebx, %esi
+ 900 094e 89C1     		movl	%eax, %ecx
+ 901 0950 F3A5     		rep movsl
+ 235:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 902              		.loc 1 235 0
+ 903 0952 A1000000 		movl	_args_index, %eax
+ 903      00
+ 904 0957 83C001   		addl	$1, %eax
+ 905 095a A3000000 		movl	%eax, _args_index
+ 905      00
+ 236:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 237:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.val = oper_minus(args);
+ 906              		.loc 1 237 0
+ 907 095f C7042400 		movl	$_args, (%esp)
+ 907      000000
+ 908 0966 E8B3F6FF 		call	_oper_minus
+ 908      FF
+ 909 096b A3000000 		movl	%eax, _result
+ 909      00
+ 910 0970 89150400 		movl	%edx, _result+4
+ 910      0000
+ 238:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 239:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env[env_index]=result;
+ 911              		.loc 1 239 0
+ 912 0976 8B150000 		movl	_env_index, %edx
+ 912      0000
+ 913 097c 89D0     		movl	%edx, %eax
+ 914 097e C1E002   		sall	$2, %eax
+ 915 0981 01D0     		addl	%edx, %eax
+ 916 0983 C1E004   		sall	$4, %eax
+ 917 0986 05000000 		addl	$_env, %eax
+ 917      00
+ 918 098b 89C2     		movl	%eax, %edx
+ 919 098d BB000000 		movl	$_result, %ebx
+ 919      00
+ 920 0992 B8140000 		movl	$20, %eax
+ 920      00
+ 921 0997 89D7     		movl	%edx, %edi
+ 922 0999 89DE     		movl	%ebx, %esi
+ 923 099b 89C1     		movl	%eax, %ecx
+ 924 099d F3A5     		rep movsl
+ 240:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index++;
+ 925              		.loc 1 240 0
+ 926 099f A1000000 		movl	_env_index, %eax
+ 926      00
+ 927 09a4 83C001   		addl	$1, %eax
+ 928 09a7 A3000000 		movl	%eax, _env_index
+ 928      00
+ 241:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 242:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index = 0;
+ 929              		.loc 1 242 0
+ 930 09ac C7050000 		movl	$0, _args_index
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 28
+
+
+ 930      00000000 
+ 930      0000
+ 243:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 244:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[6];
+ 931              		.loc 1 244 0
+ 932 09b6 BA000000 		movl	$_result, %edx
+ 932      00
+ 933 09bb BBE00100 		movl	$_env+480, %ebx
+ 933      00
+ 934 09c0 B8140000 		movl	$20, %eax
+ 934      00
+ 935 09c5 89D7     		movl	%edx, %edi
+ 936 09c7 89DE     		movl	%ebx, %esi
+ 937 09c9 89C1     		movl	%eax, %ecx
+ 938 09cb F3A5     		rep movsl
+ 245:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 246:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 939              		.loc 1 246 0
+ 940 09cd 8B150000 		movl	_args_index, %edx
+ 940      0000
+ 941 09d3 89D0     		movl	%edx, %eax
+ 942 09d5 C1E002   		sall	$2, %eax
+ 943 09d8 01D0     		addl	%edx, %eax
+ 944 09da C1E004   		sall	$4, %eax
+ 945 09dd 05000000 		addl	$_args, %eax
+ 945      00
+ 946 09e2 89C2     		movl	%eax, %edx
+ 947 09e4 BB000000 		movl	$_result, %ebx
+ 947      00
+ 948 09e9 B8140000 		movl	$20, %eax
+ 948      00
+ 949 09ee 89D7     		movl	%edx, %edi
+ 950 09f0 89DE     		movl	%ebx, %esi
+ 951 09f2 89C1     		movl	%eax, %ecx
+ 952 09f4 F3A5     		rep movsl
+ 247:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 953              		.loc 1 247 0
+ 954 09f6 A1000000 		movl	_args_index, %eax
+ 954      00
+ 955 09fb 83C001   		addl	$1, %eax
+ 956 09fe A3000000 		movl	%eax, _args_index
+ 956      00
+ 248:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 249:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[5];
+ 957              		.loc 1 249 0
+ 958 0a03 BA000000 		movl	$_result, %edx
+ 958      00
+ 959 0a08 BB900100 		movl	$_env+400, %ebx
+ 959      00
+ 960 0a0d B8140000 		movl	$20, %eax
+ 960      00
+ 961 0a12 89D7     		movl	%edx, %edi
+ 962 0a14 89DE     		movl	%ebx, %esi
+ 963 0a16 89C1     		movl	%eax, %ecx
+ 964 0a18 F3A5     		rep movsl
+ 250:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 251:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 29
+
+
+ 965              		.loc 1 251 0
+ 966 0a1a 8B150000 		movl	_args_index, %edx
+ 966      0000
+ 967 0a20 89D0     		movl	%edx, %eax
+ 968 0a22 C1E002   		sall	$2, %eax
+ 969 0a25 01D0     		addl	%edx, %eax
+ 970 0a27 C1E004   		sall	$4, %eax
+ 971 0a2a 05000000 		addl	$_args, %eax
+ 971      00
+ 972 0a2f 89C2     		movl	%eax, %edx
+ 973 0a31 BB000000 		movl	$_result, %ebx
+ 973      00
+ 974 0a36 B8140000 		movl	$20, %eax
+ 974      00
+ 975 0a3b 89D7     		movl	%edx, %edi
+ 976 0a3d 89DE     		movl	%ebx, %esi
+ 977 0a3f 89C1     		movl	%eax, %ecx
+ 978 0a41 F3A5     		rep movsl
+ 252:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 979              		.loc 1 252 0
+ 980 0a43 A1000000 		movl	_args_index, %eax
+ 980      00
+ 981 0a48 83C001   		addl	$1, %eax
+ 982 0a4b A3000000 		movl	%eax, _args_index
+ 982      00
+ 253:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 254:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.val = oper_plus(args);
+ 983              		.loc 1 254 0
+ 984 0a50 C7042400 		movl	$_args, (%esp)
+ 984      000000
+ 985 0a57 E8A4F5FF 		call	_oper_plus
+ 985      FF
+ 986 0a5c A3000000 		movl	%eax, _result
+ 986      00
+ 987 0a61 89150400 		movl	%edx, _result+4
+ 987      0000
+ 255:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 256:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env[env_index]=result;
+ 988              		.loc 1 256 0
+ 989 0a67 8B150000 		movl	_env_index, %edx
+ 989      0000
+ 990 0a6d 89D0     		movl	%edx, %eax
+ 991 0a6f C1E002   		sall	$2, %eax
+ 992 0a72 01D0     		addl	%edx, %eax
+ 993 0a74 C1E004   		sall	$4, %eax
+ 994 0a77 05000000 		addl	$_env, %eax
+ 994      00
+ 995 0a7c 89C2     		movl	%eax, %edx
+ 996 0a7e BB000000 		movl	$_result, %ebx
+ 996      00
+ 997 0a83 B8140000 		movl	$20, %eax
+ 997      00
+ 998 0a88 89D7     		movl	%edx, %edi
+ 999 0a8a 89DE     		movl	%ebx, %esi
+ 1000 0a8c 89C1     		movl	%eax, %ecx
+ 1001 0a8e F3A5     		rep movsl
+ 257:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index++;
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 30
+
+
+ 1002              		.loc 1 257 0
+ 1003 0a90 A1000000 		movl	_env_index, %eax
+ 1003      00
+ 1004 0a95 83C001   		addl	$1, %eax
+ 1005 0a98 A3000000 		movl	%eax, _env_index
+ 1005      00
+ 258:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 259:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index = 0;
+ 1006              		.loc 1 259 0
+ 1007 0a9d C7050000 		movl	$0, _args_index
+ 1007      00000000 
+ 1007      0000
+ 260:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 261:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[9];
+ 1008              		.loc 1 261 0
+ 1009 0aa7 BA000000 		movl	$_result, %edx
+ 1009      00
+ 1010 0aac BBD00200 		movl	$_env+720, %ebx
+ 1010      00
+ 1011 0ab1 B8140000 		movl	$20, %eax
+ 1011      00
+ 1012 0ab6 89D7     		movl	%edx, %edi
+ 1013 0ab8 89DE     		movl	%ebx, %esi
+ 1014 0aba 89C1     		movl	%eax, %ecx
+ 1015 0abc F3A5     		rep movsl
+ 262:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 263:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 1016              		.loc 1 263 0
+ 1017 0abe 8B150000 		movl	_args_index, %edx
+ 1017      0000
+ 1018 0ac4 89D0     		movl	%edx, %eax
+ 1019 0ac6 C1E002   		sall	$2, %eax
+ 1020 0ac9 01D0     		addl	%edx, %eax
+ 1021 0acb C1E004   		sall	$4, %eax
+ 1022 0ace 05000000 		addl	$_args, %eax
+ 1022      00
+ 1023 0ad3 89C2     		movl	%eax, %edx
+ 1024 0ad5 BB000000 		movl	$_result, %ebx
+ 1024      00
+ 1025 0ada B8140000 		movl	$20, %eax
+ 1025      00
+ 1026 0adf 89D7     		movl	%edx, %edi
+ 1027 0ae1 89DE     		movl	%ebx, %esi
+ 1028 0ae3 89C1     		movl	%eax, %ecx
+ 1029 0ae5 F3A5     		rep movsl
+ 264:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 1030              		.loc 1 264 0
+ 1031 0ae7 A1000000 		movl	_args_index, %eax
+ 1031      00
+ 1032 0aec 83C001   		addl	$1, %eax
+ 1033 0aef A3000000 		movl	%eax, _args_index
+ 1033      00
+ 265:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 266:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[10];
+ 1034              		.loc 1 266 0
+ 1035 0af4 BA000000 		movl	$_result, %edx
+ 1035      00
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 31
+
+
+ 1036 0af9 BB200300 		movl	$_env+800, %ebx
+ 1036      00
+ 1037 0afe B8140000 		movl	$20, %eax
+ 1037      00
+ 1038 0b03 89D7     		movl	%edx, %edi
+ 1039 0b05 89DE     		movl	%ebx, %esi
+ 1040 0b07 89C1     		movl	%eax, %ecx
+ 1041 0b09 F3A5     		rep movsl
+ 267:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 268:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 1042              		.loc 1 268 0
+ 1043 0b0b 8B150000 		movl	_args_index, %edx
+ 1043      0000
+ 1044 0b11 89D0     		movl	%edx, %eax
+ 1045 0b13 C1E002   		sall	$2, %eax
+ 1046 0b16 01D0     		addl	%edx, %eax
+ 1047 0b18 C1E004   		sall	$4, %eax
+ 1048 0b1b 05000000 		addl	$_args, %eax
+ 1048      00
+ 1049 0b20 89C2     		movl	%eax, %edx
+ 1050 0b22 BB000000 		movl	$_result, %ebx
+ 1050      00
+ 1051 0b27 B8140000 		movl	$20, %eax
+ 1051      00
+ 1052 0b2c 89D7     		movl	%edx, %edi
+ 1053 0b2e 89DE     		movl	%ebx, %esi
+ 1054 0b30 89C1     		movl	%eax, %ecx
+ 1055 0b32 F3A5     		rep movsl
+ 269:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 1056              		.loc 1 269 0
+ 1057 0b34 A1000000 		movl	_args_index, %eax
+ 1057      00
+ 1058 0b39 83C001   		addl	$1, %eax
+ 1059 0b3c A3000000 		movl	%eax, _args_index
+ 1059      00
+ 270:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 271:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[7];
+ 1060              		.loc 1 271 0
+ 1061 0b41 BA000000 		movl	$_result, %edx
+ 1061      00
+ 1062 0b46 BB300200 		movl	$_env+560, %ebx
+ 1062      00
+ 1063 0b4b B8140000 		movl	$20, %eax
+ 1063      00
+ 1064 0b50 89D7     		movl	%edx, %edi
+ 1065 0b52 89DE     		movl	%ebx, %esi
+ 1066 0b54 89C1     		movl	%eax, %ecx
+ 1067 0b56 F3A5     		rep movsl
+ 272:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 273:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 1068              		.loc 1 273 0
+ 1069 0b58 8B150000 		movl	_args_index, %edx
+ 1069      0000
+ 1070 0b5e 89D0     		movl	%edx, %eax
+ 1071 0b60 C1E002   		sall	$2, %eax
+ 1072 0b63 01D0     		addl	%edx, %eax
+ 1073 0b65 C1E004   		sall	$4, %eax
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 32
+
+
+ 1074 0b68 05000000 		addl	$_args, %eax
+ 1074      00
+ 1075 0b6d 89C2     		movl	%eax, %edx
+ 1076 0b6f BB000000 		movl	$_result, %ebx
+ 1076      00
+ 1077 0b74 B8140000 		movl	$20, %eax
+ 1077      00
+ 1078 0b79 89D7     		movl	%edx, %edi
+ 1079 0b7b 89DE     		movl	%ebx, %esi
+ 1080 0b7d 89C1     		movl	%eax, %ecx
+ 1081 0b7f F3A5     		rep movsl
+ 274:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 1082              		.loc 1 274 0
+ 1083 0b81 A1000000 		movl	_args_index, %eax
+ 1083      00
+ 1084 0b86 83C001   		addl	$1, %eax
+ 1085 0b89 A3000000 		movl	%eax, _args_index
+ 1085      00
+ 275:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 276:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[4];
+ 1086              		.loc 1 276 0
+ 1087 0b8e BA000000 		movl	$_result, %edx
+ 1087      00
+ 1088 0b93 BB400100 		movl	$_env+320, %ebx
+ 1088      00
+ 1089 0b98 B8140000 		movl	$20, %eax
+ 1089      00
+ 1090 0b9d 89D7     		movl	%edx, %edi
+ 1091 0b9f 89DE     		movl	%ebx, %esi
+ 1092 0ba1 89C1     		movl	%eax, %ecx
+ 1093 0ba3 F3A5     		rep movsl
+ 277:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 278:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr = result.addr;
+ 1094              		.loc 1 278 0
+ 1095 0ba5 A1080000 		movl	_result+8, %eax
+ 1095      00
+ 1096 0baa A3000000 		movl	%eax, _addr
+ 1096      00
+ 279:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     *env = **result.p_env;
+ 1097              		.loc 1 279 0
+ 1098 0baf A1100000 		movl	_result+16, %eax
+ 1098      00
+ 1099 0bb4 BA000000 		movl	$_env, %edx
+ 1099      00
+ 1100 0bb9 89C3     		movl	%eax, %ebx
+ 1101 0bbb B8140000 		movl	$20, %eax
+ 1101      00
+ 1102 0bc0 89D7     		movl	%edx, %edi
+ 1103 0bc2 89DE     		movl	%ebx, %esi
+ 1104 0bc4 89C1     		movl	%eax, %ecx
+ 1105 0bc6 F3A5     		rep movsl
+ 280:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index = result.envLen;
+ 1106              		.loc 1 280 0
+ 1107 0bc8 A10C0000 		movl	_result+12, %eax
+ 1107      00
+ 1108 0bcd A3000000 		movl	%eax, _env_index
+ 1108      00
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 33
+
+
+ 281:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 282:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     goto *addr;
+ 1109              		.loc 1 282 0
+ 1110 0bd2 A1000000 		movl	_addr, %eax
+ 1110      00
+ 1111 0bd7 E9E2F5FF 		jmp	L17
+ 1111      FF
+ 1112              	L25:
+ 283:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 284:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     PL_L21:
+ 285:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 286:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index = 0;
+ 1113              		.loc 1 286 0
+ 1114 0bdc C7050000 		movl	$0, _args_index
+ 1114      00000000 
+ 1114      0000
+ 287:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 288:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[6];
+ 1115              		.loc 1 288 0
+ 1116 0be6 BA000000 		movl	$_result, %edx
+ 1116      00
+ 1117 0beb BBE00100 		movl	$_env+480, %ebx
+ 1117      00
+ 1118 0bf0 B8140000 		movl	$20, %eax
+ 1118      00
+ 1119 0bf5 89D7     		movl	%edx, %edi
+ 1120 0bf7 89DE     		movl	%ebx, %esi
+ 1121 0bf9 89C1     		movl	%eax, %ecx
+ 1122 0bfb F3A5     		rep movsl
+ 289:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 290:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 1123              		.loc 1 290 0
+ 1124 0bfd 8B150000 		movl	_args_index, %edx
+ 1124      0000
+ 1125 0c03 89D0     		movl	%edx, %eax
+ 1126 0c05 C1E002   		sall	$2, %eax
+ 1127 0c08 01D0     		addl	%edx, %eax
+ 1128 0c0a C1E004   		sall	$4, %eax
+ 1129 0c0d 05000000 		addl	$_args, %eax
+ 1129      00
+ 1130 0c12 89C2     		movl	%eax, %edx
+ 1131 0c14 BB000000 		movl	$_result, %ebx
+ 1131      00
+ 1132 0c19 B8140000 		movl	$20, %eax
+ 1132      00
+ 1133 0c1e 89D7     		movl	%edx, %edi
+ 1134 0c20 89DE     		movl	%ebx, %esi
+ 1135 0c22 89C1     		movl	%eax, %ecx
+ 1136 0c24 F3A5     		rep movsl
+ 291:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 1137              		.loc 1 291 0
+ 1138 0c26 A1000000 		movl	_args_index, %eax
+ 1138      00
+ 1139 0c2b 83C001   		addl	$1, %eax
+ 1140 0c2e A3000000 		movl	%eax, _args_index
+ 1140      00
+ 292:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 34
+
+
+ 293:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[7];
+ 1141              		.loc 1 293 0
+ 1142 0c33 BA000000 		movl	$_result, %edx
+ 1142      00
+ 1143 0c38 BB300200 		movl	$_env+560, %ebx
+ 1143      00
+ 1144 0c3d B8140000 		movl	$20, %eax
+ 1144      00
+ 1145 0c42 89D7     		movl	%edx, %edi
+ 1146 0c44 89DE     		movl	%ebx, %esi
+ 1147 0c46 89C1     		movl	%eax, %ecx
+ 1148 0c48 F3A5     		rep movsl
+ 294:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 295:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr = result.addr;
+ 1149              		.loc 1 295 0
+ 1150 0c4a A1080000 		movl	_result+8, %eax
+ 1150      00
+ 1151 0c4f A3000000 		movl	%eax, _addr
+ 1151      00
+ 296:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     *env = **result.p_env;
+ 1152              		.loc 1 296 0
+ 1153 0c54 A1100000 		movl	_result+16, %eax
+ 1153      00
+ 1154 0c59 BA000000 		movl	$_env, %edx
+ 1154      00
+ 1155 0c5e 89C3     		movl	%eax, %ebx
+ 1156 0c60 B8140000 		movl	$20, %eax
+ 1156      00
+ 1157 0c65 89D7     		movl	%edx, %edi
+ 1158 0c67 89DE     		movl	%ebx, %esi
+ 1159 0c69 89C1     		movl	%eax, %ecx
+ 1160 0c6b F3A5     		rep movsl
+ 297:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index = result.envLen;
+ 1161              		.loc 1 297 0
+ 1162 0c6d A10C0000 		movl	_result+12, %eax
+ 1162      00
+ 1163 0c72 A3000000 		movl	%eax, _env_index
+ 1163      00
+ 298:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 299:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     goto *addr;
+ 1164              		.loc 1 299 0
+ 1165 0c77 A1000000 		movl	_addr, %eax
+ 1165      00
+ 1166 0c7c E93DF5FF 		jmp	L17
+ 1166      FF
+ 1167              	L22:
+ 300:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 301:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     PL_A19:
+ 302:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 303:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr = &&PL_B20;
+ 1168              		.loc 1 303 0
+ 1169 0c81 C7050000 		movl	$L23, _addr
+ 1169      00000D07 
+ 1169      0000
+ 304:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 305:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.addr = addr;
+ 1170              		.loc 1 305 0
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 35
+
+
+ 1171 0c8b A1000000 		movl	_addr, %eax
+ 1171      00
+ 1172 0c90 A3080000 		movl	%eax, _result+8
+ 1172      00
+ 306:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     *result.p_env = env;
+ 1173              		.loc 1 306 0
+ 1174 0c95 C7051000 		movl	$_env, _result+16
+ 1174      00000000 
+ 1174      0000
+ 307:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.envLen = env_index;
+ 1175              		.loc 1 307 0
+ 1176 0c9f A1000000 		movl	_env_index, %eax
+ 1176      00
+ 1177 0ca4 A30C0000 		movl	%eax, _result+12
+ 1177      00
+ 308:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 309:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 1178              		.loc 1 309 0
+ 1179 0ca9 8B150000 		movl	_args_index, %edx
+ 1179      0000
+ 1180 0caf 89D0     		movl	%edx, %eax
+ 1181 0cb1 C1E002   		sall	$2, %eax
+ 1182 0cb4 01D0     		addl	%edx, %eax
+ 1183 0cb6 C1E004   		sall	$4, %eax
+ 1184 0cb9 05000000 		addl	$_args, %eax
+ 1184      00
+ 1185 0cbe 89C2     		movl	%eax, %edx
+ 1186 0cc0 BB000000 		movl	$_result, %ebx
+ 1186      00
+ 1187 0cc5 B8140000 		movl	$20, %eax
+ 1187      00
+ 1188 0cca 89D7     		movl	%edx, %edi
+ 1189 0ccc 89DE     		movl	%ebx, %esi
+ 1190 0cce 89C1     		movl	%eax, %ecx
+ 1191 0cd0 F3A5     		rep movsl
+ 310:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 1192              		.loc 1 310 0
+ 1193 0cd2 A1000000 		movl	_args_index, %eax
+ 1193      00
+ 1194 0cd7 83C001   		addl	$1, %eax
+ 1195 0cda A3000000 		movl	%eax, _args_index
+ 1195      00
+ 311:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 312:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[3];
+ 1196              		.loc 1 312 0
+ 1197 0cdf BA000000 		movl	$_result, %edx
+ 1197      00
+ 1198 0ce4 BBF00000 		movl	$_env+240, %ebx
+ 1198      00
+ 1199 0ce9 B8140000 		movl	$20, %eax
+ 1199      00
+ 1200 0cee 89D7     		movl	%edx, %edi
+ 1201 0cf0 89DE     		movl	%ebx, %esi
+ 1202 0cf2 89C1     		movl	%eax, %ecx
+ 1203 0cf4 F3A5     		rep movsl
+ 313:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 314:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 36
+
+
+ 1204              		.loc 1 314 0
+ 1205 0cf6 8B150000 		movl	_args_index, %edx
+ 1205      0000
+ 1206 0cfc 89D0     		movl	%edx, %eax
+ 1207 0cfe C1E002   		sall	$2, %eax
+ 1208 0d01 01D0     		addl	%edx, %eax
+ 1209 0d03 C1E004   		sall	$4, %eax
+ 1210 0d06 05000000 		addl	$_args, %eax
+ 1210      00
+ 1211 0d0b 89C2     		movl	%eax, %edx
+ 1212 0d0d BB000000 		movl	$_result, %ebx
+ 1212      00
+ 1213 0d12 B8140000 		movl	$20, %eax
+ 1213      00
+ 1214 0d17 89D7     		movl	%edx, %edi
+ 1215 0d19 89DE     		movl	%ebx, %esi
+ 1216 0d1b 89C1     		movl	%eax, %ecx
+ 1217 0d1d F3A5     		rep movsl
+ 315:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 1218              		.loc 1 315 0
+ 1219 0d1f A1000000 		movl	_args_index, %eax
+ 1219      00
+ 1220 0d24 83C001   		addl	$1, %eax
+ 1221 0d27 A3000000 		movl	%eax, _args_index
+ 1221      00
+ 316:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 317:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr = &&PL_A22;
+ 1222              		.loc 1 317 0
+ 1223 0d2c C7050000 		movl	$L27, _addr
+ 1223      0000EF0E 
+ 1223      0000
+ 318:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 319:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     goto *addr;
+ 1224              		.loc 1 319 0
+ 1225 0d36 A1000000 		movl	_addr, %eax
+ 1225      00
+ 1226 0d3b E97EF4FF 		jmp	L17
+ 1226      FF
+ 1227              	L28:
+ 320:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 321:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     PL_B23:
+ 322:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 323:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env[env_index]=args[0];
+ 1228              		.loc 1 323 0
+ 1229 0d40 8B150000 		movl	_env_index, %edx
+ 1229      0000
+ 1230 0d46 89D0     		movl	%edx, %eax
+ 1231 0d48 C1E002   		sall	$2, %eax
+ 1232 0d4b 01D0     		addl	%edx, %eax
+ 1233 0d4d C1E004   		sall	$4, %eax
+ 1234 0d50 05000000 		addl	$_env, %eax
+ 1234      00
+ 1235 0d55 89C2     		movl	%eax, %edx
+ 1236 0d57 BB000000 		movl	$_args, %ebx
+ 1236      00
+ 1237 0d5c B8140000 		movl	$20, %eax
+ 1237      00
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 37
+
+
+ 1238 0d61 89D7     		movl	%edx, %edi
+ 1239 0d63 89DE     		movl	%ebx, %esi
+ 1240 0d65 89C1     		movl	%eax, %ecx
+ 1241 0d67 F3A5     		rep movsl
+ 324:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index++;
+ 1242              		.loc 1 324 0
+ 1243 0d69 A1000000 		movl	_env_index, %eax
+ 1243      00
+ 1244 0d6e 83C001   		addl	$1, %eax
+ 1245 0d71 A3000000 		movl	%eax, _env_index
+ 1245      00
+ 325:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     if(args_index==2){
+ 1246              		.loc 1 325 0
+ 1247 0d76 A1000000 		movl	_args_index, %eax
+ 1247      00
+ 1248 0d7b 83F802   		cmpl	$2, %eax
+ 1249 0d7e 7536     		jne	L29
+ 326:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env[env_index]=args[1];
+ 1250              		.loc 1 326 0
+ 1251 0d80 8B150000 		movl	_env_index, %edx
+ 1251      0000
+ 1252 0d86 89D0     		movl	%edx, %eax
+ 1253 0d88 C1E002   		sall	$2, %eax
+ 1254 0d8b 01D0     		addl	%edx, %eax
+ 1255 0d8d C1E004   		sall	$4, %eax
+ 1256 0d90 05000000 		addl	$_env, %eax
+ 1256      00
+ 1257 0d95 89C2     		movl	%eax, %edx
+ 1258 0d97 BB500000 		movl	$_args+80, %ebx
+ 1258      00
+ 1259 0d9c B8140000 		movl	$20, %eax
+ 1259      00
+ 1260 0da1 89D7     		movl	%edx, %edi
+ 1261 0da3 89DE     		movl	%ebx, %esi
+ 1262 0da5 89C1     		movl	%eax, %ecx
+ 1263 0da7 F3A5     		rep movsl
+ 327:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****         env_index++;
+ 1264              		.loc 1 327 0
+ 1265 0da9 A1000000 		movl	_env_index, %eax
+ 1265      00
+ 1266 0dae 83C001   		addl	$1, %eax
+ 1267 0db1 A3000000 		movl	%eax, _env_index
+ 1267      00
+ 1268              	L29:
+ 328:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     }
+ 329:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 330:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index = 0;
+ 1269              		.loc 1 330 0
+ 1270 0db6 C7050000 		movl	$0, _args_index
+ 1270      00000000 
+ 1270      0000
+ 331:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 332:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.val = 200;
+ 1271              		.loc 1 332 0
+ 1272 0dc0 C7050000 		movl	$200, _result
+ 1272      0000C800 
+ 1272      0000
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 38
+
+
+ 1273 0dca C7050400 		movl	$0, _result+4
+ 1273      00000000 
+ 1273      0000
+ 333:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 334:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 1274              		.loc 1 334 0
+ 1275 0dd4 8B150000 		movl	_args_index, %edx
+ 1275      0000
+ 1276 0dda 89D0     		movl	%edx, %eax
+ 1277 0ddc C1E002   		sall	$2, %eax
+ 1278 0ddf 01D0     		addl	%edx, %eax
+ 1279 0de1 C1E004   		sall	$4, %eax
+ 1280 0de4 05000000 		addl	$_args, %eax
+ 1280      00
+ 1281 0de9 89C2     		movl	%eax, %edx
+ 1282 0deb BB000000 		movl	$_result, %ebx
+ 1282      00
+ 1283 0df0 B8140000 		movl	$20, %eax
+ 1283      00
+ 1284 0df5 89D7     		movl	%edx, %edi
+ 1285 0df7 89DE     		movl	%ebx, %esi
+ 1286 0df9 89C1     		movl	%eax, %ecx
+ 1287 0dfb F3A5     		rep movsl
+ 335:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 1288              		.loc 1 335 0
+ 1289 0dfd A1000000 		movl	_args_index, %eax
+ 1289      00
+ 1290 0e02 83C001   		addl	$1, %eax
+ 1291 0e05 A3000000 		movl	%eax, _args_index
+ 1291      00
+ 336:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 337:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.val = 0;
+ 1292              		.loc 1 337 0
+ 1293 0e0a C7050000 		movl	$0, _result
+ 1293      00000000 
+ 1293      0000
+ 1294 0e14 C7050400 		movl	$0, _result+4
+ 1294      00000000 
+ 1294      0000
+ 338:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 339:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 1295              		.loc 1 339 0
+ 1296 0e1e 8B150000 		movl	_args_index, %edx
+ 1296      0000
+ 1297 0e24 89D0     		movl	%edx, %eax
+ 1298 0e26 C1E002   		sall	$2, %eax
+ 1299 0e29 01D0     		addl	%edx, %eax
+ 1300 0e2b C1E004   		sall	$4, %eax
+ 1301 0e2e 05000000 		addl	$_args, %eax
+ 1301      00
+ 1302 0e33 89C2     		movl	%eax, %edx
+ 1303 0e35 BB000000 		movl	$_result, %ebx
+ 1303      00
+ 1304 0e3a B8140000 		movl	$20, %eax
+ 1304      00
+ 1305 0e3f 89D7     		movl	%edx, %edi
+ 1306 0e41 89DE     		movl	%ebx, %esi
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 39
+
+
+ 1307 0e43 89C1     		movl	%eax, %ecx
+ 1308 0e45 F3A5     		rep movsl
+ 340:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 1309              		.loc 1 340 0
+ 1310 0e47 A1000000 		movl	_args_index, %eax
+ 1310      00
+ 1311 0e4c 83C001   		addl	$1, %eax
+ 1312 0e4f A3000000 		movl	%eax, _args_index
+ 1312      00
+ 341:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 342:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[5];
+ 1313              		.loc 1 342 0
+ 1314 0e54 BA000000 		movl	$_result, %edx
+ 1314      00
+ 1315 0e59 BB900100 		movl	$_env+400, %ebx
+ 1315      00
+ 1316 0e5e B8140000 		movl	$20, %eax
+ 1316      00
+ 1317 0e63 89D7     		movl	%edx, %edi
+ 1318 0e65 89DE     		movl	%ebx, %esi
+ 1319 0e67 89C1     		movl	%eax, %ecx
+ 1320 0e69 F3A5     		rep movsl
+ 343:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 344:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args[args_index] = result;
+ 1321              		.loc 1 344 0
+ 1322 0e6b 8B150000 		movl	_args_index, %edx
+ 1322      0000
+ 1323 0e71 89D0     		movl	%edx, %eax
+ 1324 0e73 C1E002   		sall	$2, %eax
+ 1325 0e76 01D0     		addl	%edx, %eax
+ 1326 0e78 C1E004   		sall	$4, %eax
+ 1327 0e7b 05000000 		addl	$_args, %eax
+ 1327      00
+ 1328 0e80 89C2     		movl	%eax, %edx
+ 1329 0e82 BB000000 		movl	$_result, %ebx
+ 1329      00
+ 1330 0e87 B8140000 		movl	$20, %eax
+ 1330      00
+ 1331 0e8c 89D7     		movl	%edx, %edi
+ 1332 0e8e 89DE     		movl	%ebx, %esi
+ 1333 0e90 89C1     		movl	%eax, %ecx
+ 1334 0e92 F3A5     		rep movsl
+ 345:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     args_index++;
+ 1335              		.loc 1 345 0
+ 1336 0e94 A1000000 		movl	_args_index, %eax
+ 1336      00
+ 1337 0e99 83C001   		addl	$1, %eax
+ 1338 0e9c A3000000 		movl	%eax, _args_index
+ 1338      00
+ 346:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 347:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result = env[4];
+ 1339              		.loc 1 347 0
+ 1340 0ea1 BA000000 		movl	$_result, %edx
+ 1340      00
+ 1341 0ea6 BB400100 		movl	$_env+320, %ebx
+ 1341      00
+ 1342 0eab B8140000 		movl	$20, %eax
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 40
+
+
+ 1342      00
+ 1343 0eb0 89D7     		movl	%edx, %edi
+ 1344 0eb2 89DE     		movl	%ebx, %esi
+ 1345 0eb4 89C1     		movl	%eax, %ecx
+ 1346 0eb6 F3A5     		rep movsl
+ 348:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 349:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr = result.addr;
+ 1347              		.loc 1 349 0
+ 1348 0eb8 A1080000 		movl	_result+8, %eax
+ 1348      00
+ 1349 0ebd A3000000 		movl	%eax, _addr
+ 1349      00
+ 350:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     *env = **result.p_env;
+ 1350              		.loc 1 350 0
+ 1351 0ec2 A1100000 		movl	_result+16, %eax
+ 1351      00
+ 1352 0ec7 BA000000 		movl	$_env, %edx
+ 1352      00
+ 1353 0ecc 89C3     		movl	%eax, %ebx
+ 1354 0ece B8140000 		movl	$20, %eax
+ 1354      00
+ 1355 0ed3 89D7     		movl	%edx, %edi
+ 1356 0ed5 89DE     		movl	%ebx, %esi
+ 1357 0ed7 89C1     		movl	%eax, %ecx
+ 1358 0ed9 F3A5     		rep movsl
+ 351:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index = result.envLen;
+ 1359              		.loc 1 351 0
+ 1360 0edb A10C0000 		movl	_result+12, %eax
+ 1360      00
+ 1361 0ee0 A3000000 		movl	%eax, _env_index
+ 1361      00
+ 352:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 353:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     goto *addr;
+ 1362              		.loc 1 353 0
+ 1363 0ee5 A1000000 		movl	_addr, %eax
+ 1363      00
+ 1364 0eea E9CFF2FF 		jmp	L17
+ 1364      FF
+ 1365              	L27:
+ 354:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 355:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     PL_A22:
+ 356:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 357:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr = &&PL_B23;
+ 1366              		.loc 1 357 0
+ 1367 0eef C7050000 		movl	$L28, _addr
+ 1367      0000400D 
+ 1367      0000
+ 358:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 359:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.addr = addr;
+ 1368              		.loc 1 359 0
+ 1369 0ef9 A1000000 		movl	_addr, %eax
+ 1369      00
+ 1370 0efe A3080000 		movl	%eax, _result+8
+ 1370      00
+ 360:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     *result.p_env = env;
+ 1371              		.loc 1 360 0
+ 1372 0f03 C7051000 		movl	$_env, _result+16
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 41
+
+
+ 1372      00000000 
+ 1372      0000
+ 361:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     result.envLen = env_index;
+ 1373              		.loc 1 361 0
+ 1374 0f0d A1000000 		movl	_env_index, %eax
+ 1374      00
+ 1375 0f12 A30C0000 		movl	%eax, _result+12
+ 1375      00
+ 362:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 363:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     addr = result.addr;
+ 1376              		.loc 1 363 0
+ 1377 0f17 A1080000 		movl	_result+8, %eax
+ 1377      00
+ 1378 0f1c A3000000 		movl	%eax, _addr
+ 1378      00
+ 364:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     *env = **result.p_env;
+ 1379              		.loc 1 364 0
+ 1380 0f21 A1100000 		movl	_result+16, %eax
+ 1380      00
+ 1381 0f26 BA000000 		movl	$_env, %edx
+ 1381      00
+ 1382 0f2b 89C3     		movl	%eax, %ebx
+ 1383 0f2d B8140000 		movl	$20, %eax
+ 1383      00
+ 1384 0f32 89D7     		movl	%edx, %edi
+ 1385 0f34 89DE     		movl	%ebx, %esi
+ 1386 0f36 89C1     		movl	%eax, %ecx
+ 1387 0f38 F3A5     		rep movsl
+ 365:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     env_index = result.envLen;
+ 1388              		.loc 1 365 0
+ 1389 0f3a A10C0000 		movl	_result+12, %eax
+ 1389      00
+ 1390 0f3f A3000000 		movl	%eax, _env_index
+ 1390      00
+ 366:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 367:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     goto *addr;
+ 1391              		.loc 1 367 0
+ 1392 0f44 A1000000 		movl	_addr, %eax
+ 1392      00
+ 1393 0f49 E970F2FF 		jmp	L17
+ 1393      FF
+ 1394              	L30:
+ 368:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** }
+ 1395              		.loc 1 368 0
+ 1396 0f4e 81C44C01 		addl	$332, %esp
+ 1396      0000
+ 1397 0f54 5B       		popl	%ebx
+ 1398              		.cfi_restore 3
+ 1399 0f55 5E       		popl	%esi
+ 1400              		.cfi_restore 6
+ 1401 0f56 5F       		popl	%edi
+ 1402              		.cfi_restore 7
+ 1403 0f57 5D       		popl	%ebp
+ 1404              		.cfi_restore 5
+ 1405              		.cfi_def_cfa 4, 4
+ 1406 0f58 C3       		ret
+ 1407              		.cfi_endproc
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 42
+
+
+ 1408              	LFE10:
+ 1410              		.section .rdata,"dr"
+ 1411              	LC0:
+ 1412 0000 416E7377 		.ascii "Answer: %lli\0"
+ 1412      65723A20 
+ 1412      256C6C69 
+ 1412      00
+ 1413 000d 000000   		.text
+ 1414              		.globl	_main
+ 1416              	_main:
+ 1417              	LFB11:
+ 369:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** 
+ 370:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** int main(){
+ 1418              		.loc 1 370 0
+ 1419              		.cfi_startproc
+ 1420 0f59 55       		pushl	%ebp
+ 1421              		.cfi_def_cfa_offset 8
+ 1422              		.cfi_offset 5, -8
+ 1423 0f5a 89E5     		movl	%esp, %ebp
+ 1424              		.cfi_def_cfa_register 5
+ 1425 0f5c 83E4F0   		andl	$-16, %esp
+ 1426 0f5f 83EC10   		subl	$16, %esp
+ 1427              		.loc 1 370 0
+ 1428 0f62 E8000000 		call	___main
+ 1428      00
+ 371:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     printf("Answer: %lli",func());
+ 1429              		.loc 1 371 0
+ 1430 0f67 E823F1FF 		call	_func
+ 1430      FF
+ 1431 0f6c 89442404 		movl	%eax, 4(%esp)
+ 1432 0f70 89542408 		movl	%edx, 8(%esp)
+ 1433 0f74 C7042400 		movl	$LC0, (%esp)
+ 1433      000000
+ 1434 0f7b E8000000 		call	_printf
+ 1434      00
+ 372:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c ****     return 0;
+ 1435              		.loc 1 372 0
+ 1436 0f80 B8000000 		movl	$0, %eax
+ 1436      00
+ 373:C:/Users/deniz/Documents/+SeniorSem1/Programming Languages/ProgrammingLanguages2016/Final Project\auto_build.c **** }
+ 1437              		.loc 1 373 0
+ 1438 0f85 C9       		leave
+ 1439              		.cfi_restore 5
+ 1440              		.cfi_def_cfa 4, 4
+ 1441 0f86 C3       		ret
+ 1442              		.cfi_endproc
+ 1443              	LFE11:
+ 1444              	Letext0:
+ 1445              		.file 2 "C:/Program Files (x86)/CodeBlocks/MinGW/include/stdio.h"
+ 1446 0f87 90       		.section	.debug_info,"dr"
+ 1447              	Ldebug_info0:
+ 1448 0000 A7040000 		.long	0x4a7
+ 1449 0004 0400     		.word	0x4
+ 1450 0006 00000000 		.secrel32	Ldebug_abbrev0
+ 1451 000a 04       		.byte	0x4
+ 1452 000b 01       		.uleb128 0x1
+ 1453 000c 474E5520 		.ascii "GNU C 4.9.2 -mtune=generic -march=pentiumpro -g\0"
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 43
+
+
+ 1453      4320342E 
+ 1453      392E3220 
+ 1453      2D6D7475 
+ 1453      6E653D67 
+ 1454 003c 01       		.byte	0x1
+ 1455 003d 433A5C55 		.ascii "C:\\Users\\deniz\\Documents\\+SeniorSem1\\Programming Languages\\ProgrammingLanguages2016\
+ 1455      73657273 
+ 1455      5C64656E 
+ 1455      697A5C44 
+ 1455      6F63756D 
+ 1456 00ac 00000000 		.long	Ltext0
+ 1457 00b0 870F0000 		.long	Letext0-Ltext0
+ 1458 00b4 00000000 		.secrel32	Ldebug_line0
+ 1459 00b8 02       		.uleb128 0x2
+ 1460 00b9 04       		.byte	0x4
+ 1461 00ba 07       		.byte	0x7
+ 1462 00bb 756E7369 		.ascii "unsigned int\0"
+ 1462      676E6564 
+ 1462      20696E74 
+ 1462      00
+ 1463 00c8 02       		.uleb128 0x2
+ 1464 00c9 02       		.byte	0x2
+ 1465 00ca 07       		.byte	0x7
+ 1466 00cb 73686F72 		.ascii "short unsigned int\0"
+ 1466      7420756E 
+ 1466      7369676E 
+ 1466      65642069 
+ 1466      6E7400
+ 1467 00de 02       		.uleb128 0x2
+ 1468 00df 04       		.byte	0x4
+ 1469 00e0 05       		.byte	0x5
+ 1470 00e1 696E7400 		.ascii "int\0"
+ 1471 00e5 02       		.uleb128 0x2
+ 1472 00e6 04       		.byte	0x4
+ 1473 00e7 05       		.byte	0x5
+ 1474 00e8 6C6F6E67 		.ascii "long int\0"
+ 1474      20696E74 
+ 1474      00
+ 1475 00f1 02       		.uleb128 0x2
+ 1476 00f2 08       		.byte	0x8
+ 1477 00f3 05       		.byte	0x5
+ 1478 00f4 6C6F6E67 		.ascii "long long int\0"
+ 1478      206C6F6E 
+ 1478      6720696E 
+ 1478      7400
+ 1479 0102 02       		.uleb128 0x2
+ 1480 0103 01       		.byte	0x1
+ 1481 0104 06       		.byte	0x6
+ 1482 0105 63686172 		.ascii "char\0"
+ 1482      00
+ 1483 010a 03       		.uleb128 0x3
+ 1484 010b 5F696F62 		.ascii "_iobuf\0"
+ 1484      756600
+ 1485 0112 20       		.byte	0x20
+ 1486 0113 02       		.byte	0x2
+ 1487 0114 81       		.byte	0x81
+ 1488 0115 91010000 		.long	0x191
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 44
+
+
+ 1489 0119 04       		.uleb128 0x4
+ 1490 011a 5F707472 		.ascii "_ptr\0"
+ 1490      00
+ 1491 011f 02       		.byte	0x2
+ 1492 0120 83       		.byte	0x83
+ 1493 0121 91010000 		.long	0x191
+ 1494 0125 00       		.byte	0
+ 1495 0126 04       		.uleb128 0x4
+ 1496 0127 5F636E74 		.ascii "_cnt\0"
+ 1496      00
+ 1497 012c 02       		.byte	0x2
+ 1498 012d 84       		.byte	0x84
+ 1499 012e DE000000 		.long	0xde
+ 1500 0132 04       		.byte	0x4
+ 1501 0133 04       		.uleb128 0x4
+ 1502 0134 5F626173 		.ascii "_base\0"
+ 1502      6500
+ 1503 013a 02       		.byte	0x2
+ 1504 013b 85       		.byte	0x85
+ 1505 013c 91010000 		.long	0x191
+ 1506 0140 08       		.byte	0x8
+ 1507 0141 04       		.uleb128 0x4
+ 1508 0142 5F666C61 		.ascii "_flag\0"
+ 1508      6700
+ 1509 0148 02       		.byte	0x2
+ 1510 0149 86       		.byte	0x86
+ 1511 014a DE000000 		.long	0xde
+ 1512 014e 0C       		.byte	0xc
+ 1513 014f 04       		.uleb128 0x4
+ 1514 0150 5F66696C 		.ascii "_file\0"
+ 1514      6500
+ 1515 0156 02       		.byte	0x2
+ 1516 0157 87       		.byte	0x87
+ 1517 0158 DE000000 		.long	0xde
+ 1518 015c 10       		.byte	0x10
+ 1519 015d 04       		.uleb128 0x4
+ 1520 015e 5F636861 		.ascii "_charbuf\0"
+ 1520      72627566 
+ 1520      00
+ 1521 0167 02       		.byte	0x2
+ 1522 0168 88       		.byte	0x88
+ 1523 0169 DE000000 		.long	0xde
+ 1524 016d 14       		.byte	0x14
+ 1525 016e 04       		.uleb128 0x4
+ 1526 016f 5F627566 		.ascii "_bufsiz\0"
+ 1526      73697A00 
+ 1527 0177 02       		.byte	0x2
+ 1528 0178 89       		.byte	0x89
+ 1529 0179 DE000000 		.long	0xde
+ 1530 017d 18       		.byte	0x18
+ 1531 017e 04       		.uleb128 0x4
+ 1532 017f 5F746D70 		.ascii "_tmpfname\0"
+ 1532      666E616D 
+ 1532      6500
+ 1533 0189 02       		.byte	0x2
+ 1534 018a 8A       		.byte	0x8a
+ 1535 018b 91010000 		.long	0x191
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 45
+
+
+ 1536 018f 1C       		.byte	0x1c
+ 1537 0190 00       		.byte	0
+ 1538 0191 05       		.uleb128 0x5
+ 1539 0192 04       		.byte	0x4
+ 1540 0193 02010000 		.long	0x102
+ 1541 0197 06       		.uleb128 0x6
+ 1542 0198 46494C45 		.ascii "FILE\0"
+ 1542      00
+ 1543 019d 02       		.byte	0x2
+ 1544 019e 8B       		.byte	0x8b
+ 1545 019f 0A010000 		.long	0x10a
+ 1546 01a3 02       		.uleb128 0x2
+ 1547 01a4 02       		.byte	0x2
+ 1548 01a5 05       		.byte	0x5
+ 1549 01a6 73686F72 		.ascii "short int\0"
+ 1549      7420696E 
+ 1549      7400
+ 1550 01b0 07       		.uleb128 0x7
+ 1551 01b1 00000000 		.secrel32	LASF0
+ 1552 01b5 50       		.byte	0x50
+ 1553 01b6 01       		.byte	0x1
+ 1554 01b7 04       		.byte	0x4
+ 1555 01b8 F3010000 		.long	0x1f3
+ 1556 01bc 04       		.uleb128 0x4
+ 1557 01bd 76616C00 		.ascii "val\0"
+ 1558 01c1 01       		.byte	0x1
+ 1559 01c2 05       		.byte	0x5
+ 1560 01c3 F1000000 		.long	0xf1
+ 1561 01c7 00       		.byte	0
+ 1562 01c8 04       		.uleb128 0x4
+ 1563 01c9 61646472 		.ascii "addr\0"
+ 1563      00
+ 1564 01ce 01       		.byte	0x1
+ 1565 01cf 06       		.byte	0x6
+ 1566 01d0 F3010000 		.long	0x1f3
+ 1567 01d4 08       		.byte	0x8
+ 1568 01d5 04       		.uleb128 0x4
+ 1569 01d6 656E764C 		.ascii "envLen\0"
+ 1569      656E00
+ 1570 01dd 01       		.byte	0x1
+ 1571 01de 07       		.byte	0x7
+ 1572 01df DE000000 		.long	0xde
+ 1573 01e3 0C       		.byte	0xc
+ 1574 01e4 04       		.uleb128 0x4
+ 1575 01e5 705F656E 		.ascii "p_env\0"
+ 1575      7600
+ 1576 01eb 01       		.byte	0x1
+ 1577 01ec 08       		.byte	0x8
+ 1578 01ed F5010000 		.long	0x1f5
+ 1579 01f1 10       		.byte	0x10
+ 1580 01f2 00       		.byte	0
+ 1581 01f3 08       		.uleb128 0x8
+ 1582 01f4 04       		.byte	0x4
+ 1583 01f5 09       		.uleb128 0x9
+ 1584 01f6 11020000 		.long	0x211
+ 1585 01fa 05020000 		.long	0x205
+ 1586 01fe 0A       		.uleb128 0xa
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 46
+
+
+ 1587 01ff 05020000 		.long	0x205
+ 1588 0203 0F       		.byte	0xf
+ 1589 0204 00       		.byte	0
+ 1590 0205 02       		.uleb128 0x2
+ 1591 0206 04       		.byte	0x4
+ 1592 0207 07       		.byte	0x7
+ 1593 0208 73697A65 		.ascii "sizetype\0"
+ 1593      74797065 
+ 1593      00
+ 1594 0211 05       		.uleb128 0x5
+ 1595 0212 04       		.byte	0x4
+ 1596 0213 B0010000 		.long	0x1b0
+ 1597 0217 0B       		.uleb128 0xb
+ 1598 0218 00000000 		.secrel32	LASF0
+ 1599 021c 01       		.byte	0x1
+ 1600 021d 09       		.byte	0x9
+ 1601 021e B0010000 		.long	0x1b0
+ 1602 0222 0C       		.uleb128 0xc
+ 1603 0223 6F706572 		.ascii "oper_plus\0"
+ 1603      5F706C75 
+ 1603      7300
+ 1604 022d 01       		.byte	0x1
+ 1605 022e 17       		.byte	0x17
+ 1606 022f F1000000 		.long	0xf1
+ 1607 0233 00000000 		.long	LFB6
+ 1608 0237 1E000000 		.long	LFE6-LFB6
+ 1609 023b 01       		.uleb128 0x1
+ 1610 023c 9C       		.byte	0x9c
+ 1611 023d 50020000 		.long	0x250
+ 1612 0241 0D       		.uleb128 0xd
+ 1613 0242 636C6F00 		.ascii "clo\0"
+ 1614 0246 01       		.byte	0x1
+ 1615 0247 17       		.byte	0x17
+ 1616 0248 50020000 		.long	0x250
+ 1617 024c 02       		.uleb128 0x2
+ 1618 024d 91       		.byte	0x91
+ 1619 024e 00       		.sleb128 0
+ 1620 024f 00       		.byte	0
+ 1621 0250 05       		.uleb128 0x5
+ 1622 0251 04       		.byte	0x4
+ 1623 0252 17020000 		.long	0x217
+ 1624 0256 0C       		.uleb128 0xc
+ 1625 0257 6F706572 		.ascii "oper_minus\0"
+ 1625      5F6D696E 
+ 1625      757300
+ 1626 0262 01       		.byte	0x1
+ 1627 0263 1A       		.byte	0x1a
+ 1628 0264 F1000000 		.long	0xf1
+ 1629 0268 1E000000 		.long	LFB7
+ 1630 026c 22000000 		.long	LFE7-LFB7
+ 1631 0270 01       		.uleb128 0x1
+ 1632 0271 9C       		.byte	0x9c
+ 1633 0272 85020000 		.long	0x285
+ 1634 0276 0D       		.uleb128 0xd
+ 1635 0277 636C6F00 		.ascii "clo\0"
+ 1636 027b 01       		.byte	0x1
+ 1637 027c 1A       		.byte	0x1a
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 47
+
+
+ 1638 027d 50020000 		.long	0x250
+ 1639 0281 02       		.uleb128 0x2
+ 1640 0282 91       		.byte	0x91
+ 1641 0283 00       		.sleb128 0
+ 1642 0284 00       		.byte	0
+ 1643 0285 0C       		.uleb128 0xc
+ 1644 0286 6F706572 		.ascii "oper_times\0"
+ 1644      5F74696D 
+ 1644      657300
+ 1645 0291 01       		.byte	0x1
+ 1646 0292 1D       		.byte	0x1d
+ 1647 0293 F1000000 		.long	0xf1
+ 1648 0297 40000000 		.long	LFB8
+ 1649 029b 31000000 		.long	LFE8-LFB8
+ 1650 029f 01       		.uleb128 0x1
+ 1651 02a0 9C       		.byte	0x9c
+ 1652 02a1 B4020000 		.long	0x2b4
+ 1653 02a5 0D       		.uleb128 0xd
+ 1654 02a6 636C6F00 		.ascii "clo\0"
+ 1655 02aa 01       		.byte	0x1
+ 1656 02ab 1D       		.byte	0x1d
+ 1657 02ac 50020000 		.long	0x250
+ 1658 02b0 02       		.uleb128 0x2
+ 1659 02b1 91       		.byte	0x91
+ 1660 02b2 00       		.sleb128 0
+ 1661 02b3 00       		.byte	0
+ 1662 02b4 0C       		.uleb128 0xc
+ 1663 02b5 6F706572 		.ascii "oper_zero\0"
+ 1663      5F7A6572 
+ 1663      6F00
+ 1664 02bf 01       		.byte	0x1
+ 1665 02c0 20       		.byte	0x20
+ 1666 02c1 F1000000 		.long	0xf1
+ 1667 02c5 71000000 		.long	LFB9
+ 1668 02c9 1E000000 		.long	LFE9-LFB9
+ 1669 02cd 01       		.uleb128 0x1
+ 1670 02ce 9C       		.byte	0x9c
+ 1671 02cf E2020000 		.long	0x2e2
+ 1672 02d3 0D       		.uleb128 0xd
+ 1673 02d4 636C6F00 		.ascii "clo\0"
+ 1674 02d8 01       		.byte	0x1
+ 1675 02d9 20       		.byte	0x20
+ 1676 02da 50020000 		.long	0x250
+ 1677 02de 02       		.uleb128 0x2
+ 1678 02df 91       		.byte	0x91
+ 1679 02e0 00       		.sleb128 0
+ 1680 02e1 00       		.byte	0
+ 1681 02e2 0E       		.uleb128 0xe
+ 1682 02e3 66756E63 		.ascii "func\0"
+ 1682      00
+ 1683 02e8 01       		.byte	0x1
+ 1684 02e9 26       		.byte	0x26
+ 1685 02ea F1000000 		.long	0xf1
+ 1686 02ee 8F000000 		.long	LFB10
+ 1687 02f2 CA0E0000 		.long	LFE10-LFB10
+ 1688 02f6 01       		.uleb128 0x1
+ 1689 02f7 9C       		.byte	0x9c
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 48
+
+
+ 1690 02f8 E4030000 		.long	0x3e4
+ 1691 02fc 0F       		.uleb128 0xf
+ 1692 02fd 61646472 		.ascii "addr1\0"
+ 1692      3100
+ 1693 0303 01       		.byte	0x1
+ 1694 0304 2B       		.byte	0x2b
+ 1695 0305 17020000 		.long	0x217
+ 1696 0309 03       		.uleb128 0x3
+ 1697 030a 91       		.byte	0x91
+ 1698 030b 987F     		.sleb128 -104
+ 1699 030d 10       		.uleb128 0x10
+ 1700 030e 504C5F73 		.ascii "PL_start0\0"
+ 1700      74617274 
+ 1700      3000
+ 1701 0318 01       		.byte	0x1
+ 1702 0319 41       		.byte	0x41
+ 1703 031a 7C010000 		.long	L10
+ 1704 031e 0F       		.uleb128 0xf
+ 1705 031f 61646472 		.ascii "addr2\0"
+ 1705      3200
+ 1706 0325 01       		.byte	0x1
+ 1707 0326 30       		.byte	0x30
+ 1708 0327 17020000 		.long	0x217
+ 1709 032b 03       		.uleb128 0x3
+ 1710 032c 91       		.byte	0x91
+ 1711 032d C87E     		.sleb128 -184
+ 1712 032f 10       		.uleb128 0x10
+ 1713 0330 504C5F73 		.ascii "PL_start16\0"
+ 1713      74617274 
+ 1713      313600
+ 1714 033b 01       		.byte	0x1
+ 1715 033c 65       		.byte	0x65
+ 1716 033d 3F030000 		.long	L11
+ 1717 0341 0F       		.uleb128 0xf
+ 1718 0342 61646472 		.ascii "addr3\0"
+ 1718      3300
+ 1719 0348 01       		.byte	0x1
+ 1720 0349 35       		.byte	0x35
+ 1721 034a 17020000 		.long	0x217
+ 1722 034e 03       		.uleb128 0x3
+ 1723 034f 91       		.byte	0x91
+ 1724 0350 F87D     		.sleb128 -264
+ 1725 0352 10       		.uleb128 0x10
+ 1726 0353 504C5F73 		.ascii "PL_start32\0"
+ 1726      74617274 
+ 1726      333200
+ 1727 035e 01       		.byte	0x1
+ 1728 035f 89       		.byte	0x89
+ 1729 0360 FE040000 		.long	L12
+ 1730 0364 0F       		.uleb128 0xf
+ 1731 0365 61646472 		.ascii "addr4\0"
+ 1731      3400
+ 1732 036b 01       		.byte	0x1
+ 1733 036c 3A       		.byte	0x3a
+ 1734 036d 17020000 		.long	0x217
+ 1735 0371 03       		.uleb128 0x3
+ 1736 0372 91       		.byte	0x91
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 49
+
+
+ 1737 0373 A87D     		.sleb128 -344
+ 1738 0375 10       		.uleb128 0x10
+ 1739 0376 504C5F73 		.ascii "PL_start45\0"
+ 1739      74617274 
+ 1739      343500
+ 1740 0381 01       		.byte	0x1
+ 1741 0382 A8       		.byte	0xa8
+ 1742 0383 70060000 		.long	L13
+ 1743 0387 10       		.uleb128 0x10
+ 1744 0388 46554E43 		.ascii "FUNC_START\0"
+ 1744      5F535441 
+ 1744      525400
+ 1745 0393 01       		.byte	0x1
+ 1746 0394 B5       		.byte	0xb5
+ 1747 0395 61010000 		.long	L14
+ 1748 0399 11       		.uleb128 0x11
+ 1749 039a 504C5F41 		.ascii "PL_A19\0"
+ 1749      313900
+ 1750 03a1 01       		.byte	0x1
+ 1751 03a2 2D01     		.word	0x12d
+ 1752 03a4 810C0000 		.long	L22
+ 1753 03a8 10       		.uleb128 0x10
+ 1754 03a9 504C5F42 		.ascii "PL_B20\0"
+ 1754      323000
+ 1755 03b0 01       		.byte	0x1
+ 1756 03b1 BD       		.byte	0xbd
+ 1757 03b2 0D070000 		.long	L23
+ 1758 03b6 11       		.uleb128 0x11
+ 1759 03b7 504C5F4C 		.ascii "PL_L21\0"
+ 1759      323100
+ 1760 03be 01       		.byte	0x1
+ 1761 03bf 1C01     		.word	0x11c
+ 1762 03c1 DC0B0000 		.long	L25
+ 1763 03c5 11       		.uleb128 0x11
+ 1764 03c6 504C5F41 		.ascii "PL_A22\0"
+ 1764      323200
+ 1765 03cd 01       		.byte	0x1
+ 1766 03ce 6301     		.word	0x163
+ 1767 03d0 EF0E0000 		.long	L27
+ 1768 03d4 11       		.uleb128 0x11
+ 1769 03d5 504C5F42 		.ascii "PL_B23\0"
+ 1769      323300
+ 1770 03dc 01       		.byte	0x1
+ 1771 03dd 4101     		.word	0x141
+ 1772 03df 400D0000 		.long	L28
+ 1773 03e3 00       		.byte	0
+ 1774 03e4 12       		.uleb128 0x12
+ 1775 03e5 6D61696E 		.ascii "main\0"
+ 1775      00
+ 1776 03ea 01       		.byte	0x1
+ 1777 03eb 7201     		.word	0x172
+ 1778 03ed DE000000 		.long	0xde
+ 1779 03f1 590F0000 		.long	LFB11
+ 1780 03f5 2E000000 		.long	LFE11-LFB11
+ 1781 03f9 01       		.uleb128 0x1
+ 1782 03fa 9C       		.byte	0x9c
+ 1783 03fb 09       		.uleb128 0x9
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 50
+
+
+ 1784 03fc 97010000 		.long	0x197
+ 1785 0400 06040000 		.long	0x406
+ 1786 0404 13       		.uleb128 0x13
+ 1787 0405 00       		.byte	0
+ 1788 0406 14       		.uleb128 0x14
+ 1789 0407 5F696F62 		.ascii "_iob\0"
+ 1789      00
+ 1790 040c 02       		.byte	0x2
+ 1791 040d 9A       		.byte	0x9a
+ 1792 040e FB030000 		.long	0x3fb
+ 1793 0412 15       		.uleb128 0x15
+ 1794 0413 61646472 		.ascii "addr\0"
+ 1794      00
+ 1795 0418 01       		.byte	0x1
+ 1796 0419 0B       		.byte	0xb
+ 1797 041a F3010000 		.long	0x1f3
+ 1798 041e 05       		.uleb128 0x5
+ 1799 041f 03       		.byte	0x3
+ 1800 0420 00000000 		.long	_addr
+ 1801 0424 15       		.uleb128 0x15
+ 1802 0425 72657375 		.ascii "result\0"
+ 1802      6C7400
+ 1803 042c 01       		.byte	0x1
+ 1804 042d 0E       		.byte	0xe
+ 1805 042e 17020000 		.long	0x217
+ 1806 0432 05       		.uleb128 0x5
+ 1807 0433 03       		.byte	0x3
+ 1808 0434 00000000 		.long	_result
+ 1809 0438 09       		.uleb128 0x9
+ 1810 0439 17020000 		.long	0x217
+ 1811 043d 48040000 		.long	0x448
+ 1812 0441 0A       		.uleb128 0xa
+ 1813 0442 05020000 		.long	0x205
+ 1814 0446 01       		.byte	0x1
+ 1815 0447 00       		.byte	0
+ 1816 0448 15       		.uleb128 0x15
+ 1817 0449 61726773 		.ascii "args\0"
+ 1817      00
+ 1818 044e 01       		.byte	0x1
+ 1819 044f 10       		.byte	0x10
+ 1820 0450 38040000 		.long	0x438
+ 1821 0454 05       		.uleb128 0x5
+ 1822 0455 03       		.byte	0x3
+ 1823 0456 00000000 		.long	_args
+ 1824 045a 15       		.uleb128 0x15
+ 1825 045b 61726773 		.ascii "args_index\0"
+ 1825      5F696E64 
+ 1825      657800
+ 1826 0466 01       		.byte	0x1
+ 1827 0467 11       		.byte	0x11
+ 1828 0468 DE000000 		.long	0xde
+ 1829 046c 05       		.uleb128 0x5
+ 1830 046d 03       		.byte	0x3
+ 1831 046e 00000000 		.long	_args_index
+ 1832 0472 09       		.uleb128 0x9
+ 1833 0473 17020000 		.long	0x217
+ 1834 0477 82040000 		.long	0x482
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 51
+
+
+ 1835 047b 0A       		.uleb128 0xa
+ 1836 047c 05020000 		.long	0x205
+ 1837 0480 0F       		.byte	0xf
+ 1838 0481 00       		.byte	0
+ 1839 0482 15       		.uleb128 0x15
+ 1840 0483 656E7600 		.ascii "env\0"
+ 1841 0487 01       		.byte	0x1
+ 1842 0488 13       		.byte	0x13
+ 1843 0489 72040000 		.long	0x472
+ 1844 048d 05       		.uleb128 0x5
+ 1845 048e 03       		.byte	0x3
+ 1846 048f 00000000 		.long	_env
+ 1847 0493 15       		.uleb128 0x15
+ 1848 0494 656E765F 		.ascii "env_index\0"
+ 1848      696E6465 
+ 1848      7800
+ 1849 049e 01       		.byte	0x1
+ 1850 049f 14       		.byte	0x14
+ 1851 04a0 DE000000 		.long	0xde
+ 1852 04a4 05       		.uleb128 0x5
+ 1853 04a5 03       		.byte	0x3
+ 1854 04a6 00000000 		.long	_env_index
+ 1855 04aa 00       		.byte	0
+ 1856              		.section	.debug_abbrev,"dr"
+ 1857              	Ldebug_abbrev0:
+ 1858 0000 01       		.uleb128 0x1
+ 1859 0001 11       		.uleb128 0x11
+ 1860 0002 01       		.byte	0x1
+ 1861 0003 25       		.uleb128 0x25
+ 1862 0004 08       		.uleb128 0x8
+ 1863 0005 13       		.uleb128 0x13
+ 1864 0006 0B       		.uleb128 0xb
+ 1865 0007 03       		.uleb128 0x3
+ 1866 0008 08       		.uleb128 0x8
+ 1867 0009 11       		.uleb128 0x11
+ 1868 000a 01       		.uleb128 0x1
+ 1869 000b 12       		.uleb128 0x12
+ 1870 000c 06       		.uleb128 0x6
+ 1871 000d 10       		.uleb128 0x10
+ 1872 000e 17       		.uleb128 0x17
+ 1873 000f 00       		.byte	0
+ 1874 0010 00       		.byte	0
+ 1875 0011 02       		.uleb128 0x2
+ 1876 0012 24       		.uleb128 0x24
+ 1877 0013 00       		.byte	0
+ 1878 0014 0B       		.uleb128 0xb
+ 1879 0015 0B       		.uleb128 0xb
+ 1880 0016 3E       		.uleb128 0x3e
+ 1881 0017 0B       		.uleb128 0xb
+ 1882 0018 03       		.uleb128 0x3
+ 1883 0019 08       		.uleb128 0x8
+ 1884 001a 00       		.byte	0
+ 1885 001b 00       		.byte	0
+ 1886 001c 03       		.uleb128 0x3
+ 1887 001d 13       		.uleb128 0x13
+ 1888 001e 01       		.byte	0x1
+ 1889 001f 03       		.uleb128 0x3
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 52
+
+
+ 1890 0020 08       		.uleb128 0x8
+ 1891 0021 0B       		.uleb128 0xb
+ 1892 0022 0B       		.uleb128 0xb
+ 1893 0023 3A       		.uleb128 0x3a
+ 1894 0024 0B       		.uleb128 0xb
+ 1895 0025 3B       		.uleb128 0x3b
+ 1896 0026 0B       		.uleb128 0xb
+ 1897 0027 01       		.uleb128 0x1
+ 1898 0028 13       		.uleb128 0x13
+ 1899 0029 00       		.byte	0
+ 1900 002a 00       		.byte	0
+ 1901 002b 04       		.uleb128 0x4
+ 1902 002c 0D       		.uleb128 0xd
+ 1903 002d 00       		.byte	0
+ 1904 002e 03       		.uleb128 0x3
+ 1905 002f 08       		.uleb128 0x8
+ 1906 0030 3A       		.uleb128 0x3a
+ 1907 0031 0B       		.uleb128 0xb
+ 1908 0032 3B       		.uleb128 0x3b
+ 1909 0033 0B       		.uleb128 0xb
+ 1910 0034 49       		.uleb128 0x49
+ 1911 0035 13       		.uleb128 0x13
+ 1912 0036 38       		.uleb128 0x38
+ 1913 0037 0B       		.uleb128 0xb
+ 1914 0038 00       		.byte	0
+ 1915 0039 00       		.byte	0
+ 1916 003a 05       		.uleb128 0x5
+ 1917 003b 0F       		.uleb128 0xf
+ 1918 003c 00       		.byte	0
+ 1919 003d 0B       		.uleb128 0xb
+ 1920 003e 0B       		.uleb128 0xb
+ 1921 003f 49       		.uleb128 0x49
+ 1922 0040 13       		.uleb128 0x13
+ 1923 0041 00       		.byte	0
+ 1924 0042 00       		.byte	0
+ 1925 0043 06       		.uleb128 0x6
+ 1926 0044 16       		.uleb128 0x16
+ 1927 0045 00       		.byte	0
+ 1928 0046 03       		.uleb128 0x3
+ 1929 0047 08       		.uleb128 0x8
+ 1930 0048 3A       		.uleb128 0x3a
+ 1931 0049 0B       		.uleb128 0xb
+ 1932 004a 3B       		.uleb128 0x3b
+ 1933 004b 0B       		.uleb128 0xb
+ 1934 004c 49       		.uleb128 0x49
+ 1935 004d 13       		.uleb128 0x13
+ 1936 004e 00       		.byte	0
+ 1937 004f 00       		.byte	0
+ 1938 0050 07       		.uleb128 0x7
+ 1939 0051 13       		.uleb128 0x13
+ 1940 0052 01       		.byte	0x1
+ 1941 0053 03       		.uleb128 0x3
+ 1942 0054 0E       		.uleb128 0xe
+ 1943 0055 0B       		.uleb128 0xb
+ 1944 0056 0B       		.uleb128 0xb
+ 1945 0057 3A       		.uleb128 0x3a
+ 1946 0058 0B       		.uleb128 0xb
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 53
+
+
+ 1947 0059 3B       		.uleb128 0x3b
+ 1948 005a 0B       		.uleb128 0xb
+ 1949 005b 01       		.uleb128 0x1
+ 1950 005c 13       		.uleb128 0x13
+ 1951 005d 00       		.byte	0
+ 1952 005e 00       		.byte	0
+ 1953 005f 08       		.uleb128 0x8
+ 1954 0060 0F       		.uleb128 0xf
+ 1955 0061 00       		.byte	0
+ 1956 0062 0B       		.uleb128 0xb
+ 1957 0063 0B       		.uleb128 0xb
+ 1958 0064 00       		.byte	0
+ 1959 0065 00       		.byte	0
+ 1960 0066 09       		.uleb128 0x9
+ 1961 0067 01       		.uleb128 0x1
+ 1962 0068 01       		.byte	0x1
+ 1963 0069 49       		.uleb128 0x49
+ 1964 006a 13       		.uleb128 0x13
+ 1965 006b 01       		.uleb128 0x1
+ 1966 006c 13       		.uleb128 0x13
+ 1967 006d 00       		.byte	0
+ 1968 006e 00       		.byte	0
+ 1969 006f 0A       		.uleb128 0xa
+ 1970 0070 21       		.uleb128 0x21
+ 1971 0071 00       		.byte	0
+ 1972 0072 49       		.uleb128 0x49
+ 1973 0073 13       		.uleb128 0x13
+ 1974 0074 2F       		.uleb128 0x2f
+ 1975 0075 0B       		.uleb128 0xb
+ 1976 0076 00       		.byte	0
+ 1977 0077 00       		.byte	0
+ 1978 0078 0B       		.uleb128 0xb
+ 1979 0079 16       		.uleb128 0x16
+ 1980 007a 00       		.byte	0
+ 1981 007b 03       		.uleb128 0x3
+ 1982 007c 0E       		.uleb128 0xe
+ 1983 007d 3A       		.uleb128 0x3a
+ 1984 007e 0B       		.uleb128 0xb
+ 1985 007f 3B       		.uleb128 0x3b
+ 1986 0080 0B       		.uleb128 0xb
+ 1987 0081 49       		.uleb128 0x49
+ 1988 0082 13       		.uleb128 0x13
+ 1989 0083 00       		.byte	0
+ 1990 0084 00       		.byte	0
+ 1991 0085 0C       		.uleb128 0xc
+ 1992 0086 2E       		.uleb128 0x2e
+ 1993 0087 01       		.byte	0x1
+ 1994 0088 3F       		.uleb128 0x3f
+ 1995 0089 19       		.uleb128 0x19
+ 1996 008a 03       		.uleb128 0x3
+ 1997 008b 08       		.uleb128 0x8
+ 1998 008c 3A       		.uleb128 0x3a
+ 1999 008d 0B       		.uleb128 0xb
+ 2000 008e 3B       		.uleb128 0x3b
+ 2001 008f 0B       		.uleb128 0xb
+ 2002 0090 27       		.uleb128 0x27
+ 2003 0091 19       		.uleb128 0x19
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 54
+
+
+ 2004 0092 49       		.uleb128 0x49
+ 2005 0093 13       		.uleb128 0x13
+ 2006 0094 11       		.uleb128 0x11
+ 2007 0095 01       		.uleb128 0x1
+ 2008 0096 12       		.uleb128 0x12
+ 2009 0097 06       		.uleb128 0x6
+ 2010 0098 40       		.uleb128 0x40
+ 2011 0099 18       		.uleb128 0x18
+ 2012 009a 9742     		.uleb128 0x2117
+ 2013 009c 19       		.uleb128 0x19
+ 2014 009d 01       		.uleb128 0x1
+ 2015 009e 13       		.uleb128 0x13
+ 2016 009f 00       		.byte	0
+ 2017 00a0 00       		.byte	0
+ 2018 00a1 0D       		.uleb128 0xd
+ 2019 00a2 05       		.uleb128 0x5
+ 2020 00a3 00       		.byte	0
+ 2021 00a4 03       		.uleb128 0x3
+ 2022 00a5 08       		.uleb128 0x8
+ 2023 00a6 3A       		.uleb128 0x3a
+ 2024 00a7 0B       		.uleb128 0xb
+ 2025 00a8 3B       		.uleb128 0x3b
+ 2026 00a9 0B       		.uleb128 0xb
+ 2027 00aa 49       		.uleb128 0x49
+ 2028 00ab 13       		.uleb128 0x13
+ 2029 00ac 02       		.uleb128 0x2
+ 2030 00ad 18       		.uleb128 0x18
+ 2031 00ae 00       		.byte	0
+ 2032 00af 00       		.byte	0
+ 2033 00b0 0E       		.uleb128 0xe
+ 2034 00b1 2E       		.uleb128 0x2e
+ 2035 00b2 01       		.byte	0x1
+ 2036 00b3 3F       		.uleb128 0x3f
+ 2037 00b4 19       		.uleb128 0x19
+ 2038 00b5 03       		.uleb128 0x3
+ 2039 00b6 08       		.uleb128 0x8
+ 2040 00b7 3A       		.uleb128 0x3a
+ 2041 00b8 0B       		.uleb128 0xb
+ 2042 00b9 3B       		.uleb128 0x3b
+ 2043 00ba 0B       		.uleb128 0xb
+ 2044 00bb 49       		.uleb128 0x49
+ 2045 00bc 13       		.uleb128 0x13
+ 2046 00bd 11       		.uleb128 0x11
+ 2047 00be 01       		.uleb128 0x1
+ 2048 00bf 12       		.uleb128 0x12
+ 2049 00c0 06       		.uleb128 0x6
+ 2050 00c1 40       		.uleb128 0x40
+ 2051 00c2 18       		.uleb128 0x18
+ 2052 00c3 9642     		.uleb128 0x2116
+ 2053 00c5 19       		.uleb128 0x19
+ 2054 00c6 01       		.uleb128 0x1
+ 2055 00c7 13       		.uleb128 0x13
+ 2056 00c8 00       		.byte	0
+ 2057 00c9 00       		.byte	0
+ 2058 00ca 0F       		.uleb128 0xf
+ 2059 00cb 34       		.uleb128 0x34
+ 2060 00cc 00       		.byte	0
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 55
+
+
+ 2061 00cd 03       		.uleb128 0x3
+ 2062 00ce 08       		.uleb128 0x8
+ 2063 00cf 3A       		.uleb128 0x3a
+ 2064 00d0 0B       		.uleb128 0xb
+ 2065 00d1 3B       		.uleb128 0x3b
+ 2066 00d2 0B       		.uleb128 0xb
+ 2067 00d3 49       		.uleb128 0x49
+ 2068 00d4 13       		.uleb128 0x13
+ 2069 00d5 02       		.uleb128 0x2
+ 2070 00d6 18       		.uleb128 0x18
+ 2071 00d7 00       		.byte	0
+ 2072 00d8 00       		.byte	0
+ 2073 00d9 10       		.uleb128 0x10
+ 2074 00da 0A       		.uleb128 0xa
+ 2075 00db 00       		.byte	0
+ 2076 00dc 03       		.uleb128 0x3
+ 2077 00dd 08       		.uleb128 0x8
+ 2078 00de 3A       		.uleb128 0x3a
+ 2079 00df 0B       		.uleb128 0xb
+ 2080 00e0 3B       		.uleb128 0x3b
+ 2081 00e1 0B       		.uleb128 0xb
+ 2082 00e2 11       		.uleb128 0x11
+ 2083 00e3 01       		.uleb128 0x1
+ 2084 00e4 00       		.byte	0
+ 2085 00e5 00       		.byte	0
+ 2086 00e6 11       		.uleb128 0x11
+ 2087 00e7 0A       		.uleb128 0xa
+ 2088 00e8 00       		.byte	0
+ 2089 00e9 03       		.uleb128 0x3
+ 2090 00ea 08       		.uleb128 0x8
+ 2091 00eb 3A       		.uleb128 0x3a
+ 2092 00ec 0B       		.uleb128 0xb
+ 2093 00ed 3B       		.uleb128 0x3b
+ 2094 00ee 05       		.uleb128 0x5
+ 2095 00ef 11       		.uleb128 0x11
+ 2096 00f0 01       		.uleb128 0x1
+ 2097 00f1 00       		.byte	0
+ 2098 00f2 00       		.byte	0
+ 2099 00f3 12       		.uleb128 0x12
+ 2100 00f4 2E       		.uleb128 0x2e
+ 2101 00f5 00       		.byte	0
+ 2102 00f6 3F       		.uleb128 0x3f
+ 2103 00f7 19       		.uleb128 0x19
+ 2104 00f8 03       		.uleb128 0x3
+ 2105 00f9 08       		.uleb128 0x8
+ 2106 00fa 3A       		.uleb128 0x3a
+ 2107 00fb 0B       		.uleb128 0xb
+ 2108 00fc 3B       		.uleb128 0x3b
+ 2109 00fd 05       		.uleb128 0x5
+ 2110 00fe 49       		.uleb128 0x49
+ 2111 00ff 13       		.uleb128 0x13
+ 2112 0100 11       		.uleb128 0x11
+ 2113 0101 01       		.uleb128 0x1
+ 2114 0102 12       		.uleb128 0x12
+ 2115 0103 06       		.uleb128 0x6
+ 2116 0104 40       		.uleb128 0x40
+ 2117 0105 18       		.uleb128 0x18
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 56
+
+
+ 2118 0106 9642     		.uleb128 0x2116
+ 2119 0108 19       		.uleb128 0x19
+ 2120 0109 00       		.byte	0
+ 2121 010a 00       		.byte	0
+ 2122 010b 13       		.uleb128 0x13
+ 2123 010c 21       		.uleb128 0x21
+ 2124 010d 00       		.byte	0
+ 2125 010e 00       		.byte	0
+ 2126 010f 00       		.byte	0
+ 2127 0110 14       		.uleb128 0x14
+ 2128 0111 34       		.uleb128 0x34
+ 2129 0112 00       		.byte	0
+ 2130 0113 03       		.uleb128 0x3
+ 2131 0114 08       		.uleb128 0x8
+ 2132 0115 3A       		.uleb128 0x3a
+ 2133 0116 0B       		.uleb128 0xb
+ 2134 0117 3B       		.uleb128 0x3b
+ 2135 0118 0B       		.uleb128 0xb
+ 2136 0119 49       		.uleb128 0x49
+ 2137 011a 13       		.uleb128 0x13
+ 2138 011b 3F       		.uleb128 0x3f
+ 2139 011c 19       		.uleb128 0x19
+ 2140 011d 3C       		.uleb128 0x3c
+ 2141 011e 19       		.uleb128 0x19
+ 2142 011f 00       		.byte	0
+ 2143 0120 00       		.byte	0
+ 2144 0121 15       		.uleb128 0x15
+ 2145 0122 34       		.uleb128 0x34
+ 2146 0123 00       		.byte	0
+ 2147 0124 03       		.uleb128 0x3
+ 2148 0125 08       		.uleb128 0x8
+ 2149 0126 3A       		.uleb128 0x3a
+ 2150 0127 0B       		.uleb128 0xb
+ 2151 0128 3B       		.uleb128 0x3b
+ 2152 0129 0B       		.uleb128 0xb
+ 2153 012a 49       		.uleb128 0x49
+ 2154 012b 13       		.uleb128 0x13
+ 2155 012c 3F       		.uleb128 0x3f
+ 2156 012d 19       		.uleb128 0x19
+ 2157 012e 02       		.uleb128 0x2
+ 2158 012f 18       		.uleb128 0x18
+ 2159 0130 00       		.byte	0
+ 2160 0131 00       		.byte	0
+ 2161 0132 00       		.byte	0
+ 2162              		.section	.debug_aranges,"dr"
+ 2163 0000 1C000000 		.long	0x1c
+ 2164 0004 0200     		.word	0x2
+ 2165 0006 00000000 		.secrel32	Ldebug_info0
+ 2166 000a 04       		.byte	0x4
+ 2167 000b 00       		.byte	0
+ 2168 000c 0000     		.word	0
+ 2169 000e 0000     		.word	0
+ 2170 0010 00000000 		.long	Ltext0
+ 2171 0014 870F0000 		.long	Letext0-Ltext0
+ 2172 0018 00000000 		.long	0
+ 2173 001c 00000000 		.long	0
+ 2174              		.section	.debug_line,"dr"
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 57
+
+
+ 2175              	Ldebug_line0:
+ 2176 0000 2B020000 		.section	.debug_str,"dr"
+ 2176      0200C000 
+ 2176      00000101 
+ 2176      FB0E0D00 
+ 2176      01010101 
+ 2177              	LASF0:
+ 2178 0000 74436C6F 		.ascii "tClosure\0"
+ 2178      73757265 
+ 2178      00
+ 2179              		.ident	"GCC: (tdm-1) 4.9.2"
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s 			page 58
 
 
 DEFINED SYMBOLS
@@ -344,15 +3380,15 @@ DEFINED SYMBOLS
                             *COM*:00000004 _addr
                             *COM*:00000050 _result
                             *COM*:000000a0 _args
-C:\Users\deniz\AppData\Local\Temp\ccbnNqxc.s:8      .bss:00000000 _args_index
+C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s:11     .bss:00000000 _args_index
                             *COM*:00000500 _env
-C:\Users\deniz\AppData\Local\Temp\ccbnNqxc.s:13     .bss:00000004 _env_index
-C:\Users\deniz\AppData\Local\Temp\ccbnNqxc.s:18     .text:00000000 _oper_plus
-C:\Users\deniz\AppData\Local\Temp\ccbnNqxc.s:36     .text:0000001e _oper_minus
-C:\Users\deniz\AppData\Local\Temp\ccbnNqxc.s:56     .text:00000040 _oper_times
-C:\Users\deniz\AppData\Local\Temp\ccbnNqxc.s:84     .text:00000071 _oper_zero
-C:\Users\deniz\AppData\Local\Temp\ccbnNqxc.s:100    .text:0000008f _func
-C:\Users\deniz\AppData\Local\Temp\ccbnNqxc.s:242    .text:00000272 _main
+C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s:17     .data:00000000 _env_index
+C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s:22     .text:00000000 _oper_plus
+C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s:55     .text:0000001e _oper_minus
+C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s:89     .text:00000040 _oper_times
+C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s:135    .text:00000071 _oper_zero
+C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s:163    .text:0000008f _func
+C:\Users\deniz\AppData\Local\Temp\cc9UVll1.s:1416   .text:00000f59 _main
 
 UNDEFINED SYMBOLS
 ___main

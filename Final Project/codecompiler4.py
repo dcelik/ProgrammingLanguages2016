@@ -859,17 +859,17 @@ def shell_comp ():
     #                "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_minus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP",
     #                "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","PRIM-CALL",oper_zero,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",1,"LOAD-ADDR-ENV","JUMP",
     #                  "PUSH-ENV-ARGS","LOOKUP",0,"RETURN"],0)
-    code = ["PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_plus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP",
-                   "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_minus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP",
-                   "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","PRIM-CALL",oper_zero,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",1,"LOAD-ADDR-ENV","JUMP",
-                     "PUSH-ENV-ARGS","LOOKUP",0,"RETURN"]
+    code = ["#start0","PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_plus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP","#start16",
+                "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_minus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP","#start32",
+                "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","PRIM-CALL",oper_zero,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",1,"LOAD-ADDR-ENV","JUMP","#start45",
+                "PUSH-ENV-ARGS","LOOKUP",0,"RETURN"]
     
-    # primitives are first (first NUM_PRIMITIVES entries) and then everything else
-    # including the "DONE" continuation
-    env = [VClosureAddr(0,[]),
-           VClosureAddr(16,[]),
-           VClosureAddr(32,[]),
-           VClosureAddr(45,[])]
+    # # primitives are first (first NUM_PRIMITIVES entries) and then everything else
+    # # including the "DONE" continuation
+    # env = [VClosureAddr(0,[]),
+    #        VClosureAddr(16,[]),
+    #        VClosureAddr(32,[]),
+    #        VClosureAddr(45,[])]
            
     symtable = [ "+" ,
                  "-",
@@ -898,8 +898,7 @@ def shell_comp ():
                     c = comp_exp.compile()
                     code = code + c
                     #code = code+assemble(c,start)
-                    translate_into_c(code)
-                    print("file_created")
+                    assemble_c(code)
                     #v = execute(code,start,env)
                     #print "Eval time: {}s".format(round(timer.time(),3))
                 #print v
@@ -1000,6 +999,164 @@ def assemble (code,addr):
     return result
 
 
+def assemble_c (code):
+    # CONVERT "assembly code" (instructions in text and labels in the code)
+    # INTO "machine code" (instruction numbers and explicit addresses)
+    
+    # take another pass to construct the final code
+    # - transform operations into opcodes
+    # - remove labels
+    # - change address labels to underlying addresses
+
+
+    index = 0
+    with open("auto_build.c",'w') as t:
+        t.write("#include <stdlib.h>\
+                \n#include <stdio.h>\
+              \n\ntypedef struct tClosure{\
+                \n    long long val;\
+                \n    void* addr;\
+                \n    int envLen;\
+                \n    struct tClosure * p_env[16];\
+                \n} tClosure;\
+                \n\
+                \nvoid* addr;\
+                \n\
+                \n//RESULT\
+                \ntClosure result;\
+                \n//ARGS\
+                \ntClosure args[2];\
+                \nint args_index = 0;\
+                \n//ENV\
+                \ntClosure env[16];\
+                \nint env_index = 0;\
+                \n\
+                \n\
+                \nlong long oper_plus(tClosure clo[]){\
+                \n    return clo[0].val+clo[1].val;\
+                \n}\
+                \nlong long oper_minus(tClosure clo[]){\
+                \n    return clo[0].val-clo[1].val;\
+                \n}\
+                \nlong long oper_times(tClosure clo[]){\
+                \n    return clo[0].val*clo[1].val;\
+                \n}\
+                \nlong long oper_zero(tClosure clo[]){\
+                \n    //true->1\
+                \n    //false->0\
+                \n    return clo[0].val==0;\
+                \n}\
+                \n\
+                \nlong long func(){\
+                \n    //Setup result\
+                \n    result.val = -1;\
+                \n    result.envLen = 0;\
+                \n    tClosure addr1;\
+                \n    addr1.addr = &&PL_start0;\
+                \n    addr1.envLen = 0;\
+                \n    env[0] = addr1;\
+                \n\
+                \n    tClosure addr2;\
+                \n    addr2.addr = &&PL_start16;\
+                \n    addr2.envLen = 0;\
+                \n    env[1] = addr2;\
+                \n\
+                \n    tClosure addr3;\
+                \n    addr3.addr = &&PL_start32;\
+                \n    addr3.envLen = 0;\
+                \n    env[2] = addr3;\
+                \n\
+                \n    tClosure addr4;\
+                \n    addr4.addr = &&PL_start45;\
+                \n    addr4.envLen = 0;\
+                \n    env[3] = addr4;\n")
+
+        while index<len(code):
+            op = code[index]
+            if type(op) is str:
+                if op.startswith("#"):
+                    t.write("\n")
+                    t.write("    PL_{}:\n".format(op[1:]))
+                    index +=1
+
+                elif op == "RETURN":
+                    t.write("\n")
+                    t.write("    return result.val;\n")
+                    index += 1
+
+                elif op == "CLEAR-ARGS":
+                    t.write("\n")
+                    t.write("    args_index = 0;\n")
+                    index+=1
+
+                elif op == "LOAD":
+                    t.write("\n")
+                    t.write("    result.val = {};\n  ".format(code[index+1].value))
+                    index += 2
+                          
+                elif op == "PUSH-ARGS":
+                    t.write("\n")
+                    t.write("    args[args_index] = result;\n    args_index++;\n")
+                    index += 1
+
+                elif op == "LOOKUP":
+                    t.write("\n")
+                    t.write("    result = env[{}];\n".format(code[index+1]))
+                    index += 2
+
+                elif op == "LOAD-ADDR-ENV":
+                    t.write("\n")
+                    t.write("    addr = result.addr;\
+                           \n    *env = **result.p_env;\
+                           \n    env_index = result.envLen;\n")
+                    index += 1
+
+                elif op == "JUMP":
+                    t.write("\n")
+                    t.write("    goto *addr;\n")
+                    index += 1
+                          
+                elif op == "PUSH-ENV-ARGS":
+                    t.write("\n")
+                    t.write("    env[env_index]=args[0];\
+                           \n    env_index++;\
+                           \n    if(args_index==2){\
+                           \n        env[env_index]=args[1];\
+                           \n        env_index++;\
+                           \n    }\n")
+                    index += 1
+                  
+                elif op == "PUSH-ENV":
+                    t.write("\n")
+                    t.write("    env[env_index]=result;\n    env_index++;\n")
+                    index += 1
+
+                elif op == "LOAD-ADDR":
+                    t.write("\n")
+                    t.write("    addr = &&PL_{};\n".format(code[index+1][1:]))
+                    index += 2
+
+                elif op == "LOAD-FUN":
+                    t.write("\n")
+                    t.write("    result.addr = addr;\n    *result.p_env = env;\n    result.envLen = env_index;\n")
+                    index += 1
+
+                elif op == "PRIM-CALL":
+                    t.write("\n")
+                    t.write("    result.val = {}(args);\n".format(code[index+1].__name__))
+                    index += 2
+
+                elif op == "JUMP-TRUE":
+                    t.write("\n")
+                    t.write("    if(result.val==1){\n        goto *addr;\n    }\n")
+                    index += 1
+
+                else:
+                    raise Exception("Unrecognized opcode: {}".format(op))
+
+        t.write("}\n\nint main(){\n    printf(\"Answer: %lli\",func());\n    return 0;\n}\n")
+    print("File Created!")
+    return
 
 def execute (code,start_pc,start_env):
     result = VNone()
@@ -1193,13 +1350,8 @@ long long func(){\n\
 
     while True:
 
-        if pc in jump_labels:
-            t.write("\n")
-            t.write("    PL_{}:\n".format(pc))
 
         op = code[pc]
-
-        print op
         if op[0] == "#":
             print(op)
             t.write("\n")
