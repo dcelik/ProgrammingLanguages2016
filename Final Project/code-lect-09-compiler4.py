@@ -1192,62 +1192,76 @@ int main(){\n\
     while True:
 
         if pc in jump_labels:
+            t.write("\n")
             t.write("    PL_{}:\n".format(pc))
 
         op = code[pc]
 
         if op == "RETURN":
+            t.write("\n")
             t.write("    return result.val;\n}\n")
             pc += 1
             break
 
         elif op == "CLEAR-ARGS":
+            t.write("\n")
             t.write("    args_index = 0;\n")
             pc+=1
 
         elif op == "LOAD":
+            t.write("\n")
             t.write("    result.val = {};\n    result.isInt = 1;\n".format(code[pc+1].value))
             pc += 2
                   
         elif op == "PUSH-ARGS":
+            t.write("\n")
             t.write("    args[args_index] = result;\n    args_index++;\n")
             pc += 1
 
         elif op == "LOOKUP":
+            t.write("\n")
             t.write("    result = env[{}];\n".format(code[pc+1]))
             pc += 2
 
         elif op == "LOAD-ADDR-ENV":
-            t.write("    addr = result.addr;\n    env = realloc(result.p_env,sizeof(tClosure)*result.envLen);\n")
+            t.write("\n")
+            t.write("    addr = result.addr;\n    temp_env = realloc(env,sizeof(result.p_env));\n    env = temp_env;\n    env = result.p_env;\n")
             pc += 1
 
         elif op == "JUMP":
+            t.write("\n")
             t.write("    goto *addr;\n")
             pc += 1
                   
         elif op == "PUSH-ENV-ARGS":
+            t.write("\n")
             t.write("    temp_env = realloc(env,sizeof(env)+sizeof(args));\n    env = temp_env;\n    if(args_index>=1){\n        env[env_index]=args[0];\n        env_index++;\n    }\n    if(args_index==2){\n        env[env_index]=args[1];\n        env_index++;\n    }\n")
             pc += 1
           
         elif op == "PUSH-ENV":
+            t.write("\n")
             t.write("    temp_env = realloc(env,sizeof(env)+sizeof(result));\n    env = temp_env;\n    env[env_index]=result;\n    env_index++;\n")
             pc += 1
 
         elif op == "LOAD-ADDR":
+            t.write("\n")
             t.write("    addr = &&PL_{};\n".format(code[pc+1]))
             jump_labels.append(code[pc+1])
             pc += 2
 
         elif op == "LOAD-FUN":
+            t.write("\n")
             t.write("    result.addr = addr;\n    result.envLen = sizeof(env)/sizeof(tClosure);\n    result.p_env = env;\n")
             pc += 1
 
         elif op == "PRIM-CALL":
+            t.write("\n")
             t.write("    result.val = {}(args);\n    result.isInt = 1;\n".format(code[pc+1].__name__))
                   # print [ str(a) for a in args ]
             pc += 2
 
         elif op == "JUMP-TRUE":
+            t.write("\n")
             t.write("    if(result.val==1){\n        goto *addr;\n    }\n")
             pc += 1
 
