@@ -17,7 +17,7 @@ tClosure result;
 tClosure args[2];
 int args_index = 0;
 //ENV
-tClosure* env;
+tClosure env[1024];
 int env_index = 0;
 
 //int n = 10;
@@ -43,8 +43,7 @@ int main(){
     result.isInt = 0;
     result.envLen = 1;
     result.p_env = malloc(sizeof(tClosure)*result.envLen);
-    env = malloc(sizeof(tClosure)*1);
-    tClosure* temp_env = malloc(sizeof(tClosure)*1);
+
     result.val = 10;
     result.isInt = 1;
     args[args_index] = result;
@@ -58,14 +57,9 @@ int main(){
     addr = &&PL_8;
     PL_8:
     result.addr = addr;
-    result.envLen = sizeof(env)/sizeof(tClosure)+1;
-    result.p_env = env;
-    temp_env = realloc(env,sizeof(env)+sizeof(result));
-    env = temp_env;
+    *result.p_env = env;
     env[env_index]=result;
     env_index++;
-    temp_env = realloc(env,sizeof(env)+sizeof(args));
-    env = temp_env;
     if(args_index>=1){
         env[env_index]=args[0];
         printf("Saving to ENV: %d\n", env[env_index].val);
@@ -107,8 +101,6 @@ int main(){
     args[args_index] = result;
     printf("ARGS: %d\n", args[args_index].val);
     args_index++;
-    temp_env = realloc(env,sizeof(env)+sizeof(args));
-    env = temp_env;
     if(args_index>=1){
         env[env_index]=args[0];
         printf("Saving to ENV: %d\n", env[env_index].val);
@@ -137,8 +129,6 @@ int main(){
     args[args_index] = result;
     printf("ARGS: %d\n", args[args_index].val);
     args_index++;
-    temp_env = realloc(env,sizeof(env)+sizeof(args));
-    env = temp_env;
     if(args_index>=1){
         env[env_index]=args[0];
         printf("Saving to ENV: %d\n", env[env_index].val);
@@ -166,8 +156,8 @@ int main(){
     ///////*****ERROR in LOADING ENV from RESULT.ENV*****/////////
     // Issues caused by null result environment from LOAD-FUN command.
     // Result.p_env cannot be empty. Result.envLen should be >= 1
-    temp_env = realloc(result.p_env,sizeof(tClosure)*result.envLen);
-    env = temp_env;
+
+    env = result.p_env;
     goto *addr;
     PL_55:
     result = env[2];
