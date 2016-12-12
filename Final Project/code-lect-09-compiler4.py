@@ -1140,71 +1140,117 @@ def execute (code,start_pc,start_env):
 def translate_into_c(code):
     pc = 0
     jump_labels = []
+    filename = "auto_build.c"
+    t = open(filename, 'w')
+    t.truncate()
+
+    t.write("typedef struct tClosure{\n\
+    int val;\n\
+    void* addr;\n\
+    int isInt;\n\
+    int envLen;\n\
+    struct tClosure *p_env;\n\
+} tClosure;\n\
+\n\
+void* addr;\n\
+\n\
+//RESULT\n\
+tClosure result;\n\
+//ARGS\n\
+tClosure args[2];\n\
+int args_index = 0;\n\
+//ENV\n\
+tClosure* env;\n\
+int env_index = 0;\n\
+\n\
+//int n = 10;\n\
+\n\
+int oper_plus(tClosure clo[]){\n\
+    return clo[0].val+clo[1].val;\n\
+}\n\
+int oper_minus(tClosure clo[]){\n\
+    return clo[0].val-clo[1].val;\n\
+}\n\
+int oper_times(tClosure clo[]){\n\
+    return clo[0].val*clo[1].val;\n\
+}\n\
+int oper_zero(tClosure clo[]){\n\
+    //true->1\n\
+    //false->0\n\
+    return clo[0].val==0;\n\
+}\n\
+\n\
+int main(){\n\
+    //Setup result\n\
+    result.val = -1;\n\
+    result.isInt = 0;\n\
+    result.envLen = 0;\n\
+    result.p_env = (tClosure *)malloc(sizeof(tClosure)*result.envLen);\n\
+    env = (tClosure *)malloc(sizeof(tClosure)*0);\n\
+    tClosure* temp_env = (tClosure *)malloc(sizeof(tClosure)*0);\n")
+
     while True:
 
         if pc in jump_labels:
-            print "PL_{}:\n".format(pc)
+            t.write("    PL_{}:\n".format(pc))
 
         op = code[pc]
 
         if op == "RETURN":
-            print "return result.val;\n"
+            t.write("    return result.val;\n}\n")
             pc += 1
             break
 
         elif op == "CLEAR-ARGS":
-            print"args_index = 0;\n"
+            t.write("    args_index = 0;\n")
             pc+=1
 
         elif op == "LOAD":
-            print "result.val = {};\nresult.isInt = 1;\n".format(code[pc+1].value)
+            t.write("    result.val = {};\n    result.isInt = 1;\n".format(code[pc+1].value))
             pc += 2
                   
         elif op == "PUSH-ARGS":
-            print "args[args_index] = result;\nargs_index++;\n"
+            t.write("    args[args_index] = result;\n    args_index++;\n")
             pc += 1
 
         elif op == "LOOKUP":
-            print "result = env[{}]\n".format(code[pc+1])
+            t.write("    result = env[{}];\n".format(code[pc+1]))
             pc += 2
 
         elif op == "LOAD-ADDR-ENV":
-            print "addr = result.addr;\nenv = (tClosure *)malloc(sizeof(tClosure)*result.envLen);\nenv = result.p_env;\n"
+            t.write("    addr = result.addr;\n    env = realloc(result.p_env,sizeof(tClosure)*result.envLen);\n")
             pc += 1
 
         elif op == "JUMP":
-            print "goto addr;\n"
+            t.write("    goto *addr;\n")
             pc += 1
                   
         elif op == "PUSH-ENV-ARGS":
-            print "temp_env = realloc(env,sizeof(env)+sizeof(args));\nenv = temp_env;\nif(args_index>=1){\n    env[env_index]=args[0];\n    env_index++;\n}\nif(args_index==2){\n    env[env_index]=args[1];\n    env_index++;\n}\n"
+            t.write("    temp_env = realloc(env,sizeof(env)+sizeof(args));\n    env = temp_env;\n    if(args_index>=1){\n        env[env_index]=args[0];\n        env_index++;\n    }\n    if(args_index==2){\n        env[env_index]=args[1];\n        env_index++;\n    }\n")
             pc += 1
           
         elif op == "PUSH-ENV":
-            print "tClosure* temp_env = realloc(env,sizeof(env)+sizeof(result));\nenv = temp_env;\nenv[env_index]=result;\nenv_index++;\n"
+            t.write("    temp_env = realloc(env,sizeof(env)+sizeof(result));\n    env = temp_env;\n    env[env_index]=result;\n    env_index++;\n")
             pc += 1
 
         elif op == "LOAD-ADDR":
-            print "addr = &&PL_{}\n".format(code[pc+1])
+            t.write("    addr = &&PL_{};\n".format(code[pc+1]))
             jump_labels.append(code[pc+1])
             pc += 2
 
         elif op == "LOAD-FUN":
-            print "result.addr = addr;\nresult.envLen = sizeof(env)/sizeof(tClosure);\nresult.p_env = env;\n"
+            t.write("    result.addr = addr;\n    result.envLen = sizeof(env)/sizeof(tClosure);\n    result.p_env = env;\n")
             pc += 1
 
         elif op == "PRIM-CALL":
-            print "result.val = {}(args);\nresult.isInt = 1;\n".format(code[pc+1].__name__)
+            t.write("    result.val = {}(args);\n    result.isInt = 1;\n".format(code[pc+1].__name__))
                   # print [ str(a) for a in args ]
             pc += 2
 
         elif op == "JUMP-TRUE":
-            print "if(result.val==1){\n    goto addr;\n}\n"
+            t.write("    if(result.val==1){\n        goto *addr;\n    }\n")
             pc += 1
 
-        elif op[:2] == "PL":
-            print "{}\n".format(op)
-            pc += 1
         else:
             raise Exception("Unrecognized opcode: {}".format(op))
 
@@ -1299,62 +1345,62 @@ def decode (c):
 
 
 code = ["LOAD",
-            VInteger(10),
-            "PUSH-ARGS",
-            "LOAD",
-            VInteger(0),
-            "PUSH-ARGS",
-            "LOAD-ADDR",
-            8,   #loop
-            "LOAD-FUN",  #loop
-            "PUSH-ENV",
-            "PUSH-ENV-ARGS",
-            "CLEAR-ARGS",
-            "LOOKUP",
-             1,
-             "PUSH-ARGS",
-             "PRIM-CALL",
-             oper_zero,
-             "LOAD-ADDR",
-             55, #done
-             "JUMP-TRUE",
-             "CLEAR-ARGS",
-             "LOOKUP",
-             1,
-             "PUSH-ARGS",
-             "LOAD",
-             VInteger(1),
-             "PUSH-ARGS",
-             "PRIM-CALL",
-             oper_minus,
-             "CLEAR-ARGS",
-             "PUSH-ARGS",
-             "PUSH-ENV-ARGS",
-             "CLEAR-ARGS",
-             "LOOKUP",
-             1,
-             "PUSH-ARGS",
-             "LOOKUP",
-             2,
-             "PUSH-ARGS",
-             "PRIM-CALL",
-             oper_plus,
-             "CLEAR-ARGS",
-             "PUSH-ARGS",
-             "PUSH-ENV-ARGS",
-             "CLEAR-ARGS",
-             "LOOKUP",
-             3,
-             "PUSH-ARGS",
-             "LOOKUP",
-             4,
-             "PUSH-ARGS",
-             "LOOKUP",
-             0,
-             "LOAD-ADDR-ENV",
-             "JUMP",  
-             "LOOKUP",   #done
-             2,
-             "RETURN"]
+        VInteger(10),
+        "PUSH-ARGS",
+        "LOAD",
+        VInteger(0),
+        "PUSH-ARGS",
+        "LOAD-ADDR",
+        8,   #loop
+        "LOAD-FUN",  #loop
+        "PUSH-ENV",
+        "PUSH-ENV-ARGS",
+        "CLEAR-ARGS",
+        "LOOKUP",
+        1,
+        "PUSH-ARGS",
+        "PRIM-CALL",
+        oper_zero,
+        "LOAD-ADDR",
+        55, #done
+        "JUMP-TRUE",
+        "CLEAR-ARGS",
+        "LOOKUP",
+        1,
+        "PUSH-ARGS",
+        "LOAD",
+        VInteger(1),
+        "PUSH-ARGS",
+        "PRIM-CALL",
+        oper_minus,
+        "CLEAR-ARGS",
+        "PUSH-ARGS",
+        "PUSH-ENV-ARGS",
+        "CLEAR-ARGS",
+        "LOOKUP",
+        1,
+        "PUSH-ARGS",
+        "LOOKUP",
+        2,
+        "PUSH-ARGS",
+        "PRIM-CALL",
+        oper_plus,
+        "CLEAR-ARGS",
+        "PUSH-ARGS",
+        "PUSH-ENV-ARGS",
+        "CLEAR-ARGS",
+        "LOOKUP",
+        3,
+        "PUSH-ARGS",
+        "LOOKUP",
+        4,
+        "PUSH-ARGS",
+        "LOOKUP",
+        0,
+        "LOAD-ADDR-ENV",
+        "JUMP",  
+        "LOOKUP",   #done
+        2,
+        "RETURN"]
     
 translate_into_c(code)
