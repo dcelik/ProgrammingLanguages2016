@@ -1,4 +1,6 @@
-typedef struct tClosure{
+#include <stdlib.h>
+
+ typedef struct tClosure{
     int val;
     void* addr;
     int isInt;

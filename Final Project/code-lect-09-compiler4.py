@@ -1144,7 +1144,7 @@ def translate_into_c(code):
     t = open(filename, 'w')
     t.truncate()
 
-    t.write("typedef struct tClosure{\n\
+    t.write("#include <stdlib.h>\n\n typedef struct tClosure{\n\
     int val;\n\
     void* addr;\n\
     int isInt;\n\
