@@ -855,10 +855,14 @@ def shell_comp ():
     print "Lecture 9 - REF Compiled Language (defun, define)"
     print "#quit to quit, #abs to see abstract representation and code"
     #env = initial_env_compenv()
-    code = assemble(["PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_plus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP",
+    # code = assemble(["PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_plus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP",
+    #                "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_minus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP",
+    #                "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","PRIM-CALL",oper_zero,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",1,"LOAD-ADDR-ENV","JUMP",
+    #                  "PUSH-ENV-ARGS","LOOKUP",0,"RETURN"],0)
+    code = ["PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_plus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP",
                    "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_minus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP",
                    "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","PRIM-CALL",oper_zero,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",1,"LOAD-ADDR-ENV","JUMP",
-                     "PUSH-ENV-ARGS","LOOKUP",0,"RETURN"],0)
+                     "PUSH-ENV-ARGS","LOOKUP",0,"RETURN"]
     
     # primitives are first (first NUM_PRIMITIVES entries) and then everything else
     # including the "DONE" continuation
@@ -892,10 +896,13 @@ def shell_comp ():
                     comp_exp = cps_exp.compile_env(symtable)
                     start = len(code)
                     c = comp_exp.compile()
-                    code = code+assemble(c,start)
-                    v = execute(code,start,env)
-                    print "Eval time: {}s".format(round(timer.time(),3))
-                print v
+                    code = code + c
+                    #code = code+assemble(c,start)
+                    translate_into_c(code)
+                    print("file_created")
+                    #v = execute(code,start,env)
+                    #print "Eval time: {}s".format(round(timer.time(),3))
+                #print v
 
             elif result["result"] == "abstract":
                 exp = result["expr"]
@@ -930,12 +937,10 @@ def shell_comp ():
                 c = comp_exp.compile()
                 start = len(code)
                 code = code + assemble(c,start)
-                translate_into_c(code)
-                print(file_created)
-                #v = execute(code,start,env)
-                #env = env + [v]
-                #symtable += [result["name"]]
-                #print "{} defined".format(result["name"])
+                v = execute(code,start,env)
+                env = env + [v]
+                symtable += [result["name"]]
+                print "{} defined".format(result["name"])
                 
         except Exception as e:
             print "Exception: {}".format(e)
@@ -1140,6 +1145,7 @@ def execute (code,start_pc,start_env):
 #######################################################################################
 
 def translate_into_c(code):
+    print(code)
     pc = 0
     jump_labels = []
     filename = "auto_build.c"
@@ -1192,6 +1198,12 @@ long long func(){\n\
             t.write("    PL_{}:\n".format(pc))
 
         op = code[pc]
+
+        print op
+        if op[0] == "#":
+            print(op)
+            t.write("\n")
+            t.write("    PL_{}:\n".format(op[1:]))
 
         if op == "RETURN":
             t.write("\n")

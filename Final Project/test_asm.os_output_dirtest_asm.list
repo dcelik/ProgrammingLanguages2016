@@ -1,4 +1,4 @@
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 1
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccUgDJAb.s 			page 1
 
 
    1              		.file	"test_asm.c"
@@ -58,7 +58,7 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 1
   59 003f 55       		pushl	%ebp
   60 0040 89E5     		movl	%esp, %ebp
   61 0042 8B4508   		movl	8(%ebp), %eax
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 2
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccUgDJAb.s 			page 2
 
 
   62 0045 8B00     		movl	(%eax), %eax
@@ -118,7 +118,7 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 1
  116 00b0 01000000 		.long	1
  117 00b4 04000000 		.long	4
  118 00b8 03000000 		.long	3
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 3
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccUgDJAb.s 			page 3
 
 
  119 00bc 03000000 		.long	3
@@ -133,343 +133,67 @@ GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 1
  128 00e0 02000000 		.long	2
  129 00e4 00000000 		.long	0
  130 00e8 00000000 		.space 4
- 132 00ec 00000000 		.text
+ 132 00ec 00000000 		.section .rdata,"dr"
  132      00000000 
  132      00000000 
  132      00000000 
  132      00000000 
- 133              		.globl	_main
- 135              	_main:
- 136 0051 55       		pushl	%ebp
- 137 0052 89E5     		movl	%esp, %ebp
- 138 0054 83E4F0   		andl	$-16, %esp
- 139 0057 83EC20   		subl	$32, %esp
- 140 005a E8000000 		call	___main
- 140      00
- 141 005f C7050000 		movl	$-1, _result
- 141      0000FFFF 
- 141      FFFF
- 142 0069 C7050800 		movl	$0, _result+8
- 142      00000000 
- 142      0000
- 143 0073 C7050C00 		movl	$0, _result+12
- 143      00000000 
- 143      0000
- 144 007d A10C0000 		movl	_result+12, %eax
- 144      00
- 145 0082 89C2     		movl	%eax, %edx
- 146 0084 89D0     		movl	%edx, %eax
- 147 0086 C1E002   		sall	$2, %eax
- 148 0089 01D0     		addl	%edx, %eax
- 149 008b C1E002   		sall	$2, %eax
- 150 008e 890424   		movl	%eax, (%esp)
- 151 0091 E8000000 		call	_malloc
+ 133              	LC0:
+ 134 0000 54686520 		.ascii "The size of env is %lu\12\0"
+ 134      73697A65 
+ 134      206F6620 
+ 134      656E7620 
+ 134      69732025 
+ 135              		.text
+ 136              		.globl	_main
+ 138              	_main:
+ 139 0051 55       		pushl	%ebp
+ 140 0052 89E5     		movl	%esp, %ebp
+ 141 0054 83E4F0   		andl	$-16, %esp
+ 142 0057 83EC20   		subl	$32, %esp
+ 143 005a E8000000 		call	___main
+ 143      00
+ 144              	L10:
+ 145 005f C7442404 		movl	$20, 4(%esp)
+ 145      14000000 
+ 146 0067 C7042402 		movl	$2, (%esp)
+ 146      000000
+ 147 006e E8000000 		call	_calloc
+ 147      00
+ 148 0073 A3000000 		movl	%eax, _env
+ 148      00
+ 149 0078 C7442404 		movl	$20, 4(%esp)
+ 149      14000000 
+ 150 0080 C7042400 		movl	$LC0, (%esp)
+ 150      000000
+ 151 0087 E8000000 		call	_printf
  151      00
- 152 0096 A3100000 		movl	%eax, _result+16
+ 152 008c A1000000 		movl	_env, %eax
  152      00
- 153 009b C7042400 		movl	$0, (%esp)
- 153      000000
- 154 00a2 E8000000 		call	_malloc
- 154      00
- 155 00a7 A3000000 		movl	%eax, _env
+ 153 0091 C7442404 		movl	$80, 4(%esp)
+ 153      50000000 
+ 154 0099 890424   		movl	%eax, (%esp)
+ 155 009c E8000000 		call	_realloc
  155      00
- 156 00ac C7050000 		movl	$10, _result
- 156      00000A00 
- 156      0000
- 157 00b6 C7050800 		movl	$1, _result+8
- 157      00000100 
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 4
+ 156 00a1 8944241C 		movl	%eax, 28(%esp)
+ 157 00a5 8B44241C 		movl	28(%esp), %eax
+ 158 00a9 A3000000 		movl	%eax, _env
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccUgDJAb.s 			page 4
 
 
- 157      0000
- 158 00c0 8B150000 		movl	_args_index, %edx
- 158      0000
- 159 00c6 89D0     		movl	%edx, %eax
- 160 00c8 C1E002   		sall	$2, %eax
- 161 00cb 01D0     		addl	%edx, %eax
- 162 00cd C1E002   		sall	$2, %eax
- 163 00d0 05000000 		addl	$_args, %eax
- 163      00
- 164 00d5 8B150000 		movl	_result, %edx
- 164      0000
- 165 00db 8910     		movl	%edx, (%eax)
- 166 00dd 8B150400 		movl	_result+4, %edx
- 166      0000
- 167 00e3 895004   		movl	%edx, 4(%eax)
- 168 00e6 8B150800 		movl	_result+8, %edx
- 168      0000
- 169 00ec 895008   		movl	%edx, 8(%eax)
- 170 00ef 8B150C00 		movl	_result+12, %edx
- 170      0000
- 171 00f5 89500C   		movl	%edx, 12(%eax)
- 172 00f8 8B151000 		movl	_result+16, %edx
- 172      0000
- 173 00fe 895010   		movl	%edx, 16(%eax)
- 174 0101 A1000000 		movl	_args_index, %eax
- 174      00
- 175 0106 83C001   		addl	$1, %eax
- 176 0109 A3000000 		movl	%eax, _args_index
- 176      00
- 177 010e C7050000 		movl	$0, _result
- 177      00000000 
- 177      0000
- 178 0118 C7050800 		movl	$1, _result+8
- 178      00000100 
- 178      0000
- 179 0122 8B150000 		movl	_args_index, %edx
- 179      0000
- 180 0128 89D0     		movl	%edx, %eax
- 181 012a C1E002   		sall	$2, %eax
- 182 012d 01D0     		addl	%edx, %eax
- 183 012f C1E002   		sall	$2, %eax
- 184 0132 05000000 		addl	$_args, %eax
- 184      00
- 185 0137 8B150000 		movl	_result, %edx
- 185      0000
- 186 013d 8910     		movl	%edx, (%eax)
- 187 013f 8B150400 		movl	_result+4, %edx
- 187      0000
- 188 0145 895004   		movl	%edx, 4(%eax)
- 189 0148 8B150800 		movl	_result+8, %edx
- 189      0000
- 190 014e 895008   		movl	%edx, 8(%eax)
- 191 0151 8B150C00 		movl	_result+12, %edx
- 191      0000
- 192 0157 89500C   		movl	%edx, 12(%eax)
- 193 015a 8B151000 		movl	_result+16, %edx
- 193      0000
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 5
-
-
- 194 0160 895010   		movl	%edx, 16(%eax)
- 195 0163 A1000000 		movl	_args_index, %eax
- 195      00
- 196 0168 83C001   		addl	$1, %eax
- 197 016b A3000000 		movl	%eax, _args_index
- 197      00
- 198 0170 C7050000 		movl	$L10, _addr
- 198      00007A01 
- 198      0000
- 199              	L10:
- 200 017a A1000000 		movl	_addr, %eax
- 200      00
- 201 017f A3040000 		movl	%eax, _result+4
- 201      00
- 202 0184 C7050C00 		movl	$0, _result+12
- 202      00000000 
- 202      0000
- 203 018e A1000000 		movl	_env, %eax
- 203      00
- 204 0193 A3100000 		movl	%eax, _result+16
- 204      00
- 205 0198 A1000000 		movl	_env, %eax
- 205      00
- 206 019d C7442404 		movl	$24, 4(%esp)
- 206      18000000 
- 207 01a5 890424   		movl	%eax, (%esp)
- 208 01a8 E8000000 		call	_realloc
- 208      00
- 209 01ad 8944241C 		movl	%eax, 28(%esp)
- 210 01b1 8B44241C 		movl	28(%esp), %eax
- 211 01b5 A3000000 		movl	%eax, _env
- 211      00
- 212 01ba 8B150000 		movl	_env, %edx
- 212      0000
- 213 01c0 A1040000 		movl	_env_index, %eax
- 213      00
- 214 01c5 89C1     		movl	%eax, %ecx
- 215 01c7 89C8     		movl	%ecx, %eax
- 216 01c9 C1E002   		sall	$2, %eax
- 217 01cc 01C8     		addl	%ecx, %eax
- 218 01ce C1E002   		sall	$2, %eax
- 219 01d1 01D0     		addl	%edx, %eax
- 220 01d3 8B150000 		movl	_result, %edx
- 220      0000
- 221 01d9 8910     		movl	%edx, (%eax)
- 222 01db 8B150400 		movl	_result+4, %edx
- 222      0000
- 223 01e1 895004   		movl	%edx, 4(%eax)
- 224 01e4 8B150800 		movl	_result+8, %edx
- 224      0000
- 225 01ea 895008   		movl	%edx, 8(%eax)
- 226 01ed 8B150C00 		movl	_result+12, %edx
- 226      0000
- 227 01f3 89500C   		movl	%edx, 12(%eax)
- 228 01f6 8B151000 		movl	_result+16, %edx
- 228      0000
- 229 01fc 895010   		movl	%edx, 16(%eax)
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 6
-
-
- 230 01ff A1040000 		movl	_env_index, %eax
- 230      00
- 231 0204 83C001   		addl	$1, %eax
- 232 0207 A3040000 		movl	%eax, _env_index
- 232      00
- 233 020c A1000000 		movl	_env, %eax
- 233      00
- 234 0211 C7442404 		movl	$44, 4(%esp)
- 234      2C000000 
- 235 0219 890424   		movl	%eax, (%esp)
- 236 021c E8000000 		call	_realloc
- 236      00
- 237 0221 8944241C 		movl	%eax, 28(%esp)
- 238 0225 8B44241C 		movl	28(%esp), %eax
- 239 0229 A3000000 		movl	%eax, _env
- 239      00
- 240 022e A1000000 		movl	_args_index, %eax
- 240      00
- 241 0233 85C0     		testl	%eax, %eax
- 242 0235 7E52     		jle	L11
- 243 0237 8B150000 		movl	_env, %edx
- 243      0000
- 244 023d A1040000 		movl	_env_index, %eax
- 244      00
- 245 0242 89C1     		movl	%eax, %ecx
- 246 0244 89C8     		movl	%ecx, %eax
- 247 0246 C1E002   		sall	$2, %eax
- 248 0249 01C8     		addl	%ecx, %eax
- 249 024b C1E002   		sall	$2, %eax
- 250 024e 01D0     		addl	%edx, %eax
- 251 0250 8B150000 		movl	_args, %edx
- 251      0000
- 252 0256 8910     		movl	%edx, (%eax)
- 253 0258 8B150400 		movl	_args+4, %edx
- 253      0000
- 254 025e 895004   		movl	%edx, 4(%eax)
- 255 0261 8B150800 		movl	_args+8, %edx
- 255      0000
- 256 0267 895008   		movl	%edx, 8(%eax)
- 257 026a 8B150C00 		movl	_args+12, %edx
- 257      0000
- 258 0270 89500C   		movl	%edx, 12(%eax)
- 259 0273 8B151000 		movl	_args+16, %edx
- 259      0000
- 260 0279 895010   		movl	%edx, 16(%eax)
- 261 027c A1040000 		movl	_env_index, %eax
- 261      00
- 262 0281 83C001   		addl	$1, %eax
- 263 0284 A3040000 		movl	%eax, _env_index
- 263      00
- 264              	L11:
- 265 0289 A1000000 		movl	_args_index, %eax
- 265      00
- 266 028e 83F802   		cmpl	$2, %eax
- 267 0291 7552     		jne	L12
- 268 0293 8B150000 		movl	_env, %edx
- 268      0000
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 7
-
-
- 269 0299 A1040000 		movl	_env_index, %eax
- 269      00
- 270 029e 89C1     		movl	%eax, %ecx
- 271 02a0 89C8     		movl	%ecx, %eax
- 272 02a2 C1E002   		sall	$2, %eax
- 273 02a5 01C8     		addl	%ecx, %eax
- 274 02a7 C1E002   		sall	$2, %eax
- 275 02aa 01D0     		addl	%edx, %eax
- 276 02ac 8B151400 		movl	_args+20, %edx
- 276      0000
- 277 02b2 8910     		movl	%edx, (%eax)
- 278 02b4 8B151800 		movl	_args+24, %edx
- 278      0000
- 279 02ba 895004   		movl	%edx, 4(%eax)
- 280 02bd 8B151C00 		movl	_args+28, %edx
- 280      0000
- 281 02c3 895008   		movl	%edx, 8(%eax)
- 282 02c6 8B152000 		movl	_args+32, %edx
- 282      0000
- 283 02cc 89500C   		movl	%edx, 12(%eax)
- 284 02cf 8B152400 		movl	_args+36, %edx
- 284      0000
- 285 02d5 895010   		movl	%edx, 16(%eax)
- 286 02d8 A1040000 		movl	_env_index, %eax
- 286      00
- 287 02dd 83C001   		addl	$1, %eax
- 288 02e0 A3040000 		movl	%eax, _env_index
- 288      00
- 289              	L12:
- 290 02e5 C7050000 		movl	$0, _args_index
- 290      00000000 
- 290      0000
- 291 02ef A1000000 		movl	_env, %eax
- 291      00
- 292 02f4 8B5014   		movl	20(%eax), %edx
- 293 02f7 89150000 		movl	%edx, _result
- 293      0000
- 294 02fd 8B5018   		movl	24(%eax), %edx
- 295 0300 89150400 		movl	%edx, _result+4
- 295      0000
- 296 0306 8B501C   		movl	28(%eax), %edx
- 297 0309 89150800 		movl	%edx, _result+8
- 297      0000
- 298 030f 8B5020   		movl	32(%eax), %edx
- 299 0312 89150C00 		movl	%edx, _result+12
- 299      0000
- 300 0318 8B4024   		movl	36(%eax), %eax
- 301 031b A3100000 		movl	%eax, _result+16
- 301      00
- 302 0320 8B150000 		movl	_args_index, %edx
- 302      0000
- 303 0326 89D0     		movl	%edx, %eax
- 304 0328 C1E002   		sall	$2, %eax
- 305 032b 01D0     		addl	%edx, %eax
- 306 032d C1E002   		sall	$2, %eax
- 307 0330 05000000 		addl	$_args, %eax
- 307      00
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 8
-
-
- 308 0335 8B150000 		movl	_result, %edx
- 308      0000
- 309 033b 8910     		movl	%edx, (%eax)
- 310 033d 8B150400 		movl	_result+4, %edx
- 310      0000
- 311 0343 895004   		movl	%edx, 4(%eax)
- 312 0346 8B150800 		movl	_result+8, %edx
- 312      0000
- 313 034c 895008   		movl	%edx, 8(%eax)
- 314 034f 8B150C00 		movl	_result+12, %edx
- 314      0000
- 315 0355 89500C   		movl	%edx, 12(%eax)
- 316 0358 8B151000 		movl	_result+16, %edx
- 316      0000
- 317 035e 895010   		movl	%edx, 16(%eax)
- 318 0361 A1000000 		movl	_args_index, %eax
- 318      00
- 319 0366 83C001   		addl	$1, %eax
- 320 0369 A3000000 		movl	%eax, _args_index
- 320      00
- 321 036e C7042400 		movl	$_args, (%esp)
- 321      000000
- 322 0375 E8C5FCFF 		call	_oper_zero
- 322      FF
- 323 037a A3000000 		movl	%eax, _result
- 323      00
- 324 037f C7050800 		movl	$1, _result+8
- 324      00000100 
- 324      0000
- 325 0389 A1040000 		movl	_result+4, %eax
- 325      00
- 326 038e A3000000 		movl	%eax, _addr
- 326      00
- 327 0393 A1000000 		movl	_env, %eax
- 327      00
- 328 0398 C7442404 		movl	$4, 4(%esp)
- 328      04000000 
- 329 03a0 890424   		movl	%eax, (%esp)
- 330 03a3 E8000000 		call	_realloc
- 330      00
- 331 03a8 8944241C 		movl	%eax, 28(%esp)
- 332 03ac A1100000 		movl	_result+16, %eax
- 332      00
- 333 03b1 A3000000 		movl	%eax, _env
- 333      00
- 334 03b6 C9       		leave
- 335 03b7 C3       		ret
- 336              		.ident	"GCC: (tdm-1) 4.9.2"
-GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s 			page 9
+ 158      00
+ 159 00ae C7442404 		movl	$20, 4(%esp)
+ 159      14000000 
+ 160 00b6 C7042400 		movl	$LC0, (%esp)
+ 160      000000
+ 161 00bd E8000000 		call	_printf
+ 161      00
+ 162 00c2 B8000000 		movl	$0, %eax
+ 162      00
+ 163 00c7 C9       		leave
+ 164 00c8 C3       		ret
+ 165              		.ident	"GCC: (tdm-1) 4.9.2"
+GAS LISTING C:\Users\deniz\AppData\Local\Temp\ccUgDJAb.s 			page 5
 
 
 DEFINED SYMBOLS
@@ -477,17 +201,18 @@ DEFINED SYMBOLS
                             *COM*:00000004 _addr
                             *COM*:00000014 _result
                             *COM*:00000028 _args
-C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s:8      .bss:00000000 _args_index
+C:\Users\deniz\AppData\Local\Temp\ccUgDJAb.s:8      .bss:00000000 _args_index
                             *COM*:00000004 _env
-C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s:13     .bss:00000004 _env_index
-C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s:18     .text:00000000 _oper_plus
-C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s:31     .text:00000014 _oper_minus
-C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s:45     .text:0000002a _oper_times
-C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s:58     .text:0000003f _oper_zero
-C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s:71     .data:00000000 _code
-C:\Users\deniz\AppData\Local\Temp\ccK5sROY.s:135    .text:00000051 _main
+C:\Users\deniz\AppData\Local\Temp\ccUgDJAb.s:13     .bss:00000004 _env_index
+C:\Users\deniz\AppData\Local\Temp\ccUgDJAb.s:18     .text:00000000 _oper_plus
+C:\Users\deniz\AppData\Local\Temp\ccUgDJAb.s:31     .text:00000014 _oper_minus
+C:\Users\deniz\AppData\Local\Temp\ccUgDJAb.s:45     .text:0000002a _oper_times
+C:\Users\deniz\AppData\Local\Temp\ccUgDJAb.s:58     .text:0000003f _oper_zero
+C:\Users\deniz\AppData\Local\Temp\ccUgDJAb.s:71     .data:00000000 _code
+C:\Users\deniz\AppData\Local\Temp\ccUgDJAb.s:138    .text:00000051 _main
 
 UNDEFINED SYMBOLS
 ___main
-_malloc
+_calloc
+_printf
 _realloc

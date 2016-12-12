@@ -14,7 +14,7 @@ tClosure result;
 tClosure args[2];
 int args_index = 0;
 //ENV
-tClosure *env;
+tClosure env[1024];
 int env_index = 0;
 
 //int n = 10;
@@ -45,6 +45,12 @@ int code[59] = {2,10,3,2,0,3,9,8,10,8,7,1,4,1,3,
     0,5,6,4,2,0};
 
 int main(){
+    env = calloc(2,sizeof(tClosure));
+    printf("The size of env is %lu\n", (unsigned long)sizeof(*env));
+    tClosure * t = realloc(env,sizeof(tClosure)*4);
+    env = t;
+    printf("The size of env is %lu\n", (unsigned long)sizeof(*env));
+    return 0;
     //Setup result
     result.val = -1;
     result.isInt = 0;
