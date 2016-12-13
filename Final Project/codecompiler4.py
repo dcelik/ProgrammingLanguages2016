@@ -854,22 +854,11 @@ def shell_comp ():
 
     print "Lecture 9 - REF Compiled Language (defun, define)"
     print "#quit to quit, #abs to see abstract representation and code"
-    #env = initial_env_compenv()
-    # code = assemble(["PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_plus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP",
-    #                "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_minus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP",
-    #                "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","PRIM-CALL",oper_zero,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",1,"LOAD-ADDR-ENV","JUMP",
-    #                  "PUSH-ENV-ARGS","LOOKUP",0,"RETURN"],0)
     code = ["#start0","PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_plus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP","#start16",
                 "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_minus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP","#start32",
                 "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","PRIM-CALL",oper_zero,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",1,"LOAD-ADDR-ENV","JUMP","#start45",
                 "PUSH-ENV-ARGS","LOOKUP",0,"RETURN","#START_FUNC"]
-    
-    # # primitives are first (first NUM_PRIMITIVES entries) and then everything else
-    # # including the "DONE" continuation
-    # env = [VClosureAddr(0,[]),
-    #        VClosureAddr(16,[]),
-    #        VClosureAddr(32,[]),
-    #        VClosureAddr(45,[])]
+
            
     symtable = [ "+" ,
                  "-",
@@ -1123,12 +1112,7 @@ def assemble_c (code):
                     t.write("\n")
                     t.write("    addr = result.addr;\
                             \n    memcpy(env,result.p_env,result.envLen*sizeof(tClosure));\
-                            \n    env_index = result.envLen;\n")  
-                    # t.write("    addr = result.addr;\
-                    #         \n    for (i = 0; i<result.envLen;i++){\
-                    #         \n        env[i] = result.p_env[i];\
-                    #         \n    }\
-                    #         \n    env_index = result.envLen;\n")                             
+                            \n    env_index = result.envLen;\n")                     
                     index += 1
 
                 elif op == "JUMP":
@@ -1159,11 +1143,6 @@ def assemble_c (code):
                     t.write("    result.addr = addr;\
                             \n    memcpy(result.p_env,env,env_index*sizeof(tClosure));\
                             \n    result.envLen = env_index;\n")
-                    # t.write("    result.addr = addr;\
-                    #         \n    for (i = 0; i<env_index;i++){\
-                    #         \n        result.p_env[i] = env[i];\
-                    #         \n    }\
-                    #         \n    result.envLen = env_index;\n")
                     index += 1
 
                 elif op == "PRIM-CALL":
