@@ -510,7 +510,7 @@ def oper_print (v1):
 ## PARSER
 ##
 # cf http://pyparsing.wikispaces.com/
-
+import subprocess
 from pyparsing import Word, Literal, ZeroOrMore, OneOrMore, Keyword, Forward, alphas, alphanums, NoMatch
 
 
@@ -859,7 +859,8 @@ def shell_comp ():
                 "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","PRIM-CALL",oper_zero,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",1,"LOAD-ADDR-ENV","JUMP","#start45",
                 "PUSH-ENV-ARGS","LOOKUP",0,"RETURN","#START_FUNC"]
 
-           
+    c_back = code
+
     symtable = [ "+" ,
                  "-",
                  "zero?",
@@ -867,6 +868,7 @@ def shell_comp ():
                                  
         
     while True:
+        code = c_back
         inp = raw_input("ref/comp> ")
 
         try:
@@ -888,9 +890,11 @@ def shell_comp ():
                     code = code + c
                     #code = code+assemble(c,start)
                     assemble_c(code)
+                    subprocess.call(["gcc","-O3","auto_build.c"])
+                    subprocess.call(["./a.out"])
+                    print "\n"
                     #v = execute(code,start,env)
-                    #print "Eval time: {}s".format(round(timer.time(),3))
-                #print v
+                    print "Eval time: {}s".format(round(timer.time(),3))
 
             elif result["result"] == "abstract":
                 exp = result["expr"]
@@ -1305,216 +1309,6 @@ def execute (code,start_pc,start_env):
 #######################################################################################
 #######################################################################################
 
-def translate_into_c(code):
-    print(code)
-    pc = 0
-    jump_labels = []
-    filename = "auto_build.c"
-    t = open(filename, 'w')
-    t.truncate()
-
-    t.write("#include <stdlib.h>\n\n typedef struct tClosure{\n\
-    long long val;\n\
-    void* addr;\n\
-    int envLen;\n\
-    struct tClosure * p_env[16];\n\
-} tClosure;\n\
-\n\
-void* addr;\n\
-\n\
-//RESULT\n\
-tClosure result;\n\
-//ARGS\n\
-tClosure args[2];\n\
-int args_index = 0;\n\
-//ENV\n\
-tClosure env[16];\n\
-int env_index = 0;\n\
-\n\
-\n\
-long long oper_plus(tClosure clo[]){\n\
-    return clo[0].val+clo[1].val;\n\
-}\n\
-long long oper_minus(tClosure clo[]){\n\
-    return clo[0].val-clo[1].val;\n\
-}\n\
-long long oper_times(tClosure clo[]){\n\
-    return clo[0].val*clo[1].val;\n\
-}\n\
-long long oper_zero(tClosure clo[]){\n\
-    //true->1\n\
-    //false->0\n\
-    return clo[0].val==0;\n\
-}\n\
-\n\
-long long func(){\n\
-    //Setup result\n\
-    result.val = -1;\n\
-    result.envLen = 0;\n")
-
-    while True:
-
-
-        op = code[pc]
-        if op[0] == "#":
-            print(op)
-            t.write("\n")
-            t.write("    PL_{}:\n".format(op[1:]))
-
-        if op == "RETURN":
-            t.write("\n")
-            t.write("    return result.val;\n}\n")
-            pc += 1
-            t.write("\nint main(){\n    printf(\"Answer: %lli\",func());\n    return 0;\n}\n")
-            return
-
-        elif op == "CLEAR-ARGS":
-            t.write("\n")
-            t.write("    args_index = 0;\n")
-            pc+=1
-
-        elif op == "LOAD":
-            t.write("\n")
-            t.write("    result.val = {};\n  ".format(code[pc+1].value))
-            pc += 2
-                  
-        elif op == "PUSH-ARGS":
-            t.write("\n")
-            t.write("    args[args_index] = result;\n    args_index++;\n")
-            pc += 1
-
-        elif op == "LOOKUP":
-            t.write("\n")
-            t.write("    result = env[{}];\n".format(code[pc+1]))
-            pc += 2
-
-        elif op == "LOAD-ADDR-ENV":
-            t.write("\n")
-            t.write("    addr = result.addr;\
-                   \n    *env = **result.p_env;\
-                   \n    env_index = result.envLen;\n")
-            pc += 1
-
-        elif op == "JUMP":
-            t.write("\n")
-            t.write("    goto *addr;\n")
-            pc += 1
-                  
-        elif op == "PUSH-ENV-ARGS":
-            t.write("\n")
-            t.write("    env[env_index]=args[0];\
-                   \n    env_index++;\
-                   \n    if(args_index==2){\
-                   \n        env[env_index]=args[1];\
-                   \n        env_index++;\
-                   \n    }\n")
-            pc += 1
-          
-        elif op == "PUSH-ENV":
-            t.write("\n")
-            t.write("    env[env_index]=result;\n    env_index++;\n")
-            pc += 1
-
-        elif op == "LOAD-ADDR":
-            t.write("\n")
-            t.write("    addr = &&PL_{};\n".format(code[pc+1]))
-            jump_labels.append(code[pc+1])
-            pc += 2
-
-        elif op == "LOAD-FUN":
-            t.write("\n")
-            t.write("    result.addr = addr;\n    *result.p_env = env;\n    result.envLen = env_index;\n")
-            pc += 1
-
-        elif op == "PRIM-CALL":
-            t.write("\n")
-            t.write("    result.val = {}(args);\n".format(code[pc+1].__name__))
-                  # print [ str(a) for a in args ]
-            pc += 2
-
-        elif op == "JUMP-TRUE":
-            t.write("\n")
-            t.write("    if(result.val==1){\n        goto *addr;\n    }\n")
-            pc += 1
-
-        else:
-            raise Exception("Unrecognized opcode: {}".format(op))
-
-        
-def test (n):
-    
-    code = ["LOAD",
-            VInteger(n),
-            "PUSH-ARGS",
-            "LOAD",
-            VInteger(0),
-            "PUSH-ARGS",
-            "LOAD-ADDR",
-            8,   #loop
-            "LOAD-FUN",  #loop
-            "PUSH-ENV",
-            "PUSH-ENV-ARGS",
-            "CLEAR-ARGS",
-            "LOOKUP",
-             1,
-             "PUSH-ARGS",
-             "PRIM-CALL",
-             oper_zero,
-             "LOAD-ADDR",
-             55, #done
-             "JUMP-TRUE",
-             "CLEAR-ARGS",
-             "LOOKUP",
-             1,
-             "PUSH-ARGS",
-             "LOAD",
-             VInteger(1),
-             "PUSH-ARGS",
-             "PRIM-CALL",
-             oper_minus,
-             "CLEAR-ARGS",
-             "PUSH-ARGS",
-             "PUSH-ENV-ARGS",
-             "CLEAR-ARGS",
-             "LOOKUP",
-             1,
-             "PUSH-ARGS",
-             "LOOKUP",
-             2,
-             "PUSH-ARGS",
-             "PRIM-CALL",
-             oper_plus,
-             "CLEAR-ARGS",
-             "PUSH-ARGS",
-             "PUSH-ENV-ARGS",
-             "CLEAR-ARGS",
-             "LOOKUP",
-             3,
-             "PUSH-ARGS",
-             "LOOKUP",
-             4,
-             "PUSH-ARGS",
-             "LOOKUP",
-             0,
-             "LOAD-ADDR-ENV",
-             "JUMP",  
-             "LOOKUP",   #done
-             2,
-             "RETURN"]
-
-    print_code(code,0)
-
-    with Timer() as timer:
-
-        code = decode(code)
-
-        v = execute(code,0,[])
-
-        print "Eval time: {}s".format(round(timer.time(),3))
-
-        print v
-    
-
 def print_code (c,start):
 
     
@@ -1528,70 +1322,4 @@ def decode (c):
         if CODE[k] == c:
             return k
 
-
-
-code = ["LOAD",
-        VInteger(200000),
-        "PUSH-ARGS",
-        "LOAD",
-        VInteger(0),
-        "PUSH-ARGS",
-        "LOAD-ADDR",
-        "@loop",
-        "#loop",   #loop
-        "LOAD-FUN",  #loop
-        "PUSH-ENV",
-        "PUSH-ENV-ARGS",
-        "CLEAR-ARGS",
-        "LOOKUP",
-        5,
-        "PUSH-ARGS",
-        "PRIM-CALL",
-        oper_zero,
-        "LOAD-ADDR",
-        "@done", #done
-        "JUMP-TRUE",
-        "CLEAR-ARGS",
-        "LOOKUP",
-        5,
-        "PUSH-ARGS",
-        "LOAD",
-        VInteger(1),
-        "PUSH-ARGS",
-        "PRIM-CALL",
-        oper_minus,
-        "CLEAR-ARGS",
-        "PUSH-ARGS",
-        "PUSH-ENV-ARGS",
-        "CLEAR-ARGS",
-        "LOOKUP",
-        5,
-        "PUSH-ARGS",
-        "LOOKUP",
-        6,
-        "PUSH-ARGS",
-        "PRIM-CALL",
-        oper_plus,
-        "CLEAR-ARGS",
-        "PUSH-ARGS",
-        "PUSH-ENV-ARGS",
-        "CLEAR-ARGS",
-        "LOOKUP",
-        7,
-        "PUSH-ARGS",
-        "LOOKUP",
-        8,
-        "PUSH-ARGS",
-        "LOOKUP",
-        4,
-        "LOAD-ADDR-ENV",
-        "JUMP",
-        "#done",  
-        "LOOKUP",   #done
-        6,
-        "RETURN"]
-start = ["#start0","PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_plus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP","#start16",
-                "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","LOOKUP",1,"PUSH-ARGS","PRIM-CALL",oper_minus,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",2,"LOAD-ADDR-ENV","JUMP","#start32",
-                "PUSH-ENV-ARGS","CLEAR-ARGS","LOOKUP",0,"PUSH-ARGS","PRIM-CALL",oper_zero,"CLEAR-ARGS","PUSH-ARGS","LOOKUP",1,"LOAD-ADDR-ENV","JUMP","#start45",
-                "PUSH-ENV-ARGS","LOOKUP",0,"RETURN","#START_FUNC"]    
-# assemble_c(start+code)
+shell_comp()

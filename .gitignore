@@ -94,3 +94,5 @@ ENV/
 *.exe
 *.o
 Final Project/auto_build.c
+
+*.out
